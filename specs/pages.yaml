@@ -1,10 +1,93 @@
 schema_version: 1
-status: "pending-product-validation"
+status: "approved-baseline-from-user-reference"
 rules:
   fixed_inventory: true
   fixed_sidebar_order: true
   routes_must_be_unique: true
   every_page_must_have_acceptance_criteria: true
-pages: []
-# Populate only after the user-approved sidebar/page inventory and visual reference
-# have been inspected. Do not infer page names or order from common SAP dashboards.
+  locale_aware: true
+  supports_rtl_ltr: true
+  customer_reorder_allowed: false
+sidebar:
+  - home
+  - overview
+  - systems
+  - landscape
+  - alerts-events
+  - performance
+  - jobs-processes
+  - database
+  - transports
+  - security
+  - backup-recovery
+  - reports
+  - settings
+pages:
+  - id: home
+    route: /
+    label_key: nav.home
+    status: "visual-baseline-defined"
+    acceptance:
+      - "Uses the Home dashboard grid defined in docs/VISUAL_ARCHITECTURE.md."
+      - "Fixture data is visibly labeled DEMO and has data quality states."
+      - "All UI content is localized for English and Persian."
+  - id: overview
+    route: /overview
+    label_key: nav.overview
+    status: "navigation-defined-layout-pending"
+    acceptance: ["Route resolves with correct active navigation state.", "Page content is localized in both supported locales."]
+  - id: systems
+    route: /systems
+    label_key: nav.systems
+    status: "navigation-defined-layout-pending"
+    acceptance: ["Route resolves with correct active navigation state.", "Page content is localized in both supported locales."]
+  - id: landscape
+    route: /landscape
+    label_key: nav.landscape
+    status: "navigation-defined-layout-pending"
+    acceptance: ["Route resolves with correct active navigation state.", "Page content is localized in both supported locales."]
+  - id: alerts-events
+    route: /alerts-events
+    label_key: nav.alertsEvents
+    status: "navigation-defined-layout-pending"
+    acceptance: ["Route resolves with correct active navigation state.", "Page content is localized in both supported locales."]
+  - id: performance
+    route: /performance
+    label_key: nav.performance
+    status: "navigation-defined-layout-pending"
+    acceptance: ["Route resolves with correct active navigation state.", "Page content is localized in both supported locales."]
+  - id: jobs-processes
+    route: /jobs-processes
+    label_key: nav.jobsProcesses
+    status: "navigation-defined-layout-pending"
+    acceptance: ["Route resolves with correct active navigation state.", "Page content is localized in both supported locales."]
+  - id: database
+    route: /database
+    label_key: nav.database
+    status: "navigation-defined-layout-pending"
+    acceptance: ["Route resolves with correct active navigation state.", "Page content is localized in both supported locales."]
+  - id: transports
+    route: /transports
+    label_key: nav.transports
+    status: "navigation-defined-layout-pending"
+    acceptance: ["Route resolves with correct active navigation state.", "Page content is localized in both supported locales."]
+  - id: security
+    route: /security
+    label_key: nav.security
+    status: "navigation-defined-layout-pending"
+    acceptance: ["Route resolves with correct active navigation state.", "Page content is localized in both supported locales."]
+  - id: backup-recovery
+    route: /backup-recovery
+    label_key: nav.backupRecovery
+    status: "navigation-defined-layout-pending"
+    acceptance: ["Route resolves with correct active navigation state.", "Page content is localized in both supported locales."]
+  - id: reports
+    route: /reports
+    label_key: nav.reports
+    status: "navigation-defined-layout-pending"
+    acceptance: ["Route resolves with correct active navigation state.", "Page content is localized in both supported locales."]
+  - id: settings
+    route: /settings
+    label_key: nav.settings
+    status: "navigation-defined-layout-pending"
+    acceptance: ["Route resolves with correct active navigation state.", "Page content is localized in both supported locales."]
