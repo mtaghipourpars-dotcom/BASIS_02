@@ -1,0 +1,10 @@
+schema_version: 1
+status: "pending-product-validation"
+rules:
+  fixed_inventory: true
+  fixed_sidebar_order: true
+  routes_must_be_unique: true
+  every_page_must_have_acceptance_criteria: true
+pages: []
+# Populate only after the user-approved sidebar/page inventory and visual reference
+# have been inspected. Do not infer page names or order from common SAP dashboards.
