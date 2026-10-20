@@ -1,0 +1,45 @@
+schema_version: 1
+status: "approved-requirement-pending-implementation"
+default_locale: "en"
+supported_locales:
+  - code: "en"
+    label: "English"
+    html_lang: "en"
+    direction: "ltr"
+  - code: "fa-IR"
+    label: "فارسی"
+    html_lang: "fa-IR"
+    direction: "rtl"
+language_selector:
+  placement: "global-header"
+  atomic_switch: true
+  preserve_route_and_filters: true
+  persist_preference: true
+  persistence_mechanism: "PENDING-runtime decision"
+translation_rules:
+  centralized_dictionaries: true
+  prohibit_component_hardcoded_ui_copy: true
+  include_accessibility_text: true
+  include_tooltips_and_notifications: true
+  include_chart_titles_axes_legends_tooltips: true
+  include_loading_empty_partial_stale_error_states: true
+  missing_key_development: "fail-test"
+  missing_key_production: "defined-fallback-and-telemetry"
+  translate_technical_identifiers: false
+formatting:
+  locale_aware_dates_times_numbers: true
+  preserve_source_telemetry_meaning: true
+  localize_pluralization: true
+  avoid_sentence_fragment_concatenation: true
+rtl:
+  set_document_dir: true
+  mirror_directional_layout: true
+  do_not_mirror_brand_marks: true
+  do_not_reverse_data_semantics: true
+acceptance:
+  - "Switching locale updates every visible label, accessible name, tooltip, menu, status, and chart annotation."
+  - "Switching locale updates document language and direction."
+  - "Current route, filters, selected system, and unsaved input remain intact."
+  - "Persian long labels render without overlap or critical clipping."
+  - "Technical identifiers such as SAP transaction codes and hostnames remain unchanged."
+  - "No untranslated keys or hard-coded opposite-language UI strings remain."
