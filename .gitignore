@@ -1,0 +1,28 @@
+# Secrets and local environment
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+credentials/
+
+# Dependencies and build outputs (activate as applicable to the selected stack)
+node_modules/
+dist/
+build/
+coverage/
+.vite/
+
+# Local editor and OS files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Local logs and temporary files
+*.log
+tmp/
+temp/
+
+# Never commit unreviewed production exports, dumps, or personal data.
