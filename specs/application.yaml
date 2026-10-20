@@ -1,0 +1,41 @@
+schema_version: 1
+application:
+  id: basis-02
+  name: "SAP Basis Operations Dashboard"
+  status: "baseline-scaffold"
+  phase: 1
+  phase_name: "Monitoring"
+  target_landscapes:
+    - "SAP S/4HANA On-Premise"
+    - "SAP ECC"
+  product_mode: "read-only"
+  demo_data_policy:
+    required_label: "DEMO"
+    may_appear_as_live: false
+  navigation:
+    customer_can_add_pages: false
+    customer_can_remove_pages: false
+    customer_can_reorder_pages: false
+  layout:
+    customer_can_add_widgets: false
+    customer_can_remove_widgets: false
+    customer_can_reorder_widgets: false
+    header_footer_are_product_controlled: true
+  data_integrity:
+    stale_data_may_be_healthy: false
+    unknown_data_may_be_healthy: false
+    invalid_data_may_be_healthy: false
+  technology:
+    frontend_framework: "PENDING"
+    build_tool: "PENDING"
+    package_manager: "PENDING"
+    chart_library: "PENDING"
+    test_runner: "PENDING"
+    decision_required_before_implementation: true
+  visual_reference:
+    source: "PENDING"
+    viewport_baselines: []
+  rules:
+    - "Do not invent page inventory, route names, KPI formulas, or source semantics."
+    - "Do not add operational actions in phase 1."
+    - "A fixture validates only the behavior it actually tests; it does not prove live integration."
