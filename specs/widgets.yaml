@@ -1,0 +1,27 @@
+schema_version: 1
+status: "pending-product-validation"
+required_fields_for_each_widget:
+  - id
+  - title
+  - page_id
+  - placement
+  - purpose
+  - data_contract_ref
+  - state_behavior
+  - acceptance_criteria
+rules:
+  widget_ids_must_be_unique: true
+  placement_must_reference_existing_page: true
+  fixed_placement: true
+  new_dependencies_require_approval: true
+  demo_data_must_be_labeled: true
+  states:
+    - loading
+    - success
+    - empty
+    - partial
+    - stale
+    - error
+widgets: []
+# Add widget definitions only after page placement, behavior, and source semantics
+# have been explicitly confirmed. A schema template is not an approved widget inventory.
