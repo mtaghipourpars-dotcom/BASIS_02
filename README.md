@@ -1,5 +1,7 @@
 # BASIS_02 — SAP Basis Dashboard UI Engineering
 
+**Authoritative entry point:** [Master Specification](MASTER_SPECIFICATION.md). Read it first; unresolved or conflicting requirements block implementation.
+
 **Purpose:** controlled development of a bilingual SAP Basis Operations Cockpit.
 
 ## Start here
