@@ -1,0 +1,24 @@
+schema_version: 1
+status: "no-metrics-approved-yet"
+required_fields:
+  - id
+  - display_name
+  - business_definition
+  - formula
+  - source_contract
+  - source_fields
+  - unit
+  - aggregation
+  - time_window
+  - filter_rules
+  - null_handling
+  - duplicate_handling
+  - freshness_policy
+  - test_cases
+rules:
+  no_implicit_formulas: true
+  row_count_is_not_automatically_entity_count: true
+  summed_sessions_are_not_automatically_active_gui_sessions: true
+  unverified_semantics_must_not_be_presented_as_authoritative: true
+metrics: []
+# Populate only from confirmed source evidence and approved business definitions.
