@@ -1,0 +1,36 @@
+schema_version: 1
+status: "conventions-approved-source-mappings-pending"
+provenance:
+  required_when_data_is_displayed:
+    - source_id
+    - observed_at
+    - quality
+    - freshness
+  timezone_required: true
+  unit_required_for_quantities: true
+quality_values:
+  - valid
+  - partial
+  - invalid
+  - unknown
+freshness_values:
+  - fresh
+  - stale
+  - unknown
+data_modes:
+  - DEMO
+  - LIVE
+rules:
+  - "LIVE is permitted only after the source and mapping are validated."
+  - "DEMO must be visible in the UI and fixture metadata."
+  - "Missing or invalid provenance must not silently default to healthy."
+  - "Partial results must be labeled and must not masquerade as complete."
+  - "Timeouts and source failures must produce explicit error/stale states."
+  - "The UI must not invent values to fill gaps."
+generic_record_fields:
+  source_id: "string"
+  observed_at: "ISO-8601 timestamp with timezone"
+  quality: "valid | partial | invalid | unknown"
+  freshness: "fresh | stale | unknown"
+  mode: "DEMO | LIVE"
+# This is a convention scaffold, not a substitute for a service-specific schema.
