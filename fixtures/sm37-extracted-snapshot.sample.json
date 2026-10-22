@@ -1,0 +1,85 @@
+{
+  "fixture_id": "sm37-extracted-snapshot-01",
+  "data_state": "DEMO",
+  "source_artifact": "user-upload: SM37.md",
+  "report_scope": {
+    "from_date_raw": "1405/07/25",
+    "to_date_raw": "1405/07/26"
+  },
+  "reported_records_passed": 8062,
+  "observed_at": null,
+  "system_id": null,
+  "notes": [
+    "Sample rows are transcribed from the supplied extraction, not live SAP data.",
+    "record_id is a DEMO-only source locator, not a native SAP job-run ID.",
+    "Delay meaning/unit and timezone are unknown.",
+    "Reconcile values and column alignment to the original PDF before operational use."
+  ],
+  "records": [
+    {
+      "record_id": "DEMO-SM37-L83",
+      "record_id_kind": "derived-source-locator",
+      "job_name": "/BUILD/REORG",
+      "job_created_by": "DDIC",
+      "job_status_raw": "Finished",
+      "start_date_raw": "1405/07/26",
+      "start_time_raw": "00:00:03",
+      "duration_seconds_raw": "0",
+      "delay_raw": "3",
+      "client_raw": "000",
+      "source_locator": "SM37.md excerpt around L83-L92"
+    },
+    {
+      "record_id": "DEMO-SM37-L95",
+      "record_id_kind": "derived-source-locator",
+      "job_name": "/IWBEP/SUP_UTIL_CLEANUP",
+      "job_created_by": "DDIC",
+      "job_status_raw": "Finished",
+      "start_date_raw": "1405/07/25",
+      "start_time_raw": "03:00:02",
+      "duration_seconds_raw": "1",
+      "delay_raw": "2",
+      "client_raw": "000",
+      "source_locator": "SM37.md excerpt around L95-L104"
+    },
+    {
+      "record_id": "DEMO-SM37-L143",
+      "record_id_kind": "derived-source-locator",
+      "job_name": "/SMB/Q2P_RESTART_BATCH_JOBS",
+      "job_created_by": "DDIC",
+      "job_status_raw": "Released",
+      "start_date_raw": null,
+      "start_time_raw": null,
+      "duration_seconds_raw": "0",
+      "delay_raw": "0",
+      "client_raw": "000",
+      "source_locator": "SM37.md excerpt around L143-L152"
+    },
+    {
+      "record_id": "DEMO-SM37-L155",
+      "record_id_kind": "derived-source-locator",
+      "job_name": "/SMB/Q2P_RESTART_BATCH_JOBS",
+      "job_created_by": "DDIC",
+      "job_status_raw": "Finished",
+      "start_date_raw": "1405/07/25",
+      "start_time_raw": "00:24:02",
+      "duration_seconds_raw": "0",
+      "delay_raw": "0",
+      "client_raw": "000",
+      "source_locator": "SM37.md excerpt around L155-L164"
+    },
+    {
+      "record_id": "DEMO-SM37-L2583",
+      "record_id_kind": "derived-source-locator",
+      "job_name": "QM_REPET_INSP",
+      "job_created_by": "NMOSTAFAEI",
+      "job_status_raw": "Canceled",
+      "start_date_raw": "1405/07/25",
+      "start_time_raw": "13:13:03",
+      "duration_seconds_raw": "0",
+      "delay_raw": "48",
+      "client_raw": "800",
+      "source_locator": "SM37.md excerpt around L2583-L2592"
+    }
+  ]
+}
