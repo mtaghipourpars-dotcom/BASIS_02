@@ -57,7 +57,7 @@ Layout:
 - Secondary: status distribution chart only if each row has a validated status and duplicates are handled.
 - Detail drawer: job identity, status, start/end, duration, user, server/target, job log/step evidence only where present in source.
 - Related evidence strip: links to SM21/ST22/SM13 records only when deterministic keys or reviewed time/system matching rules exist. Label time correlation as a clue, not causation.
-Source artifact: SM37.pdf exists. Exact fields and sample statuses must be verified from the PDF before marking field mapping CONFIRMED.
+Source artifact: SM37.pdf; user-uploaded SM37.md extraction reviewed. Confirmed labels include JobName, Job CreatedBy, Status, Start date, Start Time, Duration(sec.), Delay and Cli; Reason for Delay, Spool and Job doc labels are present but row-level values are incomplete. Observed row statuses: Finished, Canceled, Released, Scheduled. See docs/SM37_SOURCE_FIELD_MAPPING.md. Keep counts/charts disabled until unique row identity, deduplication, column alignment and normalized status mapping are validated.
 Features: status/time/user/name filters; row selection; details; Home-to-detail deep link. Phase 1 has no re-run/cancel/release controls.
 
 ## Island 04 — Database & Storage
@@ -147,3 +147,7 @@ Sources: aggregate existing SRC only; do not create an independent parallel heal
 
 ## Validation status
 This document establishes visual layout and intended behaviors. It does not claim that all source fields have been extracted, that live endpoints exist, or that browser/UI tests have passed. See `docs/SRC_WIDGET_FIELD_MAPPING.md` and `docs/SM37_HOME_TO_DETAIL_VALIDATION.md` for evidence and validation gates.
+
+
+## SM37 prototype artifact
+Standalone bilingual visual/interaction prototype: `prototypes/sm37-home-to-detail.html`. It demonstrates Home-to-detail navigation, sample-row search/status filtering and a read-only detail drawer. It is a prototype only, not the integrated application or live SAP monitoring.
