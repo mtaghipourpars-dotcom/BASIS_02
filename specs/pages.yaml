@@ -64,8 +64,17 @@ pages:
   - id: jobs-processes
     route: /jobs-processes
     label_key: nav.jobsProcesses
-    status: "navigation-defined-layout-pending"
-    acceptance: ["Route resolves with correct active navigation state.", "Page content is localized in both supported locales."]
+    status: "source-mapped-prototype-created; integrated-route-pending"
+    spec_ref: "docs/SM37_SOURCE_FIELD_MAPPING.md"
+    prototype_ref: "prototypes/sm37-home-to-detail.html"
+    integrity_ref: "docs/CROSS_PAGE_DATA_INTEGRITY_VALIDATION.md#sm37-concrete-checks"
+    acceptance:
+      - "Route resolves with correct active navigation state in the integrated app."
+      - "Page content is localized in English and Persian with correct RTL/LTR behavior."
+      - "Home deep link preserves supported filters and DEMO data state."
+      - "Read-only table displays only mapped source fields; missing fields remain Unknown."
+      - "Status counts/charts remain disabled until unique row identity and mapping are validated."
+      - "No execution controls are available in Phase 1."
   - id: database
     route: /database
     label_key: nav.database
