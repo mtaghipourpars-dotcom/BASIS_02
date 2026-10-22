@@ -39,6 +39,22 @@ generic_record_fields:
 # Application-level names below are proposed names, not SM37 PDF column headers.
 contracts:
   background_job:
+    status: "SM37 labels reviewed; identity and normalization pending"
+    source_artifact: "user-upload: SM37.md"
+    report_scope:
+      from_date_raw: "1405/07/25"
+      to_date_raw: "1405/07/26"
+      reported_records_passed: 8062
+    observed_status_labels: ["Finished", "Canceled", "Released", "Scheduled"]
+    confirmed_source_labels: ["JobName", "Job CreatedBy", "Status", "Start date", "Start Time", "Duration(sec.)", "Delay", "Cli", "Reason for Delay", "Spool", "Job doc"]
+    field_rules:
+      - "No stable job-run identifier, system ID, target server, end time, capture time or timezone is evidenced."
+      - "Preserve raw Jalali date and time; do not infer timezone or convert calendar."
+      - "Delay unit and meaning are unknown."
+      - "Do not enable counts/charts until row identity, duplicates, status mapping and extraction alignment are validated."
+      - "Any sample rows derived from the upload must be labeled DEMO; never label them LIVE."
+    fields:
+
     status: "source-labels-confirmed-from-user-supplied-SM37.md; identity-and-normalization-pending"
     source_artifact: "user-upload: SM37.md (extracted SM37 Job Overview report)"
     report_scope:
