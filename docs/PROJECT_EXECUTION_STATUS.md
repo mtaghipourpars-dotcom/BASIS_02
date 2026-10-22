@@ -10,8 +10,11 @@
 - `specs/application.yaml` still marks frontend framework, build tool, package manager, chart library, test runner, and visual reference as `PENDING`; it explicitly says a decision is required before implementation.
 - No real application entry point, router, app source directory, or app build command was found in the default-branch repository tree reviewed for this report.
 - The SM37 prototype remains a standalone file and reads DEMO data. It is not connected to SAP and is not integrated into an application route.
-- The first CI run failed because Playwright was configured to search `./browser` while tests live under `./tests/browser`.
-- That configuration was corrected in commit `1ee08d0a9c4b2554d4f736768dc5d8cb8f4deb45` to use `./tests/browser`. A second GitHub Actions run was started automatically; its final result must be read from the linked workflow page before calling the browser tests passing.
+- CI run 1 failed because Playwright was configured to search `./browser` while tests live under `./tests/browser`; this was corrected in commit `1ee08d0a9c4b2554d4f736768dc5d8cb8f4deb45`.
+- CI run 2 discovered the tests but all five failed at navigation because the prototype path resolved to `tests/prototypes/...` rather than `prototypes/...`. The root cause was confirmed from the job log.
+- The prototype path was corrected in commit `5f95f674f935c10c0bd69df3d6a71d1e5601b6d4`.
+- The workflow was extended to run the static Python validator before browser tests in commit `86286836f5427443b00a4d95035dce7a37ddf6a7`.
+- CI run 3 is queued for commit `86286836f5427443b00a4d95035dce7a37ddf6a7`; it is not yet verified green.
 
 ## Work completed
 
@@ -21,6 +24,8 @@
 4. Added five Playwright scenarios for navigation, filtering/search, record provenance/read-only behavior, locale/direction switching, and narrow viewport reachability.
 5. Added GitHub Actions execution for the browser suite.
 6. Fixed the initial Playwright test discovery path after inspecting the failed CI logs.
+7. Inspected the next CI failure and corrected the prototype file path used by all five browser tests.
+8. Added the static prototype validator to the CI sequence before browser acceptance.
 
 ## Remaining work and gates
 
@@ -32,7 +37,7 @@ Provide the actual app source/router if it exists elsewhere, or explicitly estab
 
 ### Gate C — Run and pass browser acceptance
 Use the latest GitHub Actions result: https://github.com/mtaghipourpars-dotcom/BASIS_02/actions/workflows/sm37-browser-acceptance.yml  
-A green run proves only the standalone prototype tests, not app integration or live SAP connectivity. Fix any assertion failures based on actual logs and rerun.
+The latest run is queued after correcting the path. A green run proves only the standalone prototype tests, not app integration or live SAP connectivity. Fix any further assertion failures based on actual logs and rerun.
 
 ### Gate D — Validate shared state and provenance
 Ensure Home and detail share the same query, status filter, and selected source scope. Every detail row must trace to a source record; derived DEMO locators must never be presented as SAP-native identifiers.
