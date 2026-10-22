@@ -40,7 +40,7 @@ At this revision, repository listing confirms the artifacts below, but this revi
 | Landscape system inventory | SM51.pdf | system/SID, instance, host, reported state, capture time | Table/topology after fields and relationships are confirmed |
 | Session list | SM04.xlsx | user, terminal/client, transaction, start time, instance | Table; no trend unless multiple timestamped snapshots exist |
 | Lock list | SM12.xlsx | lock owner/user, lock object/key, time/status if present | Table; counts only after unique-record rule |
-| Job list | SM37.pdf | job name/ID, status, start/end, duration, user, target/server | Table after field extraction; status chart only if status categories are confirmed |
+| Job list | SM37.pdf + user-uploaded SM37.md extraction | JobName, Job CreatedBy, Status, Start date, Start Time, Duration(sec.), Delay, Cli; labels for Reason for Delay, Spool, Job doc | Read-only DEMO table permitted; no counts/chart until row identity, deduplication, column alignment and status mapping pass. See docs/SM37_SOURCE_FIELD_MAPPING.md |
 | Job duration trend | SM37.pdf | multiple dated job records, start/end or duration, stable job identity | Not yet approved; requires multiple records and time scope |
 | Work Process snapshot | SM50.pdf / SM66.pdf | instance, process type/status, runtime, user/action if present | Table/status distribution if categories verified; not automatically a trend |
 | Workload trend | ST03N-02.stats / ST03N-03.stats / ST03N.pdf | period/time bucket, workload/response measure, unit, aggregation scope | Trend only after schema/units/period and comparable buckets are verified |
@@ -75,4 +75,4 @@ At this revision, repository listing confirms the artifacts below, but this revi
 - Counts: define record uniqueness, filter scope, time window, and treatment of duplicates.
 
 ## Next evidence gate
-Inspect the actual PDF page images and workbook sheets/headers. Record field names, source page/sheet, units, sample count, snapshot/window, and whether multiple observations exist. Then promote only verified rows from FIELD_CANDIDATE to FIELD_CONFIRMED. Live integration remains a separate gate requiring a real endpoint and connectivity test.
+For SM37, use docs/SM37_SOURCE_FIELD_MAPPING.md and reconcile the uploaded extraction to original PDF pages. For remaining sources, inspect PDF page images and workbook sheets/headers. Record fields, units, sample count, snapshot/window, and whether multiple observations exist. Promote only evidence-backed fields. Live integration remains a separate gate requiring a real endpoint and connectivity test. Live integration remains a separate gate requiring a real endpoint and connectivity test.
