@@ -34,3 +34,60 @@ generic_record_fields:
   freshness: "fresh | stale | unknown"
   mode: "DEMO | LIVE"
 # This is a convention scaffold, not a substitute for a service-specific schema.
+
+# Service-specific contracts are added only after source fields are inspected.
+# Application-level names below are proposed names, not SM37 PDF column headers.
+contracts:
+  background_job:
+    status: "field-mapping-pending"
+    source_artifact: "BASIS_01:SRC/SM37.pdf"
+    fields:
+      record_id:
+        type: string
+        required_for_summary: true
+        rule: "Must be a stable source identity; derived fixture IDs must be marked DEMO/derived."
+      system_id:
+        type: string
+        required: false
+        rule: "Only populate when source or fixture metadata establishes the system."
+      job_name:
+        type: string
+        required: false
+        rule: "Map only after the PDF field is inspected."
+      job_status_raw:
+        type: string
+        required: false
+        rule: "Preserve exact source label/code; do not normalize before mapping is approved."
+      job_status_normalized:
+        type: string
+        required_for_summary: true
+        allowed_values: [scheduled, released, ready, running, finished, canceled, unknown]
+        rule: "Candidate categories only; approve mapping from observed SM37 status values before use."
+      start_at:
+        type: "ISO-8601 timestamp with timezone"
+        required: false
+      end_at:
+        type: "ISO-8601 timestamp with timezone"
+        required: false
+      duration_seconds:
+        type: number
+        required: false
+        rule: "May be derived only from validated start/end timestamps with consistent timezone."
+      user_id:
+        type: string
+        required: false
+      target_server:
+        type: string
+        required: false
+      observed_at:
+        type: "ISO-8601 timestamp with timezone"
+        required: true
+        rule: "Report snapshot/collector observation time; never replace with current browser time."
+      source_locator:
+        type: string
+        required: true
+        rule: "PDF page/report section or live endpoint record key after inspection."
+      data_state:
+        type: string
+        required: true
+        allowed_values: [DEMO, VALIDATED_SNAPSHOT, LIVE, STALE, PARTIAL, UNKNOWN, ERROR]
