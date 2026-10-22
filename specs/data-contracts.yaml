@@ -39,138 +39,73 @@ generic_record_fields:
 # Application-level names below are proposed names, not SM37 PDF column headers.
 contracts:
   background_job:
-    status: "SM37 labels reviewed; identity and normalization pending"
+    status: "SM37 source labels confirmed from user upload; row identity and status normalization pending"
     source_artifact: "user-upload: SM37.md"
     report_scope:
       from_date_raw: "1405/07/25"
       to_date_raw: "1405/07/26"
       reported_records_passed: 8062
-    observed_status_labels: ["Finished", "Canceled", "Released", "Scheduled"]
     confirmed_source_labels: ["JobName", "Job CreatedBy", "Status", "Start date", "Start Time", "Duration(sec.)", "Delay", "Cli", "Reason for Delay", "Spool", "Job doc"]
+    observed_status_labels: ["Finished", "Canceled", "Released", "Scheduled"]
     field_rules:
       - "No stable job-run identifier, system ID, target server, end time, capture time or timezone is evidenced."
-      - "Preserve raw Jalali date and time; do not infer timezone or convert calendar."
+      - "Preserve raw Jalali date/time; do not infer timezone or convert calendar."
       - "Delay unit and meaning are unknown."
-      - "Do not enable counts/charts until row identity, duplicates, status mapping and extraction alignment are validated."
-      - "Any sample rows derived from the upload must be labeled DEMO; never label them LIVE."
+      - "Do not enable counts/charts until row identity, duplicate handling, status mapping and extraction alignment are validated."
+      - "Any fixture rows from the upload must be labeled DEMO, never LIVE."
     fields:
-
-    status: "source-labels-confirmed-from-user-supplied-SM37.md; identity-and-normalization-pending"
-    source_artifact: "user-upload: SM37.md (extracted SM37 Job Overview report)"
-    report_scope:
-      from_date_raw: "1405/07/25"
-      to_date_raw: "1405/07/26"
-      reported_records_passed: 8062
-      rule: "Report scope/count are transcribed from the extraction; they do not prove the number of unique displayed job records."
-    confirmed_source_labels:
-      - "JobName"
-      - "Job CreatedBy (extract sometimes truncates to Job CreatedB)"
-      - "Status"
-      - "Start date"
-      - "Start Time"
-      - "Duration(sec.)"
-      - "Delay"
-      - "Cli (client; label appears truncated in extraction)"
-      - "Reason for Delay"
-      - "Spool"
-      - "Job doc"
-      - "ABAP program / Program name (selection/filter area)"
-    observed_status_labels: ["Finished", "Canceled", "Released", "Scheduled"]
-    fields:
-      record_id:
-        type: string
-        required_for_summary: true
-        status: "not-source-confirmed"
-        rule: "No explicit job instance/run ID is visible in the supplied extraction. Do not claim a stable source ID. A composite fixture key may be derived only for DEMO and must be marked derived; summary/chart remains blocked until collision/deduplication behavior is validated."
-      system_id:
-        type: string
-        required: false
-        status: "not-provided-in-extraction"
       job_name:
-        type: string
-        required: true
         source_label: "JobName"
+        type: string
         status: "field-confirmed"
       job_created_by:
-        type: string
-        required: false
         source_label: "Job CreatedBy"
-        status: "field-confirmed-label; values present in rows"
-      job_status_raw:
         type: string
-        required: true
+        status: "field-confirmed-label"
+      job_status_raw:
         source_label: "Status"
+        type: string
         status: "field-confirmed"
-        rule: "Preserve exact source label. Observed values include Finished, Canceled, Released and Scheduled. Ready and Active appear as selection/status categories but were not confirmed as row values in the inspected excerpt."
       job_status_normalized:
         type: string
-        required_for_summary: true
-        allowed_values: [scheduled, released, ready, running, finished, canceled, unknown]
         status: "mapping-pending"
-        rule: "Do not infer normalized state or enable summary counts until all row statuses and mapping rules are reviewed."
+        allowed_values: [scheduled, released, ready, running, finished, canceled, unknown]
       start_date_raw:
-        type: string
-        required: false
         source_label: "Start date"
+        type: string
         status: "field-confirmed"
-        rule: "Keep original Jalali date string unless calendar conversion is explicitly implemented and tested."
       start_time_raw:
-        type: string
-        required: false
         source_label: "Start Time"
+        type: string
         status: "field-confirmed"
-        rule: "Keep source text; timezone is not provided by the extraction."
       duration_seconds_raw:
-        type: string
-        required: false
         source_label: "Duration(sec.)"
-        status: "field-confirmed"
-        rule: "The source provides numeric-looking duration values. Validate extraction alignment and numeric parsing before aggregating."
+        type: string
+        status: "label-confirmed; column alignment pending"
       delay_raw:
-        type: string
-        required: false
         source_label: "Delay"
-        status: "field-confirmed"
-        rule: "Keep as raw source value until the unit/meaning is confirmed; do not label it minutes or seconds."
+        type: string
+        status: "label-confirmed; unit unknown"
       client_raw:
-        type: string
-        required: false
         source_label: "Cli"
-        status: "field-confirmed-label"
+        type: string
+        status: "label-confirmed"
       reason_for_delay:
-        type: string
-        required: false
         source_label: "Reason for Delay"
-        status: "field-confirmed-label; row-level values not consistently visible in extraction"
+        type: string
+        status: "label-confirmed; row values incomplete"
       spool:
-        type: string
-        required: false
         source_label: "Spool"
-        status: "field-confirmed-label; row-level values not confirmed"
+        type: string
+        status: "label-confirmed; row values pending"
       job_document:
-        type: string
-        required: false
         source_label: "Job doc"
-        status: "field-confirmed-label; row-level values not confirmed"
-      target_server:
         type: string
-        required: false
-        status: "not-provided-in-extraction"
-      end_at:
+        status: "label-confirmed; row values pending"
+      record_id:
         type: string
-        required: false
-        status: "not-provided-in-extraction"
+        status: "not-source-confirmed"
+        rule: "A derived DEMO locator may be used for selection, never presented as native SAP job ID."
       observed_at:
         type: string
-        required: true
-        status: "not-provided-in-extraction"
-        rule: "Do not substitute current browser time. Snapshot timestamp must be supplied separately if known."
-      source_locator:
-        type: string
-        required: true
-        rule: "Use uploaded SM37.md section/line locator for the inspected extraction; PDF page locator remains pending."
-      data_state:
-        type: string
-        required: true
-        allowed_values: [DEMO, VALIDATED_SNAPSHOT, LIVE, STALE, PARTIAL, UNKNOWN, ERROR]
-        rule: "Current fixture derived from user-uploaded extraction must be DEMO until complete source extraction and identity rules pass validation."
+        status: "not-provided"
