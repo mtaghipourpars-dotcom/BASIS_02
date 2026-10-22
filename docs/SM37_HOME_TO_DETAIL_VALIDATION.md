@@ -1,6 +1,6 @@
 # BASIS_02 — SM37 Home-to-Detail Validation Slice
-Version: 1.0
-Status: validation specification; not a claim that the UI or live service has already passed tests
+Version: 1.1
+Status: source labels partially confirmed from user-uploaded SM37.md; UI/runtime validation still blocked
 Source artifact: https://github.com/mtaghipourpars-dotcom/BASIS_01/blob/main/SRC/SM37.pdf
 
 ## Goal
@@ -52,9 +52,9 @@ Names are application-level contract names, not claims about SM37 PDF column hea
 10. No execution/write action can be triggered from this path.
 
 ## Test data and current blocker
-The repository inventory confirms `SM37.pdf` exists (1,563,658 bytes), but the PDF's text/pages and exact field labels have not yet been extracted in this specification pass. Do not fabricate job rows or claim field-level validation. Before calling this slice validated:
-- inspect the PDF pages and capture its actual column headers/status values;
-- record page number and source scope;
+The user-uploaded `SM37.md` extraction exposes these report labels: `JobName`, `Job CreatedBy` (sometimes truncated), `Status`, `Start date`, `Start Time`, `Duration(sec.)`, `Delay`, `Cli`, `Reason for Delay`, `Spool` and `Job doc`. Observed row statuses include `Finished`, `Canceled`, `Released` and `Scheduled`. The report scope shown is 1405/07/25 through 1405/07/26 and the report states 8,062 records passed. This does not establish unique job-run count, stable row identity, delay unit, timezone, or a capture timestamp. Do not claim the UI or live service passed. Before calling this slice validated:
+- reconcile the extracted labels to the original PDF pages and verify column alignment;
+- define a stable row identity or approved DEMO-only derived key and deduplication rule;
 - build a clearly labeled fixture from the inspected report;
 - run the acceptance checks above in the actual app;
 - record screenshots/test results and commit hash.
