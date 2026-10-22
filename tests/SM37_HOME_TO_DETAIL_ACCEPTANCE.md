@@ -1,6 +1,6 @@
 # SM37 Home-to-Detail Acceptance Record
 
-Status: PARTIAL — source labels and sample status values reviewed from user-supplied SM37.md; runtime path remains blocked.
+Status: PROTOTYPE CREATED — source labels and sample status values reviewed; standalone bilingual prototype committed; integrated application acceptance remains pending.
 
 ## Why BLOCKED
 - The repository currently contains specification/docs/scripts/tests and no application source/build manifest from which a browser route can be launched.
@@ -28,3 +28,9 @@ Do not change this record to PASS until:
 2. A normalized fixture is built from actual inspected source rows and labeled as a snapshot/DEMO.
 3. The app path is implemented.
 4. All ten checks are run and evidence (test output/screenshots + commit) is attached.
+
+
+## Prototype artifact
+- `prototypes/sm37-home-to-detail.html` — standalone bilingual (English/Persian) clickable Home → Jobs → row-detail prototype using the labeled DEMO fixture.
+- Manual browser verification still required; this does not mean the integrated application route or live SAP connection has passed.
+- Prototype interactions to verify: Home deep link, search, raw status filter, row selection/detail, clear filters, locale switch, back to Home, and no execution controls.
