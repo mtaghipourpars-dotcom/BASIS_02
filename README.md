@@ -4,12 +4,20 @@
 
 **AI implementation work order:** [AI_IMPLEMENTATION_WORK_ORDER.md](AI_IMPLEMENTATION_WORK_ORDER.md) — proposed page-by-page widget inventory and evidence-driven rules.
 
-**Purpose:** controlled development of a bilingual SAP Basis Operations Cockpit.
+**Purpose:** develop a bilingual SAP Basis Operations Cockpit using a visual-first, iterative co-creation workflow.
+
+## Product direction
+The target product selectively brings the most useful SAP Fiori capabilities for Basis operations into one coherent experience, extends them where useful, and organizes them into three layers:
+- **Monitoring** — observe systems and technical health.
+- **Warning** — identify actionable alerts, risks, and threshold breaches.
+- **Execution** — controlled operations with authorization, confirmation, and auditability.
+
+This is the target vision, not a claim that the Fiori app inventory has already been researched or that all three layers are implemented. **BASIS_02 Phase 1 remains read-only Monitoring.** The Fiori capability review should use the official SAP Fiori Apps Reference Library and SAP documentation, then produce a visually inspectable selection and page/widget mapping before implementation scope is changed.
 
 ## Start here
 1. [Visual architecture](docs/VISUAL_ARCHITECTURE.md) — visual direction and Home composition based on the supplied reference.
-2. [Development standard](DEVELOPMENT_STANDARD.md).
-3. [AI-assisted workflow](docs/AI_DEVELOPMENT_WORKFLOW.md).
+2. [AI-assisted workflow](docs/AI_DEVELOPMENT_WORKFLOW.md) — visual-first collaboration loop and three-layer product direction.
+3. [Development standard](DEVELOPMENT_STANDARD.md).
 4. [Quality gates](docs/QUALITY_GATES.md).
 5. [Change control](docs/CHANGE_CONTROL.md).
 6. [Application contract](specs/application.yaml).
