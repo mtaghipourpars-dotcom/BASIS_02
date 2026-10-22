@@ -34,8 +34,13 @@ pages:
   - id: overview
     route: /overview
     label_key: nav.overview
-    status: "navigation-defined-layout-pending"
-    acceptance: ["Route resolves with correct active navigation state.", "Page content is localized in both supported locales."]
+    status: "layout-defined-in-docs-ISLANDS_VISUAL_SPEC-source-field-validation-pending"
+    spec_ref: "docs/ISLANDS_VISUAL_SPEC.md#island-10-system-operations"
+    acceptance:
+      - "Route resolves with correct active navigation state."
+      - "Page content is localized in both supported locales."
+      - "Operational issues link to authoritative detail pages and preserve filters."
+      - "No parallel health formula or unsupported causal inference."
   - id: systems
     route: /systems
     label_key: nav.systems
