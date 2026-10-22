@@ -1,0 +1,31 @@
+name: SM37 Browser Acceptance (Prototype)
+on:
+  push:
+    paths:
+      - "prototypes/sm37-home-to-detail.html"
+      - "tests/browser/**"
+      - "playwright.config.js"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/sm37-browser-acceptance.yml"
+  pull_request:
+    paths:
+      - "prototypes/sm37-home-to-detail.html"
+      - "tests/browser/**"
+      - "playwright.config.js"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/sm37-browser-acceptance.yml"
+  workflow_dispatch:
+
+jobs:
+  browser-acceptance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:browser
