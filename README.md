@@ -42,3 +42,14 @@ This is the target vision, not a claim that the Fiori app inventory has already 
 
 ## Status
 Visual architecture and navigation baseline are documented from the supplied reference. This is a specification update, not a claim that a running UI exists or that tests/builds have passed.
+
+
+## SM37 validation slice — current artifacts
+- Source mapping: [docs/SM37_SOURCE_FIELD_MAPPING.md](docs/SM37_SOURCE_FIELD_MAPPING.md)
+- DEMO fixture: [fixtures/sm37-extracted-snapshot.sample.json](fixtures/sm37-extracted-snapshot.sample.json)
+- Interactive bilingual prototype: [prototypes/sm37-home-to-detail.html](prototypes/sm37-home-to-detail.html)
+- Home-to-detail validation: [docs/SM37_HOME_TO_DETAIL_VALIDATION.md](docs/SM37_HOME_TO_DETAIL_VALIDATION.md)
+- Cross-page integrity contract: [docs/CROSS_PAGE_DATA_INTEGRITY_VALIDATION.md](docs/CROSS_PAGE_DATA_INTEGRITY_VALIDATION.md)
+- Acceptance record: [tests/SM37_HOME_TO_DETAIL_ACCEPTANCE.md](tests/SM37_HOME_TO_DETAIL_ACCEPTANCE.md)
+
+The prototype is read-only and uses DEMO rows from the user-supplied extraction. It is not an integrated application route and does not represent live SAP data. Counts/charts remain gated pending row identity, deduplication, extraction alignment and status mapping validation.
