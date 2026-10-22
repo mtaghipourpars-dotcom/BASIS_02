@@ -28,4 +28,5 @@ jobs:
           node-version: 22
       - run: npm install
       - run: npx playwright install --with-deps chromium
+      - run: python3 scripts/validate_sm37_prototype.py
       - run: npm run test:browser
