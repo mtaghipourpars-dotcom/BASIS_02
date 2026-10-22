@@ -1,27 +1,259 @@
 schema_version: 1
-status: "pending-product-validation"
-required_fields_for_each_widget:
-  - id
-  - title
-  - page_id
-  - placement
-  - purpose
-  - data_contract_ref
-  - state_behavior
-  - acceptance_criteria
+status: "visual-baseline-defined-source-field-validation-pending"
 rules:
   widget_ids_must_be_unique: true
   placement_must_reference_existing_page: true
   fixed_placement: true
   new_dependencies_require_approval: true
   demo_data_must_be_labeled: true
-  states:
-    - loading
-    - success
-    - empty
-    - partial
-    - stale
-    - error
-widgets: []
-# Add widget definitions only after page placement, behavior, and source semantics
-# have been explicitly confirmed. A schema template is not an approved widget inventory.
+  home_layout_is_unchanged: true
+  monitoring_warning_execution_are_capability_tracks_not_ui_modes: true
+  execution_is_disabled_in_phase_1: true
+  missing_data_is_not_zero: true
+  live_status_requires_verified_live_collector: true
+  states: [loading, success, empty, partial, stale, unavailable, not_supported, unauthorized, error]
+  field_status_values: [artifact_confirmed, field_candidate, field_confirmed, live_connected]
+  note: "Artifact existence is not field-level confirmation. See docs/SRC_WIDGET_FIELD_MAPPING.md."
+widgets:
+  - id: landscape.kpi.system-count
+    title: "Systems"
+    page_id: landscape
+    placement: "row1-col1"
+    purpose: "Count inventory records within the selected scope"
+    data_contract_ref: "contracts.landscape_inventory"
+    source: ["BASIS_01:SRC/SM51.pdf"]
+    field_status: "field_candidate"
+    display_type: "kpi"
+    state_behavior: "Show count only after unique system identity and scope are validated; otherwise UNKNOWN."
+    acceptance_criteria: ["Count reconciles to filtered inventory rows.", "No hard-coded system count."]
+  - id: landscape.topology
+    title: "System and Instance Landscape"
+    page_id: landscape
+    placement: "main-left-8of12"
+    purpose: "Show only evidenced system-to-instance-to-host relationships"
+    data_contract_ref: "contracts.landscape_inventory"
+    source: ["BASIS_01:SRC/SM51.pdf"]
+    field_status: "field_candidate"
+    display_type: "topology"
+    state_behavior: "Do not draw relationships unless source records establish the link."
+    acceptance_criteria: ["Every node has a source locator.", "Unknown links are omitted or marked unknown."]
+  - id: landscape.instance-table
+    title: "Instance Inventory"
+    page_id: landscape
+    placement: "bottom-full-width"
+    purpose: "Inspect available instance attributes and observation state"
+    data_contract_ref: "contracts.landscape_inventory"
+    source: ["BASIS_01:SRC/SM51.pdf"]
+    field_status: "field_candidate"
+    display_type: "table"
+    state_behavior: "Unknown fields remain Unknown; show source and observation time."
+    acceptance_criteria: ["Table filters preserve Home context.", "Only extracted columns are rendered as real data."]
+  - id: performance.metric-kpis
+    title: "Performance Metrics"
+    page_id: performance
+    placement: "row1"
+    purpose: "Summarize only verified workload/resource measures"
+    data_contract_ref: "contracts.performance_observation"
+    source: ["BASIS_01:SRC/ST03N.pdf", "BASIS_01:SRC/ST06.pdf", "BASIS_01:SRC/ST03N-02.stats", "BASIS_01:SRC/ST03N-03.stats"]
+    field_status: "field_candidate"
+    display_type: "kpi-group"
+    state_behavior: "Require a validated metric, unit, scope and observation period for each KPI."
+    acceptance_criteria: ["No percentage or unit is inferred.", "Unavailable metrics are explicitly marked."]
+  - id: performance.workload-trend
+    title: "Workload Trend"
+    page_id: performance
+    placement: "main-left-8of12"
+    purpose: "Trend comparable workload measurements over time"
+    data_contract_ref: "contracts.performance_observation"
+    source: ["BASIS_01:SRC/ST03N-02.stats", "BASIS_01:SRC/ST03N-03.stats", "BASIS_01:SRC/ST03N.pdf"]
+    field_status: "artifact_confirmed"
+    display_type: "line-chart"
+    state_behavior: "Disabled until file schema, time bucket, unit and aggregation are verified; gaps are not zero."
+    acceptance_criteria: ["At least two comparable time buckets.", "Axes and unit match the inspected source."]
+  - id: performance.work-process-table
+    title: "Work Processes"
+    page_id: performance
+    placement: "bottom-full-width"
+    purpose: "Inspect available work-process snapshot rows"
+    data_contract_ref: "contracts.work_process_snapshot"
+    source: ["BASIS_01:SRC/SM50.pdf", "BASIS_01:SRC/SM66.pdf"]
+    field_status: "field_candidate"
+    display_type: "table"
+    state_behavior: "Treat as a snapshot unless multiple timestamped samples are verified."
+    acceptance_criteria: ["No historical trend is inferred from one snapshot."]
+  - id: jobs.status-summary
+    title: "Job Status Summary"
+    page_id: jobs-processes
+    placement: "row1"
+    purpose: "Count jobs by validated status for an explicit time window"
+    data_contract_ref: "contracts.background_job"
+    source: ["BASIS_01:SRC/SM37.pdf"]
+    field_status: "field_candidate"
+    display_type: "kpi-group"
+    state_behavior: "Do not count until status values, record identity, scope and deduplication are confirmed."
+    acceptance_criteria: ["Summary equals table records under identical filters.", "Unknown status is not successful."]
+  - id: jobs.job-table
+    title: "Background Jobs"
+    page_id: jobs-processes
+    placement: "main-full-width"
+    purpose: "Search and inspect job records"
+    data_contract_ref: "contracts.background_job"
+    source: ["BASIS_01:SRC/SM37.pdf"]
+    field_status: "field_candidate"
+    display_type: "table"
+    state_behavior: "Render only source-confirmed fields; preserve raw status and provenance."
+    acceptance_criteria: ["Home deep link preserves system/time/status.", "No fabricated rows or live claim."]
+  - id: jobs.status-chart
+    title: "Jobs by Status"
+    page_id: jobs-processes
+    placement: "secondary-after-source-validation"
+    purpose: "Visualize validated status distribution"
+    data_contract_ref: "contracts.background_job"
+    source: ["BASIS_01:SRC/SM37.pdf"]
+    field_status: "field_candidate"
+    display_type: "bar-chart"
+    state_behavior: "Not enabled until status mapping and record uniqueness are validated."
+    acceptance_criteria: ["Chart total reconciles to filtered job table."]
+  - id: jobs.detail-drawer
+    title: "Job Details"
+    page_id: jobs-processes
+    placement: "right-drawer-on-row-selection"
+    purpose: "Show source-backed details for selected job"
+    data_contract_ref: "contracts.background_job"
+    source: ["BASIS_01:SRC/SM37.pdf"]
+    field_status: "field_candidate"
+    display_type: "detail-drawer"
+    state_behavior: "Show unavailable for fields absent from the report; read-only in Phase 1."
+    acceptance_criteria: ["Selected record identity is stable.", "No re-run/cancel/release actions."]
+  - id: database.capacity-kpis
+    title: "Database and Storage Summary"
+    page_id: database
+    placement: "row1"
+    purpose: "Show source-backed database/storage measures"
+    data_contract_ref: "contracts.database_observation"
+    source: ["BASIS_01:SRC/DB12.pdf", "BASIS_01:SRC/DB12-01.png", "BASIS_01:SRC/ST06.pdf"]
+    field_status: "field_candidate"
+    display_type: "kpi-group"
+    state_behavior: "Only show measures and units confirmed in source evidence."
+    acceptance_criteria: ["No database type is assumed.", "Backup status is not treated as capacity."]
+  - id: database.capacity-trend
+    title: "Capacity Trend"
+    page_id: database
+    placement: "main-left"
+    purpose: "Trend capacity only across comparable dated observations"
+    data_contract_ref: "contracts.database_observation"
+    source: ["BASIS_01:SRC/DB12.pdf", "BASIS_01:SRC/ST06.pdf"]
+    field_status: "field_candidate"
+    display_type: "line-chart"
+    state_behavior: "Hidden/unavailable until multiple comparable timestamped samples exist."
+    acceptance_criteria: ["No synthetic trend from a single snapshot."]
+  - id: security.session-table
+    title: "User Sessions"
+    page_id: security
+    placement: "main-left"
+    purpose: "Inspect source-backed session records"
+    data_contract_ref: "contracts.user_session"
+    source: ["BASIS_01:SRC/SM04.xlsx"]
+    field_status: "field_candidate"
+    display_type: "table"
+    state_behavior: "Column list must be taken from workbook headers after inspection."
+    acceptance_criteria: ["Session snapshot time is visible.", "No assumption that a session indicates a security incident."]
+  - id: security.lock-table
+    title: "Locks"
+    page_id: security
+    placement: "main-right"
+    purpose: "Inspect source-backed lock records"
+    data_contract_ref: "contracts.lock_record"
+    source: ["BASIS_01:SRC/SM12.xlsx"]
+    field_status: "field_candidate"
+    display_type: "table"
+    state_behavior: "Only workbook-confirmed columns are displayed."
+    acceptance_criteria: ["Count reconciles to unique records under the selected scope."]
+  - id: events.timeline
+    title: "System Events Timeline"
+    page_id: alerts-events
+    placement: "main-full-width"
+    purpose: "Present source-backed events in chronological order"
+    data_contract_ref: "contracts.system_event"
+    source: ["BASIS_01:SRC/SM21.pdf", "BASIS_01:SRC/RZ20.pdf"]
+    field_status: "field_candidate"
+    display_type: "timeline"
+    state_behavior: "Use source-reported time/severity; no root-cause claims from proximity."
+    acceptance_criteria: ["Each event links to source locator.", "Missing times remain unknown."]
+  - id: events.dump-table
+    title: "ABAP Dumps"
+    page_id: alerts-events
+    placement: "bottom-tab-dumps"
+    purpose: "Inspect dump records and diagnostic details"
+    data_contract_ref: "contracts.abap_dump"
+    source: ["BASIS_01:SRC/ST22.pdf"]
+    field_status: "field_candidate"
+    display_type: "table"
+    state_behavior: "Use only extracted report fields."
+    acceptance_criteria: ["Dump counts reconcile to filtered rows."]
+  - id: events.update-table
+    title: "Update Errors"
+    page_id: alerts-events
+    placement: "bottom-tab-update-errors"
+    purpose: "Inspect update records and their reported statuses"
+    data_contract_ref: "contracts.update_record"
+    source: ["BASIS_01:SRC/SM13.pdf"]
+    field_status: "field_candidate"
+    display_type: "table"
+    state_behavior: "Status categories require explicit mapping."
+    acceptance_criteria: ["Raw source status remains traceable."]
+  - id: systems.gateway-table
+    title: "Gateway Connections"
+    page_id: systems
+    placement: "connectivity-section"
+    purpose: "Display connection records only if present in SMGW evidence"
+    data_contract_ref: "contracts.gateway_connection"
+    source: ["BASIS_01:SRC/SMGW.pdf", "BASIS_01:SRC/SM21.pdf"]
+    field_status: "field_candidate"
+    display_type: "table"
+    state_behavior: "Do not infer network health or RFC/IDoc queue status from SMGW alone."
+    acceptance_criteria: ["Unavailable interface domains are labeled NOT_CONNECTED or NOT_SUPPORTED."]
+  - id: transports.request-table
+    title: "Transport Requests"
+    page_id: transports
+    placement: "main-full-width"
+    purpose: "Inspect source-backed transport/import records"
+    data_contract_ref: "contracts.transport_record"
+    source: ["BASIS_01:SRC/STMS.pdf"]
+    field_status: "field_candidate"
+    display_type: "table"
+    state_behavior: "Request IDs, targets, statuses and timestamps must be extracted from source."
+    acceptance_criteria: ["No import action in Phase 1.", "Status counts reconcile to filtered rows."]
+  - id: backup.history-table
+    title: "Backup History"
+    page_id: backup-recovery
+    placement: "main-full-width"
+    purpose: "Show backup evidence and history"
+    data_contract_ref: "contracts.backup_record"
+    source: ["BASIS_01:SRC/DB12.pdf", "BASIS_01:SRC/DB12-01.png", "BASIS_01:SRC/DB12-11.png"]
+    field_status: "field_candidate"
+    display_type: "table"
+    state_behavior: "Use only verified status/time/type fields; restore readiness is separate."
+    acceptance_criteria: ["Backup success is not presented as proof of recovery."]
+  - id: overview.issue-queue
+    title: "Operational Issue Queue"
+    page_id: overview
+    placement: "main-left"
+    purpose: "Aggregate issues with traceable source and deduplication policy"
+    data_contract_ref: "contracts.operational_issue"
+    source: ["validated domain contracts"]
+    field_status: "field_candidate"
+    display_type: "table"
+    state_behavior: "No parallel health formula; every row links to authoritative detail."
+    acceptance_criteria: ["Every issue has a source reference and domain.", "No inferred cause without evidence."]
+  - id: overview.domain-coverage
+    title: "Domain Data Coverage"
+    page_id: overview
+    placement: "main-right"
+    purpose: "Show which domains have validated data, stale data or no source"
+    data_contract_ref: "contracts.source_coverage"
+    source: ["SRC inventory and runtime collection metadata"]
+    field_status: "artifact_confirmed"
+    display_type: "status-matrix"
+    state_behavior: "Coverage describes evidence/connectivity, not business health."
+    acceptance_criteria: ["No source is shown LIVE solely because an artifact exists."]
