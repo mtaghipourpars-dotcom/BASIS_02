@@ -1,71 +1,39 @@
-# AI-Assisted Development Workflow
+# AI-Assisted Development Workflow — Visual Co-Creation
 
 ## Purpose
+Develop the product through visible results and short feedback loops. The product owner often arrives with a mature mental concept and is seeking execution, not a text-first discovery exercise. Visual output is a thinking tool, not merely the final presentation.
 
-Use an LLM to accelerate implementation without allowing it to invent requirements, silently broaden scope, or approve its own work.
+## Default loop
+1. **Inspect the real starting point:** existing app, repository, approved screenshots, and prior decisions. Do not assume a blank slate.
+2. **Create the next useful visual result early:** a real page, dashboard, clickable prototype, or focused change to the current app. Do not block this on a large specification document when the available evidence is enough to proceed safely.
+3. **Add independent creative value:** offer one concrete improvement beyond literal execution, while preserving approved references and constraints.
+4. **Review visually and functionally:** use the owner's reaction to discover new ideas and correct misunderstandings.
+5. **Refine in small steps:** retain working parts, change only the intended slice, and verify that related pages/data remain coherent.
+6. **Document decisions when useful:** keep documents short and update them when they prevent a real ambiguity or regression.
 
-## Workflow
+## Product interpretation rule
+Treat a request to build a dashboard as a product outcome, not merely a request to draw the requested widgets. Determine the relevant source capabilities, select the most useful ones for the target role, and express them as a coherent, visually inspectable experience. Do not ask the owner to enumerate every page or widget when research and product judgment can produce a strong first proposal. Do not claim research is complete until sources have actually been reviewed.
 
-### 0. Establish the baseline
-Inspect the current branch, repository tree, package/build files, application entry points, and existing tests. Report what exists and what is missing. Do not overwrite or replace an existing app before understanding it.
+## BASIS Operations Cockpit — intended product direction
+The product should selectively emulate and extend useful SAP Fiori capabilities for SAP Basis operations; it is not intended to copy every Fiori app indiscriminately. Research the SAP Fiori Apps Reference Library and relevant official SAP documentation, identify the most useful Basis-relevant apps/capabilities, and map them into three operational layers:
 
-### 1. Specify one coherent slice
-A task must state:
-- outcome and user-visible behavior;
-- authoritative specification files;
-- allowed files/paths and prohibited scope;
-- input/output examples and data provenance;
-- loading, empty, partial, stale, and error behavior as relevant;
-- acceptance criteria with observable pass/fail conditions;
-- commands/checks available to run.
+- **Monitoring:** observe systems, instances, services, jobs, performance, database, availability and technical health.
+- **Warning:** surface actionable alerts, threshold breaches, anomalies, risks and their evidence; provide drill-down from summary to detail.
+- **Execution:** provide controlled operational actions with explicit authorization, confirmation, auditability and safe failure handling.
 
-If a required design or data fact is unknown, mark it blocked/pending rather than inventing it.
+The three layers describe the target product vision. The current BASIS_02 Phase 1 remains read-only Monitoring unless the owner explicitly approves a later phase; do not add live execution controls to the current phase. The Fiori app inventory and selection are a research task to perform, not a completed result or an assumed list.
 
-### 2. Analyze impact
-Before editing, list impacted routes/pages, shared components, contracts, styles/tokens, fixtures, tests, and dependencies. Identify regression risks. If scope expands, stop and ask for approval.
-
-### 3. Implement the smallest slice
-Implement only the agreed scope. Prefer reuse of existing patterns. Do not add packages, new routes, global CSS changes, mock values, or alternate behavior without explicit authorization. Keep demo fixtures separate from live adapters.
-
-### 4. Validate
-Run the relevant checks from the repository's actual tooling. At minimum, review:
-- specification/contract consistency;
-- component behavior for success and failure states;
-- calculations against known examples;
-- layout at relevant viewports and with long/empty data;
-- console/build/test errors;
-- unintended changes outside scope.
-
-If no test runner or app runtime exists yet, report that limitation; do not fabricate a passing result.
-
-### 5. Review independently
-Compare implementation to the specification and acceptance criteria. The same LLM may help prepare a review checklist, but its self-review is not independent approval. Human acceptance is required for product behavior and visual fidelity.
-
-### 6. Record the result
-Summarize files changed, rationale, test commands and exact outcomes, screenshots or evidence where available, unresolved risks, and follow-up work. Update specifications only when the requirement itself was intentionally changed.
+## Implementation safeguards
+- Inspect the current branch, repository tree, package/build files, application entry points, and existing tests before changing code.
+- Keep the existing approved visual reference and navigation constraints unless the owner authorizes a change.
+- Use REAL, DEMO, and UNKNOWN distinctly. Never present synthetic fixtures as live telemetry or invent source semantics, KPI formulas, thresholds, or endpoints.
+- Keep changes incremental and scoped. Reuse existing patterns; do not rebuild the whole app for a local improvement.
+- Check cross-page KPI definitions, filters, time windows, and drill-down behavior where relevant.
+- Validate using actual available tools. Report exact checks and results; never invent a passing build or test.
+- If a critical unknown blocks a safe or meaningful next step, ask one focused question. Otherwise state a reversible assumption and continue.
 
 ## Task sizing
+Prefer one meaningful visual slice at a time. A slice may be a complete widget, page section, drill-down path, or visual comparison of candidate capabilities. The first output should help the owner see and judge the product.
 
-A task should normally produce one testable result, such as one shell component, one widget, one contract validator, or one state-handling improvement. Avoid asking the LLM to implement the whole dashboard in a single prompt.
-
-## Stop conditions
-
-Stop before coding if:
-- two authoritative specifications conflict;
-- source field meaning or metric formula is unknown;
-- the reference design is missing for a visual-fidelity task;
-- the requested change requires a new dependency or architecture decision not yet approved;
-- the task would alter fixed navigation/layout outside the agreed scope;
-- a security or data-integrity rule would be violated.
-
-## Suggested task sequence
-
-1. Inspect repository and identify current toolchain.
-2. Validate and freeze the visual/page inventory.
-3. Record technology decisions.
-4. Establish tokens and reusable shell.
-5. Implement one representative widget with fixture data.
-6. Test widget states and visual behavior.
-7. Replace fixture adapter with the user-supplied live-service contract.
-8. Test contract mapping and failure behavior.
-9. Repeat the pattern for the next widget.
+## Completion note
+Keep the report brief: what became visible or changed, what is genuinely verified, and the single best next step.
