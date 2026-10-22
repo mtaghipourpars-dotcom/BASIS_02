@@ -39,55 +39,122 @@ generic_record_fields:
 # Application-level names below are proposed names, not SM37 PDF column headers.
 contracts:
   background_job:
-    status: "field-mapping-pending"
-    source_artifact: "BASIS_01:SRC/SM37.pdf"
+    status: "source-labels-confirmed-from-user-supplied-SM37.md; identity-and-normalization-pending"
+    source_artifact: "user-upload: SM37.md (extracted SM37 Job Overview report)"
+    report_scope:
+      from_date_raw: "1405/07/25"
+      to_date_raw: "1405/07/26"
+      reported_records_passed: 8062
+      rule: "Report scope/count are transcribed from the extraction; they do not prove the number of unique displayed job records."
+    confirmed_source_labels:
+      - "JobName"
+      - "Job CreatedBy (extract sometimes truncates to Job CreatedB)"
+      - "Status"
+      - "Start date"
+      - "Start Time"
+      - "Duration(sec.)"
+      - "Delay"
+      - "Cli (client; label appears truncated in extraction)"
+      - "Reason for Delay"
+      - "Spool"
+      - "Job doc"
+      - "ABAP program / Program name (selection/filter area)"
+    observed_status_labels: ["Finished", "Canceled", "Released", "Scheduled"]
     fields:
       record_id:
         type: string
         required_for_summary: true
-        rule: "Must be a stable source identity; derived fixture IDs must be marked DEMO/derived."
+        status: "not-source-confirmed"
+        rule: "No explicit job instance/run ID is visible in the supplied extraction. Do not claim a stable source ID. A composite fixture key may be derived only for DEMO and must be marked derived; summary/chart remains blocked until collision/deduplication behavior is validated."
       system_id:
         type: string
         required: false
-        rule: "Only populate when source or fixture metadata establishes the system."
+        status: "not-provided-in-extraction"
       job_name:
         type: string
-        required: false
-        rule: "Map only after the PDF field is inspected."
-      job_status_raw:
+        required: true
+        source_label: "JobName"
+        status: "field-confirmed"
+      job_created_by:
         type: string
         required: false
-        rule: "Preserve exact source label/code; do not normalize before mapping is approved."
+        source_label: "Job CreatedBy"
+        status: "field-confirmed-label; values present in rows"
+      job_status_raw:
+        type: string
+        required: true
+        source_label: "Status"
+        status: "field-confirmed"
+        rule: "Preserve exact source label. Observed values include Finished, Canceled, Released and Scheduled. Ready and Active appear as selection/status categories but were not confirmed as row values in the inspected excerpt."
       job_status_normalized:
         type: string
         required_for_summary: true
         allowed_values: [scheduled, released, ready, running, finished, canceled, unknown]
-        rule: "Candidate categories only; approve mapping from observed SM37 status values before use."
-      start_at:
-        type: "ISO-8601 timestamp with timezone"
-        required: false
-      end_at:
-        type: "ISO-8601 timestamp with timezone"
-        required: false
-      duration_seconds:
-        type: number
-        required: false
-        rule: "May be derived only from validated start/end timestamps with consistent timezone."
-      user_id:
+        status: "mapping-pending"
+        rule: "Do not infer normalized state or enable summary counts until all row statuses and mapping rules are reviewed."
+      start_date_raw:
         type: string
         required: false
+        source_label: "Start date"
+        status: "field-confirmed"
+        rule: "Keep original Jalali date string unless calendar conversion is explicitly implemented and tested."
+      start_time_raw:
+        type: string
+        required: false
+        source_label: "Start Time"
+        status: "field-confirmed"
+        rule: "Keep source text; timezone is not provided by the extraction."
+      duration_seconds_raw:
+        type: string
+        required: false
+        source_label: "Duration(sec.)"
+        status: "field-confirmed"
+        rule: "The source provides numeric-looking duration values. Validate extraction alignment and numeric parsing before aggregating."
+      delay_raw:
+        type: string
+        required: false
+        source_label: "Delay"
+        status: "field-confirmed"
+        rule: "Keep as raw source value until the unit/meaning is confirmed; do not label it minutes or seconds."
+      client_raw:
+        type: string
+        required: false
+        source_label: "Cli"
+        status: "field-confirmed-label"
+      reason_for_delay:
+        type: string
+        required: false
+        source_label: "Reason for Delay"
+        status: "field-confirmed-label; row-level values not consistently visible in extraction"
+      spool:
+        type: string
+        required: false
+        source_label: "Spool"
+        status: "field-confirmed-label; row-level values not confirmed"
+      job_document:
+        type: string
+        required: false
+        source_label: "Job doc"
+        status: "field-confirmed-label; row-level values not confirmed"
       target_server:
         type: string
         required: false
+        status: "not-provided-in-extraction"
+      end_at:
+        type: string
+        required: false
+        status: "not-provided-in-extraction"
       observed_at:
-        type: "ISO-8601 timestamp with timezone"
+        type: string
         required: true
-        rule: "Report snapshot/collector observation time; never replace with current browser time."
+        status: "not-provided-in-extraction"
+        rule: "Do not substitute current browser time. Snapshot timestamp must be supplied separately if known."
       source_locator:
         type: string
         required: true
-        rule: "PDF page/report section or live endpoint record key after inspection."
+        rule: "Use uploaded SM37.md section/line locator for the inspected extraction; PDF page locator remains pending."
       data_state:
         type: string
         required: true
         allowed_values: [DEMO, VALIDATED_SNAPSHOT, LIVE, STALE, PARTIAL, UNKNOWN, ERROR]
+        rule: "Current fixture derived from user-uploaded extraction must be DEMO until complete source extraction and identity rules pass validation."
