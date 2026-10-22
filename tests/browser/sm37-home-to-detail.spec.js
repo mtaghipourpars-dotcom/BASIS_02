@@ -3,7 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
-const prototypeUrl = "file://" + path.resolve(here, "../prototypes/sm37-home-to-detail.html");
+const prototypeUrl = "file://" + path.resolve(here, "../../prototypes/sm37-home-to-detail.html");
 
 test.describe("SM37 Home-to-detail prototype (DEMO only)", () => {
   test("Home opens Jobs & Processes and displays source-backed sample rows", async ({ page }) => {
