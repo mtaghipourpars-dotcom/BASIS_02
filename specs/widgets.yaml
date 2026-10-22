@@ -1,5 +1,5 @@
 schema_version: 1
-status: "visual-baseline-defined-source-field-validation-pending"
+status: "SM37-source-labels-confirmed-from-user-supplied-extraction; other sources pending"
 rules:
   widget_ids_must_be_unique: true
   placement_must_reference_existing_page: true
@@ -88,9 +88,9 @@ widgets:
     purpose: "Count jobs by validated status for an explicit time window"
     data_contract_ref: "contracts.background_job"
     source: ["BASIS_01:SRC/SM37.pdf"]
-    field_status: "field_candidate"
+    field_status: "field_confirmed"
     display_type: "kpi-group"
-    state_behavior: "Do not count until status values, record identity, scope and deduplication are confirmed."
+    state_behavior: "Source labels and four observed statuses are confirmed; keep summary counts disabled until row identity/deduplication and complete extraction are validated."
     acceptance_criteria: ["Summary equals table records under identical filters.", "Unknown status is not successful."]
   - id: jobs.job-table
     title: "Background Jobs"
@@ -99,9 +99,9 @@ widgets:
     purpose: "Search and inspect job records"
     data_contract_ref: "contracts.background_job"
     source: ["BASIS_01:SRC/SM37.pdf"]
-    field_status: "field_candidate"
+    field_status: "field_confirmed"
     display_type: "table"
-    state_behavior: "Render only source-confirmed fields; preserve raw status and provenance."
+    state_behavior: "Render confirmed raw fields from the supplied SM37 extraction; retain raw Jalali date/time and raw status; missing values stay Unknown. The uploaded extraction is a DEMO/reference snapshot, not live telemetry."
     acceptance_criteria: ["Home deep link preserves system/time/status.", "No fabricated rows or live claim."]
   - id: jobs.status-chart
     title: "Jobs by Status"
@@ -112,7 +112,7 @@ widgets:
     source: ["BASIS_01:SRC/SM37.pdf"]
     field_status: "field_candidate"
     display_type: "bar-chart"
-    state_behavior: "Not enabled until status mapping and record uniqueness are validated."
+    state_behavior: "Status labels are observed, but chart remains disabled until full row extraction, record uniqueness, deduplication and filter scope are validated."
     acceptance_criteria: ["Chart total reconciles to filtered job table."]
   - id: jobs.detail-drawer
     title: "Job Details"
