@@ -257,3 +257,81 @@ widgets:
     display_type: "status-matrix"
     state_behavior: "Coverage describes evidence/connectivity, not business health."
     acceptance_criteria: ["No source is shown LIVE solely because an artifact exists."]
+
+  - id: settings.appearance
+    title: "Appearance and Theme"
+    page_id: settings
+    placement: "section-appearance"
+    purpose: "Configure theme, visual density, layout preference and motion behavior"
+    data_contract_ref: "contracts.user_preferences"
+    source: ["local user preferences; no SAP dependency"]
+    field_status: "field_candidate"
+    display_type: "settings-form"
+    state_behavior: "Apply changes immediately to the UI preview; persist only supported non-sensitive preferences locally. Provide Reset to defaults."
+    acceptance_criteria: ["Theme changes do not alter metric values or source state.", "Layout changes never reorder the fixed sidebar or alter the Home baseline.", "Reduced-motion preference is respected."]
+  - id: settings.language-font
+    title: "Language and Typography"
+    page_id: settings
+    placement: "section-language-typography"
+    purpose: "Set primary UI language, direction and supported font family/size"
+    data_contract_ref: "contracts.user_preferences"
+    source: ["local user preferences; no SAP dependency"]
+    field_status: "field_candidate"
+    display_type: "settings-form"
+    state_behavior: "Support Persian/RTL and English/LTR, selected font family, base font size and readable scaling. Preserve filters and selected record across locale changes."
+    acceptance_criteria: ["All visible labels are localized.", "RTL/LTR direction updates without breaking charts, tables or navigation.", "Font choices use bundled or system-safe fallbacks."]
+  - id: settings.dashboard
+    title: "Dashboard Preferences"
+    page_id: settings
+    placement: "section-dashboard"
+    purpose: "Set refresh interval, default time window, landing page and density without changing the fixed navigation inventory"
+    data_contract_ref: "contracts.user_preferences"
+    source: ["local user preferences; no SAP dependency"]
+    field_status: "field_candidate"
+    display_type: "settings-form"
+    state_behavior: "Refresh interval controls only local fixture refresh in Phase 1; no live polling is implied. Home remains the default landing page unless the user explicitly selects another supported landing page."
+    acceptance_criteria: ["Unsupported landing routes fall back safely.", "Refresh settings do not label demo fixtures as live.", "Home baseline remains intact."]
+  - id: settings.connection-profiles
+    title: "SAP Connection Profiles"
+    page_id: settings
+    placement: "section-connections"
+    purpose: "Prepare named SAP connection profiles for a future connector without requiring SAP access in MVP"
+    data_contract_ref: "contracts.connection_profile"
+    source: ["user-entered configuration; no network access in Phase 1"]
+    field_status: "field_candidate"
+    display_type: "connection-profile-form"
+    state_behavior: "Allow create/edit/delete of local non-secret profile metadata such as profile name, environment label, system ID, client, application-server/message-server host, instance number, router string and preferred authentication mode. Test Connection and Activate Live Data remain disabled until an approved connector and secure credential flow exist. Never store passwords, tokens, cookies, private keys or client secrets in local preferences."
+    acceptance_criteria: ["No network request is made by connection settings in Phase 1.", "Secret fields are never persisted or logged.", "Profile is visibly CONFIGURED_NOT_CONNECTED until a verified connector reports otherwise."]
+  - id: settings.data-source-mode
+    title: "Data Source and Demo Mode"
+    page_id: settings
+    placement: "section-data-source"
+    purpose: "Make demo/reference data provenance explicit and prepare future live-source selection"
+    data_contract_ref: "contracts.user_preferences"
+    source: ["local user preferences; runtime source metadata"]
+    field_status: "field_candidate"
+    display_type: "settings-form"
+    state_behavior: "MVP defaults to DEMO/REFERENCE. Live mode is unavailable and cannot be selected until a verified collector, source contract, permissions and freshness reporting are implemented."
+    acceptance_criteria: ["Every demo-backed page and KPI carries DEMO labeling.", "No toggle can create a LIVE status without verified runtime evidence.", "Unknown and unavailable data never become zero."]
+  - id: settings.accessibility
+    title: "Accessibility and Interaction"
+    page_id: settings
+    placement: "section-accessibility"
+    purpose: "Configure contrast, reduced motion, keyboard hints and table density"
+    data_contract_ref: "contracts.user_preferences"
+    source: ["local user preferences; no SAP dependency"]
+    field_status: "field_candidate"
+    display_type: "settings-form"
+    state_behavior: "Provide high-contrast option, reduced motion, compact/comfortable density and visible focus behavior; avoid conveying status by color alone."
+    acceptance_criteria: ["Keyboard focus is visible.", "Status has text/icon cues in addition to color.", "Preferences are applied consistently across routes."]
+  - id: settings.about-diagnostics
+    title: "About and Diagnostics"
+    page_id: settings
+    placement: "section-about-diagnostics"
+    purpose: "Expose app version, build/source mode, data freshness, feature capability states and local diagnostics"
+    data_contract_ref: "contracts.user_preferences"
+    source: ["application build metadata; runtime data-state metadata"]
+    field_status: "field_candidate"
+    display_type: "diagnostics-panel"
+    state_behavior: "Show app version/build when available, active locale/theme, fixture/source mode, last local refresh and capability gates. Redact secrets and personal data from diagnostics."
+    acceptance_criteria: ["Diagnostics never claim SAP connectivity without verified runtime evidence.", "Export/copy diagnostics excludes credentials and sensitive fields.", "Unsupported capability is explained."]
