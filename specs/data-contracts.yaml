@@ -109,3 +109,48 @@ contracts:
       observed_at:
         type: string
         status: "not-provided"
+
+  user_preferences:
+    status: "proposed-local-UI-preferences-contract; implementation pending"
+    source: "local application preferences only; no SAP dependency"
+    sensitivity: "non-sensitive settings only"
+    fields:
+      locale: {type: "enum", allowed_values: ["en", "fa"], default: "en"}
+      direction: {type: "derived enum", allowed_values: ["ltr", "rtl"], rule: "Derived from locale; en=ltr, fa=rtl"}
+      theme: {type: "enum", allowed_values: ["light", "dark", "system"], default: "system"}
+      font_family: {type: "string", rule: "Must be from approved bundled/system-safe font list"}
+      font_scale: {type: "number", rule: "Must be clamped to approved accessible range"}
+      density: {type: "enum", allowed_values: ["comfortable", "compact"], default: "comfortable"}
+      content_layout: {type: "enum", allowed_values: ["standard", "wide", "focused"], default: "standard"}
+      high_contrast: {type: "boolean", default: false}
+      reduced_motion: {type: "enum", allowed_values: ["on", "off", "system"], default: "system"}
+      landing_page: {type: "string", default: "home", rule: "Must resolve to an implemented route"}
+      default_time_window: {type: "string", rule: "Applied only where supported by the page"}
+      refresh_interval: {type: "string", rule: "No live polling implied in Phase 1"}
+      data_mode_preference: {type: "enum", allowed_values: ["DEMO"], rule: "LIVE cannot be selected by preference alone"}
+    rules:
+      - "Persist only if the chosen local persistence mechanism is implemented; otherwise label settings session-only."
+      - "Never include credentials, tokens, cookies or secrets."
+      - "Preference changes must not alter source values, KPI formulas, fixed navigation order or Home baseline."
+  connection_profile:
+    status: "proposed-local-metadata-contract; disconnected in MVP"
+    source: "user-entered local configuration; no network requests in Phase 1"
+    sensitivity: "profile metadata only; no credentials"
+    fields:
+      profile_name: {type: "string", required: true}
+      environment_label: {type: "enum", allowed_values: ["development", "quality", "production", "other"]}
+      sid: {type: "string", required: false}
+      client: {type: "string", required: false}
+      connection_type: {type: "enum", allowed_values: ["application_server", "message_server"]}
+      application_server_host: {type: "string", required: false}
+      message_server_host: {type: "string", required: false}
+      message_server_group: {type: "string", required: false}
+      instance_number: {type: "string", required: false}
+      saprouter_route: {type: "string", required: false}
+      authentication_mode: {type: "string", required: false}
+      notes: {type: "string", required: false, rule: "Must not contain secrets"}
+      state: {type: "enum", allowed_values: ["CONFIGURED_NOT_CONNECTED"]}
+    rules:
+      - "Locally valid configuration is not proof of connectivity."
+      - "No Test Connection, Connect or Activate Live Data action in MVP."
+      - "Never persist credentials or make SAP network requests."
