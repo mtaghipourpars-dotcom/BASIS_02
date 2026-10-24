@@ -1,0 +1,506 @@
+# BASIS_02 — M/W/E IMPLEMENTATION AUDIT, REPAIR & VERIFICATION PROMPT
+
+## 1. Mission
+
+Audit the latest code in the existing `mtaghipourpars-dotcom/BASIS_02` repository, identify every gap between the agreed product requirements and the actual running application, implement all necessary approved corrections, and verify them.
+
+This is an implementation task, not a documentation-only task.
+
+Do not create a new project, replace the application, redesign the approved Home page, or return only recommendations. Work in the existing codebase, preserve the established architecture, and make the smallest complete set of changes necessary.
+
+The required outcome is a coherent, usable SAP Basis Operations Cockpit with three explicitly distinguished capability tracks across all ten operational islands:
+
+- **M — Monitoring:** operationally functional, read-only observation.
+- **W — Warning:** rule-governed detection, evidence, and warning lifecycle where prerequisites exist.
+- **E — Execution:** contextual controlled-operation design, with all state-changing operations safely unavailable in Phase 1.
+
+A specification, registry entry, visual control, mock interaction, or passing static test is not proof that a feature is operational.
+
+## 2. Mandatory repository inspection
+
+Inspect the latest default-branch code and actual working tree before editing.
+
+Read and reconcile at least:
+
+- `MASTER_SPECIFICATION.md`
+- `IMPLEMENTATION_RULES.md`
+- `DEVELOPMENT_STANDARD.md`
+- `APPROVED_DECISIONS.md`
+- `specs/application.yaml`
+- `specs/pages.yaml`
+- `specs/widgets.yaml`
+- `specs/data-contracts.yaml`
+- `specs/metric-registry.yaml`
+- `specs/i18n.yaml`
+- `docs/TEN_ISLANDS_EMW_KPI_FUNCTIONAL_SPEC.md`
+- `docs/ISLANDS_VISUAL_SPEC.md`
+- `docs/PRODUCT_UI_SCRIPT.md`
+- `docs/VISUAL_ARCHITECTURE.md`
+- `docs/CROSS_PAGE_DATA_INTEGRITY_VALIDATION.md`
+- `docs/SETTINGS_AND_PREFERENCES_SPEC.md`
+- `GOOGLE_AI_STUDIO_PRIMARY_BUILD_PROMPT.md`
+- `GOOGLE_AI_STUDIO_CONTINUATION_PROMPT.md`
+- `GOOGLE_AI_STUDIO_EMW_IMPLEMENTATION_PROMPT.md`
+- `src/data/actionRegistry.ts`
+- action-related types, components, page components, application context, state management, data adapters, fixture definitions, translation dictionaries, and all existing tests.
+
+Inspect the actual application source, not only documentation or prototypes. Identify the active code path for every relevant control and trace its event handler through to its final effect.
+
+If any named file does not exist, identify the corresponding current implementation or record the missing artifact. Do not invent a replacement path and silently treat it as authoritative.
+
+## 3. Establish a gap matrix before implementation
+
+For each island and each capability M, W, and E, classify every required feature as one of:
+
+- `IMPLEMENTED_AND_VERIFIED`
+- `IMPLEMENTED_BUT_UNVERIFIED`
+- `PARTIALLY_IMPLEMENTED`
+- `UI_ONLY`
+- `MISSING`
+- `BLOCKED_BY_SOURCE`
+- `BLOCKED_BY_POLICY`
+- `BLOCKED_BY_AUTHORIZATION`
+- `NOT_APPLICABLE_WITH_EVIDENCE`
+
+Each classification must include:
+
+1. Page/island and capability.
+2. Feature or action ID.
+3. Current implementation file and relevant component/handler.
+4. Data contract, source mapping, rule, or action adapter involved.
+5. Actual observed behavior.
+6. Missing prerequisite or defect.
+7. Required correction.
+8. Acceptance test and evidence needed to pass it.
+
+Do not mark a feature verified merely because its name appears in the code, its button renders, or its specification exists.
+
+Create or update a repository audit document, such as `docs/EMW_IMPLEMENTATION_AUDIT.md`, with the complete gap matrix. Treat this document as evidence of the audit, not as a substitute for fixing the application.
+
+After the audit, proceed directly with all corrections that are already authorized by the established specifications. Do not ask routine questions. Do not invent business rules, source fields, thresholds, permissions, or operational policies to fill gaps.
+
+## 4. Non-negotiable architecture and product constraints
+
+Preserve the existing React + TypeScript application and its working build setup. Do not replace the framework or add dependencies without a demonstrated requirement.
+
+Preserve the approved Home composition and the fixed navigation order. Do not restore the removed welcome banner, Home footer, or deprecated Overview destination.
+
+The ten operational islands and their approved routes are:
+
+1. Landscape & Availability — `/landscape`
+2. Performance & Workload — `/performance`
+3. Jobs & Background Processing — `/jobs-processes`
+4. Database & Storage — `/database`
+5. Security & Authorization — `/security`
+6. Logs, Dumps & Events — `/alerts-events`
+7. Interfaces & Connectivity — `/interfaces-connectivity`
+8. Transports & Changes — `/transports`
+9. Backup & Recovery — `/backup-recovery`
+10. System Operations — `/system-operations`
+
+Home, Reports, and Settings remain general destinations, not additional operational islands.
+
+Inspect `specs/pages.yaml` for conflicting or obsolete page IDs, including any legacy `/systems` or `/overview` entries. Resolve only according to the established authority and approved navigation decisions. Do not add, remove, or rename destinations merely to make the code easier to implement. Record unresolved conflicts rather than silently choosing a new product design.
+
+M/W/E are contextual capabilities inside the operational workflow. They are not three global application modes, three duplicated versions of every page, or new sidebar items.
+
+Preserve the established enterprise visual style, dense information hierarchy, page-specific visualizations, and fixed widget placement. Do not replace specialized operational pages with generic CRUD lists.
+
+## 5. Strict capability semantics
+
+### M — Monitoring
+
+Monitoring is read-only.
+
+It may:
+
+- Search, filter, sort, paginate, and compare source-supported records.
+- Inspect system, instance, host, database, job, event, transport, backup, or interface details when the corresponding evidence exists.
+- Open detail drawers, inspect raw and approved normalized values, and navigate to related records through deterministic identifiers or explicitly approved correlation rules.
+- Refresh locally available data according to a documented refresh mechanism.
+- Display source identity, scope, observation timestamp/timezone, data quality, freshness, and collection coverage when supplied.
+- Display trends only from comparable timestamped observations with compatible metric definitions, units, scopes, and time windows.
+- Preserve supported filters and selected-record context during Home-to-detail navigation and browser Back navigation.
+
+Monitoring must not:
+
+- Trigger an operational mutation.
+- Present an unimplemented source query as successful.
+- Fabricate a connection, heartbeat, timestamp, source response, or metric.
+- Convert unknown data into zero or healthy status.
+- Claim that a record is live, current, or complete without evidence.
+
+Audit every M action in `src/data/actionRegistry.ts`. Any action marked executable in Phase 1 must be checked against its actual behavior. Read-only actions may remain available only if they operate safely and their source/adapter contract is truthful.
+
+### W — Warning
+
+Warning is a rule-governed capability, not a decorative alert panel.
+
+Implement or repair a centralized, typed warning-rule model with, where applicable:
+
+- Stable rule ID and version.
+- Island/domain and rule purpose.
+- Configuration and evaluation status.
+- Required source contracts and fields.
+- Threshold or policy reference.
+- Scope and evaluation window.
+- Severity and priority policy.
+- Owner, evaluation cadence, and source freshness requirements.
+- Deduplication/suppression key.
+- Evidence requirements.
+- Clear/reset semantics.
+- Test fixtures and expected outcomes.
+
+A rule may be evaluated only when all required input fields, source mappings, threshold/policy, scope, time window, and evaluation semantics are defined and validated.
+
+Do not invent thresholds, severity mappings, impact scores, confidence scores, causal relationships, or alert policies.
+
+For every actual finding, provide traceable evidence showing the rule ID/version, observed value, expected condition, unit, time window, source record, observation time, scope, and applicable quality/freshness caveats.
+
+Distinguish these conditions explicitly:
+
+- Finding detected.
+- No matching finding under verified coverage.
+- Not evaluated.
+- Rule not configured.
+- Source unavailable.
+- Data stale.
+- Data incomplete or invalid.
+- Evaluation error.
+
+Do not report “no alerts” when evaluation did not occur or source coverage is insufficient.
+
+Implement a persistent warning lifecycle only where an actual supported persistence mechanism exists. If persistence is not implemented, do not simulate durable acknowledgement, assignment, resolution, suppression, or audit history.
+
+Where lifecycle persistence is supported, implement and test only the approved operations, such as:
+
+- Acknowledge.
+- Assign or reassign.
+- Escalate.
+- Snooze.
+- Suppress.
+- Resolve.
+- Reopen, if explicitly supported.
+
+Lifecycle operations must apply to a specific warning record, maintain timestamps and actor information where available, and preserve an audit trail. A lifecycle status change must not change SAP system state.
+
+### E — Execution
+
+Execution represents controlled operations that may change SAP, operating-system, database, service, job, queue, transport, security, or backup state.
+
+In Phase 1, every state-changing execution operation must remain unavailable.
+
+This includes operations such as:
+
+- Start, stop, restart, cancel, release, rerun, reschedule, create, change, delete, or copy jobs.
+- Restart services or instances.
+- Change system configuration.
+- Release or import transports.
+- Change database or storage state.
+- Execute backup, restore, recovery, or cleanup operations.
+- Change security, user, lock, connection, or authorization state.
+- Trigger external write requests or operational commands.
+
+Do not implement a callable execution path, send an operational network request, invoke an OS command, or simulate a successful execution.
+
+Audit every E action for both UI and backend/adapter reachability. A disabled button alone is insufficient: no direct handler, shortcut, alternate component, hidden control, or shared service may bypass the Phase 1 restriction.
+
+All E controls must be disabled and display a localized, specific explanation, such as “Unavailable in Phase 1 — read-only.” Where relevant, explain the additional missing prerequisites, including an approved adapter, authorization, policy, preflight validation, approval, audit trail, and post-action verification.
+
+The action detail panel may describe planned controls and required checks, but must never imply that an operation has been requested, started, completed, or verified.
+
+A future action may be activated only after the required approved implementation exists for:
+
+- Least-privilege authorization.
+- Target revalidation.
+- Preflight and prerequisite checks.
+- Impact preview.
+- Explicit confirmation.
+- Required approval and change window.
+- Idempotency and concurrency controls.
+- Timeout and uncertain-outcome handling.
+- Auditable request and result.
+- Rollback/compensation where applicable.
+- Post-action verification.
+
+Do not build a fake execution lifecycle to make the interface appear functional.
+
+## 6. Central Action Registry and enforcement
+
+Inspect and repair `src/data/actionRegistry.ts` and the related action types and consumers.
+
+Use one consistent action contract across all islands. Every action must have:
+
+- Stable action ID and version.
+- Island ID and relevant entity type.
+- Capability mode: M, W, or E.
+- Localized name, description, purpose, and unavailable reason.
+- Preconditions and supported target context.
+- Data/source or rule reference where applicable.
+- Risk and impact information where supported.
+- Permission and approval requirements where relevant.
+- Adapter/capability status.
+- Phase 1 availability policy.
+- Verification criteria.
+- Audit/rollback metadata where applicable.
+
+Separate capability classification from execution permission. Do not treat `mode: E`, `isExecutableInPhase1`, or a UI flag as sufficient authorization.
+
+Enforce a centralized Phase 1 policy so that every state-changing action is denied by default. The policy must be applied to the actual action-dispatch path, not only to presentation components.
+
+Add automated tests proving that:
+
+1. Every E action is unavailable in Phase 1.
+2. No E action invokes a write handler or external operation.
+3. Every available M action is read-only.
+4. W lifecycle actions affect only their supported warning records.
+5. Unknown action IDs are denied by default.
+6. Missing prerequisites never silently activate a control.
+7. Local UI actions such as search, filtering, navigation, and selection continue to work.
+8. A disabled E action cannot be invoked through an alternate component or direct dispatch path.
+
+Do not mark M actions as available merely because their descriptions mention an SAP transaction, collector, cache, or service. Verify that the referenced implementation actually exists and is wired correctly.
+
+## 7. Page-by-page requirements
+
+Audit and correct every island individually. Reuse common components where appropriate, but retain page-specific workflows and primary visualizations.
+
+### Island 01 — Landscape & Availability
+
+**M:** system and instance inventory; source-supported availability/state; topology only when relationships are evidenced; source coverage and freshness; selected system/instance details; related events.
+
+**W:** rules for availability, heartbeat, missing observations, or coverage only when their required inputs and policies are validated. Show unconfigured rules and missing prerequisites.
+
+**E:** contextual future actions such as controlled restart or availability recovery only if already part of the approved action catalog. Keep unavailable in Phase 1. Do not invent new operational actions.
+
+### Island 02 — Performance & Workload
+
+**M:** validated CPU, memory, disk, workload, response-time, and work-process observations where supported; source-aware charts and time series; units and observation windows; detailed records.
+
+**W:** performance or capacity warnings only when source semantics, measurement windows, thresholds, and coverage are approved.
+
+**E:** contextual future performance-related operational controls only if approved. No automatic remediation or system changes in Phase 1.
+
+Do not create a trend from a single snapshot or mix incompatible units and aggregation windows.
+
+### Island 03 — Jobs & Background Processing
+
+**M:** inspect job records, raw status, creation/user information, start date/time, supported duration, delay, spool, job documentation, and related evidence only where the actual source contains those fields. Preserve source calendar and time strings when timezone/calendar interpretation is unknown.
+
+Support record selection and detail views. Clearly distinguish job definition/scheduling from an individual job run. Do not invent native SAP job IDs or stable run identities.
+
+**W:** job failure, cancellation, delay, or long-running rules only when the row identity, status mapping, timing semantics, source coverage, and applicable threshold are validated. Do not interpret unknown delay units.
+
+**E:** include relevant planned actions from the approved catalog, such as release, stop, cancel, reschedule, delete, copy, create schedule, start immediately, and rerun only where those actions are explicitly approved for the domain. All state-changing actions remain disabled in Phase 1.
+
+STOP and CANCEL must be distinct actions. Definition-level scheduling and run-level operations must remain distinct. Every disabled action must explain its unavailability.
+
+### Island 04 — Database & Storage
+
+**M:** validated database inventory, availability, capacity, storage, and performance observations; source provenance; supported trends; detail records.
+
+**W:** database/storage thresholds only when the exact fields, units, time windows, and policies are validated.
+
+**E:** planned database/storage operations only from an approved catalog. No mutation, cleanup, restart, or configuration change in Phase 1.
+
+Do not assume all target systems use the same database technology or source.
+
+### Island 05 — Security & Authorization
+
+**M:** validated user/session, lock, security-event, and authorization-related observations within the actual source scope. Keep different entity types separate and sanitize sensitive information.
+
+**W:** evidence-backed security signals only. A session, lock, or gateway connection is not automatically a security incident.
+
+**E:** any user, lock, security, or authorization-changing operation remains unavailable in Phase 1. Do not expose secret values or imply that the application performs a comprehensive security assessment without evidence.
+
+### Island 06 — Logs, Dumps & Events
+
+**M:** inspect source-backed system events, dumps, update errors, timestamps, source identifiers, and details. Preserve raw status values and traceable normalized mappings.
+
+**W:** rule-backed findings with explicit evidence, deduplication, severity policy, and lifecycle where supported.
+
+**E:** operational responses such as retry, restart, or remediation may be represented only if explicitly present in the approved catalog. They remain disabled in Phase 1.
+
+Do not infer root cause from time proximity alone.
+
+### Island 07 — Interfaces & Connectivity
+
+**M:** display validated RFC destination, gateway, IDoc, HTTP-service, queue, or interface evidence only when the source contracts support the relevant entity and fields. Show coverage gaps and unavailable sources distinctly.
+
+**W:** connectivity and backlog rules only where source mappings, freshness, queue semantics, and thresholds are validated.
+
+**E:** reconnect, retry, restart, or reprocess actions only where approved; all state-changing operations remain disabled.
+
+Do not claim that a gateway snapshot proves end-to-end interface health.
+
+### Island 08 — Transports & Changes
+
+**M:** inspect source-backed transport requests, target systems, raw status, import history, and timestamps. Distinguish request status from import execution result.
+
+**W:** failed or delayed transport findings only with validated status semantics and approved policy.
+
+**E:** release, import, or other transport-changing operations remain disabled in Phase 1.
+
+### Island 09 — Backup & Recovery
+
+**M:** inspect validated backup history, backup status, age, type, and source timestamps. Display restore-test and recovery evidence separately from backup-success evidence.
+
+**W:** backup-age, backup-failure, or recovery-readiness findings only when the underlying policy and evidence exist.
+
+**E:** backup, restore, recovery, and cleanup operations remain disabled in Phase 1. A successful backup must never be presented as proof that recovery has been tested.
+
+### Island 10 — System Operations
+
+**M:** provide a cross-domain operational coordination view that aggregates only validated and deduplicated records from authoritative island datasets. Every row must link to its authoritative detail.
+
+**W:** consolidate existing valid findings without inventing a second rule engine or duplicating warnings. Preserve rule identity, severity provenance, source evidence, and lifecycle.
+
+**E:** show only relevant contextual planned actions from the existing catalog, all disabled in Phase 1. Do not add generic actions that lack a valid target or approved contract.
+
+System Operations must not create independent health formulas that disagree with authoritative island pages.
+
+## 8. Contextual action placement and page interaction
+
+Every island must provide a coherent operational workspace rather than a global M/W/E mode switch.
+
+Use this pattern, adapted to the page's approved design:
+
+1. **Page header:** page title and purpose; concise capability availability indicators.
+2. **Context/filter bar:** only source-supported filters, such as system/SID, instance, time window, source, status, or severity.
+3. **Primary Monitoring area:** page-specific KPIs, topology, chart, matrix, timeline, or operational table.
+4. **Warning area:** a compact panel beside or beneath the primary visualization showing rule configuration/evaluation state and evidence-backed findings.
+5. **Contextual action area:** selected-record drawer or side panel showing only relevant planned E actions and their specific unavailability reasons.
+6. **Evidence details:** source identity, timestamp, scope, data quality, freshness, raw value, and supported related records.
+
+Do not display unrelated execution actions on every row or flood the interface with disabled controls.
+
+Keep actions in the context where the user needs them: selected system, instance, job, database, event, interface, transport, or backup record.
+
+All visible controls must have meaningful, tested behavior. No dead tabs, placeholder buttons, simulated success notifications, or local UI state pretending to represent SAP state.
+
+## 9. Shared data quality and cross-page integrity
+
+Use the existing data contracts and metric registry. Extend them only when the actual approved source evidence supports the change.
+
+Centralize data adapters, normalized records, calculations, status mappings, and applicable filters. Home and detail pages must derive from the same source dataset and metric definitions.
+
+For each data-bearing widget, expose the relevant provenance and distinguish:
+
+- Valid data.
+- Partial data.
+- Stale data.
+- Unknown data.
+- Unavailable source.
+- Unsupported capability.
+- Unauthorized source.
+- Empty result.
+- Error.
+
+Never silently default missing values to zero, healthy, successful, or current.
+
+Do not invent source timestamps, timezone, identity, units, topology, severity, or unique record IDs.
+
+Preserve selected records, filters, time boundaries, and supported system context when navigating between Home and island details. Locale changes must not alter the underlying selection or calculations.
+
+Extend `docs/CROSS_PAGE_DATA_INTEGRITY_VALIDATION.md` with testable acceptance criteria for warning records and action context as well as existing metrics and detail navigation.
+
+## 10. Bilingual and visual requirements
+
+Support English LTR and Persian RTL throughout:
+
+- M/W/E capability indicators.
+- Rule configuration and finding details.
+- Warning lifecycle controls.
+- Action catalogs and detail drawers.
+- Disabled-action reasons.
+- Confirmation/approval design surfaces, where shown as future capability.
+- Tables, charts, tooltips, dialogs, validation, loading, empty, error, and unavailable states.
+
+Centralize translations and ensure all visible and accessible text is localized. Isolate technical identifiers, SAP transaction codes, SIDs, and source IDs as LTR where appropriate.
+
+Preserve the established visual shell, Home reference, sidebar order, and professional enterprise density. Use consistent textual and visual status cues; never rely on color alone.
+
+Do not change the product's agreed wording or display policy casually. If repository documents conflict about DEMO/LIVE labels or other terminology, follow the authoritative approved decision and document the reconciliation. Never claim that data is live or connected without validated evidence.
+
+## 11. Required tests
+
+Add or repair automated tests for all of the following.
+
+### Monitoring tests
+
+- Every available M action is read-only.
+- Source-unavailable, empty, stale, partial, invalid, and error states remain distinguishable.
+- Missing values never become zero or healthy.
+- Search, filters, sorting, selection, detail drawers, and navigation work.
+- Home-to-detail values and filters reconcile to the same authoritative dataset.
+- Trends require multiple compatible timestamped observations.
+- No unsupported field or native SAP identifier is fabricated.
+
+### Warning tests
+
+- A rule without required source data or an approved policy is not evaluated.
+- A valid finding includes rule identity and traceable evidence.
+- “No findings” is distinguishable from “not evaluated.”
+- Missing, stale, or invalid data cannot generate a false healthy state.
+- Duplicate findings follow an explicit deduplication rule.
+- Lifecycle operations work only on supported warning records and persist only if persistence is implemented.
+- Warning actions never invoke SAP or OS mutations.
+
+### Execution safety tests
+
+- All state-changing E actions are disabled in Phase 1.
+- Direct invocation or dispatch of an E action is denied.
+- No execution handler calls an external write endpoint or OS/database command.
+- No fake success or completed-operation state is emitted.
+- Missing authorization, adapter, policy, or preflight gates cannot be bypassed.
+- Read-only M actions continue to work.
+
+### Whole-application tests
+
+- All ten island routes load.
+- Fixed navigation order and approved Home composition remain intact.
+- M/W/E controls and reasons are localized in English and Persian.
+- RTL/LTR switching preserves route, filters, and selected record.
+- Desktop, tablet, and mobile layouts remain usable without unintended horizontal overflow.
+- No placeholder control is represented as a working capability.
+- No conflicting source or KPI formula is introduced across pages.
+
+Update `tests/ACCEPTANCE_CHECKLIST.md` and add an explicit M/W/E acceptance matrix. Never mark tests PASS unless they were actually run.
+
+## 12. Build, inspect, and repair
+
+After implementation:
+
+1. Run the repository's actual build, TypeScript/lint, action-catalog, and browser-test commands where available.
+2. Fix failures caused by the implementation.
+3. Start the app and inspect every route in the running preview.
+4. Exercise actual interactions rather than checking screenshots alone.
+5. Verify both English and Persian, including RTL layout.
+6. Verify responsive behavior at the repository's established viewport baselines.
+7. Search the codebase for all E handlers and confirm that no Phase 1 execution path is reachable.
+8. Search for fake success messages, hard-coded healthy values, fabricated source evidence, dead buttons, and contradictory availability states.
+9. Confirm the action registry, types, page components, data contracts, and tests agree.
+10. Update relevant documentation so it reflects actual implemented behavior and remaining blockers.
+
+Do not weaken or delete tests simply to obtain a passing result. Do not hide failures by suppressing TypeScript errors or disabling test coverage.
+
+## 13. Completion report and acceptance gate
+
+Do not report the task as complete until the audit and the authorized repairs are implemented and the available checks have been run.
+
+Return a concise report containing:
+
+- Latest commit inspected and working branch.
+- Files changed.
+- Audit totals by status.
+- Features implemented and verified for M, W, and E across all ten islands.
+- Remaining blocked or unverified features and their exact reasons.
+- Build, TypeScript/lint, unit/action-catalog, and browser-test commands actually run, with results.
+- Evidence for execution safety: confirmation that no Phase 1 state-changing operation is reachable.
+- Cross-page data-integrity results.
+- Any specification conflicts that remain unresolved.
+- Commit SHA for the actual changes, if committed.
+
+Never claim that all requirements are implemented merely because the prompt ran or the documentation was updated.
+
+**Definition of done:** every island has been audited for M/W/E; all authorized corrections are implemented; Monitoring remains read-only; Warning is evidence- and rule-governed; Execution is unavailable and technically guarded in Phase 1; cross-page integrity is tested; and every completion claim is supported by actual evidence.

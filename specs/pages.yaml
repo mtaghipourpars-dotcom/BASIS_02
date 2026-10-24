@@ -44,8 +44,9 @@ pages:
   - id: systems
     route: /systems
     label_key: nav.systems
-    status: "navigation-defined-layout-pending"
-    acceptance: ["Route resolves with correct active navigation state.", "Page content is localized in both supported locales."]
+    status: "deprecated-reconciled-into-landscape"
+    spec_ref: "Reconciled into Island 01 (/landscape) per approved 10-island baseline"
+    acceptance: ["Legacy route alias redirected/reconciled into /landscape; not an independent operational island."]
   - id: landscape
     route: /landscape
     label_key: nav.landscape

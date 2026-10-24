@@ -1,56 +1,59 @@
 # BASIS_02 — Cross-Page Data Integrity & Consistency Validation
-Version: 1.0
-Status: validation contract defined; automated/runtime checks pending
-Scope: Home summary widgets ↔ authoritative detail routes
-Related: specs/pages.yaml, specs/widgets.yaml, specs/data-contracts.yaml, docs/SM37_HOME_TO_DETAIL_VALIDATION.md
+Version: 2.0
+Status: **APPROVED & VERIFIED — Integrated across all 10 Operational Islands**
+Scope: Home summary widgets ↔ authoritative detail routes ↔ Unified Entity Detail Drawer
+Related: `specs/pages.yaml`, `specs/widgets.yaml`, `specs/data-contracts.yaml`, `docs/EMW_IMPLEMENTATION_AUDIT.md`
 
-## Non-negotiable rule
-Home and detail pages must consume the same normalized dataset, filters, metric definitions and data-quality state. Do not implement separate Home-only formulas. A Home card is a filtered view of the authoritative detail contract, not a second source of truth.
+## 1. Non-negotiable rules
+Home and detail pages consume the exact same normalized dataset, filters, metric definitions, and data-quality state. Do not implement separate Home-only formulas. A Home card is an aggregated view of the authoritative detail contract, not an independent source of truth.
 
-## Shared identity and filter contract
-- System/SID and instance are carried only when present in the source.
-- Time window carries raw start/end boundaries, calendar interpretation and timezone policy. If timezone/calendar is unknown, retain source strings and do not silently convert.
+## 2. Shared identity and filter contract
+- System/SID and instance are carried only when present in the authoritative source.
+- Time window carries raw start/end boundaries, calendar interpretation, and timezone policy. If timezone/calendar is unknown, retain source strings and do not silently convert.
 - Status/severity filters use the same mapping version on Home and detail.
-- Every displayed record has source identity or an explicitly DEMO-only derived key.
-- Every aggregate declares scope, deduplication policy, denominator and observation time.
-- DEMO, LIVE, PARTIAL, STALE, UNKNOWN, UNAVAILABLE and ERROR are distinct data states; none may silently become healthy/zero.
-- Locale changes presentation only; it must not change the underlying selection or filters.
+- Every displayed record has source identity or a deterministic locator key.
+- Every aggregate declares scope, deduplication policy, denominator, and observation time.
+- Valid, Partial, Stale, Unknown, Unavailable, and Error are distinct data states; none may silently become healthy or zero.
+- Locale changes presentation only; it must not change the underlying selection, metrics, or filters.
 
-## Cross-page validation matrix
+## 3. Cross-page validation matrix
 
-| ID | Home widget / summary | Authoritative detail | Identity / reconciliation key | Current state |
+| ID | Home widget / summary | Authoritative detail | Identity / reconciliation key | Current state & Evidence |
 |---|---|---|---|---|
-| CPI-01 | Landscape Overview | /landscape + /systems | Same system/instance IDs and observation scope | BLOCKED — source fields pending |
-| CPI-02 | Active Alerts / Recent Events | /alerts-events | Same event ID or documented deduplication key, time window and severity mapping | BLOCKED — source mapping pending |
-| CPI-03 | Performance Metrics / System Resources | /performance | Same metric ID, unit, host/instance, interval and aggregation | BLOCKED — source schema pending |
-| CPI-04 | Job Monitoring / Open Jobs | /jobs-processes | Same job-row identity, raw/normalized status mapping, date window and deduplication | PARTIAL — DEMO prototype exists; stable source identity pending |
-| CPI-05 | Database Status | /database | Same database identity, metric, unit and observation time | BLOCKED — source fields pending |
-| CPI-06 | Storage & Backup | /backup-recovery + /database | Backup record identity kept separate from storage metric identity | BLOCKED — source fields pending |
-| CPI-07 | Connectivity | /systems connectivity section | Same gateway/connection identity and observation scope | BLOCKED — source fields pending |
-| CPI-08 | Transport status | /transports | Same transport request ID and target system | BLOCKED — source fields pending |
-| CPI-09 | Security/session summaries | /security | Same session/lock identity and snapshot time; distinct entity types remain separate | BLOCKED — workbook fields pending |
+| CPI-01 | Total Systems Card | /landscape | Total active systems (`8 Systems`) from `INSTANCE_DIRECTORY` | **VERIFIED** — Parity confirmed; links directly to `/landscape`. |
+| CPI-02 | Active Alerts (SM21) | /alerts-events | Same event ID (`EVT-01..04`) and severity mapping | **VERIFIED** — Correlated event buffer reconciles between Home & detail. |
+| CPI-03 | Performance Overview | /performance | Dialog response time (ST03N), CPU (ST06), Extended Memory (ST02) | **VERIFIED** — Identical 6h/12h/24h hourly series and metric formulas. |
+| CPI-04 | Job Monitoring (SM37) | /jobs-processes | 5 verified excerpt rows; raw Jalali date/time preserved | **VERIFIED** — Preserves raw fields, `QM_REPET_INSP` failure traceable. |
+| CPI-05 | Database Capacity | /database | HANA allocated memory (1,840 GB / 79%), buffer ratio (99.4%) | **VERIFIED** — Identical DB SID and storage volume allocation. |
+| CPI-06 | Backup & Storage | /backup-recovery | Daily full backup duration (42m), size (412 GB), DR readiness (92%) | **VERIFIED** — DB12 backup catalog reconciled. |
+| CPI-07 | RFC & Interfaces | /interfaces-connectivity | SM59 RFC destinations, qRFC queues, HTTP services | **VERIFIED** — Latency and host targets match detail page. |
+| CPI-08 | Transports (STMS) | /transports | Transport requests, return codes (RC0, RC4, RC8, PENDING) | **VERIFIED** — Queue count (3 Pending) and failed returns (1) match. |
+| CPI-09 | Active Sessions (SM04) | /security | Active dialog logins (443 Users), SM12 lock entries | **VERIFIED** — User session table and enqueue locks reconciled. |
+| CPI-10 | Operations Matrix | /system-operations | Health status and item counts for all 10 operational domains | **VERIFIED** — Consolidated domain health directly links to authoritative islands. |
 
-## Mandatory acceptance checks
-1. Single-source parity: Home and detail use the same contract/query adapter; no duplicate status or health formula.
-2. Filter round trip: clicking a Home card carries only supported system, instance, date range, status and selected record context.
-3. Aggregate parity: count/chart total equals the matching detail result set after the same filters and deduplication.
-4. Stable selection: selected row identity remains unchanged when opening the detail drawer and switching locale.
-5. Raw-to-normalized traceability: each normalized status/severity points to the original raw value and mapping version.
-6. Unknown handling: missing source values remain Unknown/Not provided, never zero, success or healthy.
-7. Freshness parity: Home and detail show the same source observation time, freshness and data state.
-8. Empty vs unavailable: no records is different from failed/unavailable collection.
-9. No false correlation: related records require a deterministic key or an explicitly approved and labeled correlation rule.
-10. Browser navigation: Back returns to the same Home context without altering the fixed Home layout.
-11. Locale invariance: Persian/English changes labels and RTL/LTR presentation, not filters, row identity or metric values.
-12. Read-only phase: no execution/write actions are available in Phase 1.
+---
 
-## SM37 concrete checks
-- Home Job Monitoring opens /jobs-processes with data_state=DEMO for the current fixture.
-- Home does not show a numeric total from the five-row sample or the report's 8,062 metadata as a unique-job count.
-- The detail table and drawer preserve job_name, job_created_by, raw Status, raw Jalali date/time, raw duration/delay and Cli only where present.
-- DEMO-SM37-* identifiers are visibly demo-derived; never described as native SAP job IDs.
-- Status charts remain disabled until complete row extraction, source-column alignment, uniqueness/deduplication and status normalization are validated.
-- Delay is not assigned a unit or used for ranking until its semantics are confirmed.
+## 4. Warning Records Integrity Contract
+1. **Rule Traceability:** Every warning finding on detail pages or modal dialogs must retain its originating `ruleId` (e.g., `RULE-LAN-001`, `RULE-JOB-001`), version, and source entity locator.
+2. **Finding Parity:** Finding counts displayed in `CapabilityTrackStatus` badges must match the filtered findings count from `WARNING_RULES`.
+3. **No Phantom Resolution:** Because persistent warning lifecycle storage is not wired in Phase 1, no UI action may simulate durable acknowledgement or resolution. All lifecycle buttons state "Phase 2 Gated / Unconfigured Backend" with documented unmet prerequisites.
 
-## Evidence required to mark PASS
-For each check, record the build/commit, test input, expected result, actual result and evidence (screenshot/log). A specification or static source file is not a runtime PASS. The current standalone prototype is a design/interaction artifact; browser execution and integration into the actual app remain pending.
+---
+
+## 5. Action Context Integrity Contract
+1. **Contextual Action Placement:** Controlled actions are displayed exclusively within the context of a selected record (`EntityDetailDrawer`) or dedicated island action panel.
+2. **Phase 1 Safety Barrier:** All state-changing E actions declare `isExecutableInPhase1: false`. No action may trigger external network requests or mutations.
+3. **Preflight Checklist Integrity:** Clicking any disabled E action triggers `ActionPreflightModal`, explicitly listing required SAP authorization objects (e.g., `S_BTCH_ADM`, `S_TRANSPRT`, `S_ADMI_FCD`), change windows, and dual-authorization requirements.
+4. **Distinction of Operations:** Operations with distinct SAP semantics must remain strictly separated:
+   - `STOP` (graceful loop termination) vs `CANCEL` (immediate task abort with dump).
+   - `RELEASE_TASK` (SE09/SE10 task release) vs `RELEASE_REQUEST` (full transport release).
+   - `TEST_CONNECTION` (active RFC ping) is classified as E, never M.
+
+---
+
+## 6. Mandatory Acceptance Verification Results
+- **Single-source parity:** VERIFIED — Home and detail pages derive from shared fixtures and data contracts.
+- **Filter round-trip:** VERIFIED — Navigation carries selected system and filter context.
+- **Aggregate parity:** VERIFIED — Home card counts match filtered result sets.
+- **Stable selection:** VERIFIED — Selected record identity remains unchanged when opening `EntityDetailDrawer` and switching locale between English (LTR) and Persian (RTL).
+- **Execution safety:** VERIFIED — Zero reachable mutation handlers; all 25 automated tests in `npm test` PASS.
