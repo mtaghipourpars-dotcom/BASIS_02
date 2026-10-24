@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg-main: #081321;
+    --panel-bg: #101f31;
+    --panel-bg-alt: #14273b;
+    --border-color: #263a50;
+    --border-subtle: #1e3146;
+    --text-primary: #e7f0fb;
+    --text-muted: #91a6bc;
+    --cyan-accent: #54d4e8;
+    --blue-accent: #5d9cff;
+    --green-status: #55d6a1;
+    --amber-status: #f4c36a;
+    --red-status: #ff7f8b;
+  }
+
+  html {
+    font-family: 'Inter', 'Vazirmatn', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+  }
+
+  [dir="rtl"] {
+    font-family: 'Vazirmatn', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  /* Keep technical numbers, code, and identifiers LTR isolated */
+  .tech-id, .ltr-isolate {
+    direction: ltr !important;
+    unicode-bidi: isolate;
+    font-family: 'JetBrains Mono', monospace, sans-serif;
+  }
+
+  /* Custom scrollbar for operations cockpit */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #091524;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #25394f;
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #395675;
+  }
+}
+
+/* Density styling overrides */
+.density-compact .card-dense {
+  padding: 0.65rem !important;
+}
+.density-compact table td,
+.density-compact table th {
+  padding-top: 0.4rem !important;
+  padding-bottom: 0.4rem !important;
+}
+
+/* High contrast mode */
+.high-contrast {
+  --border-color: #4b6a8e !important;
+  --text-muted: #bcd0e6 !important;
+}

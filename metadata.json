@@ -1,0 +1,8 @@
+{
+  "name": "BASIS_02 · SAP Basis Operations Cockpit",
+  "description": "Enterprise SAP Basis Operations Cockpit for read-only system monitoring, landscape topology, performance analytics, background jobs, database and change management.",
+  "permissions": [],
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
