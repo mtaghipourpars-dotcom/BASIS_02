@@ -1,0 +1,463 @@
+# BASIS_02 — Master Implementation Prompt: Monitoring (M), Warning (W), Execution (E)
+
+## Objective
+
+Implement the complete product-owned feature architecture for the existing BASIS_02 SAP Basis Operations Cockpit. Every one of the ten operational islands must explicitly support three capability tracks: Monitoring (M), Warning (W), and Execution (E). Phase 1 makes Monitoring functional and read-only; Warning features and Execution affordances must be designed, represented in the UI, and wired to explicit capability contracts, but they must remain safely inactive wherever their rule/data prerequisites or execution controls are not approved and implemented.
+
+**Do the work in the existing repository. Do not return only a plan, do not ask questions, and do not invent requirements or data. Inspect the repository, implement the changes, run the available checks, and report actual results.**
+
+## 1. Read and obey the existing repository
+
+Before changing code, inspect the current application and the following documents in full:
+
+- `MASTER_SPECIFICATION.md`
+- `specs/pages.yaml`
+- `specs/widgets.yaml`
+- `specs/data-contracts.yaml`
+- `specs/metric-registry.yaml`
+- `specs/i18n.yaml`
+- `specs/application.yaml`
+- `docs/TEN_ISLANDS_EMW_KPI_FUNCTIONAL_SPEC.md`
+- `docs/ISLANDS_VISUAL_SPEC.md`
+- `docs/PRODUCT_UI_SCRIPT.md`
+- `docs/VISUAL_ARCHITECTURE.md`
+- `docs/CROSS_PAGE_DATA_INTEGRITY_VALIDATION.md`
+- `docs/SETTINGS_AND_PREFERENCES_SPEC.md`
+- all source field mapping documents, existing route/page components, data adapters, fixtures, shared context, translations, tests, and the current UI reconstruction prompt.
+
+The existing ten-island functional specification is the page-level source for candidate widgets, layouts, candidate KPIs, and M/W/E behavior. Reuse and implement it; do not silently replace it with a new design. Where files conflict, follow the authoritative master specification and approved fixed navigation/UI decisions; record the conflict and resolve the implementation accordingly. Numeric thresholds, security policy, action permissions, source mappings, and operational policies that have not been approved must remain unconfigured, not guessed.
+
+## 2. Fixed architecture and hard constraints
+
+1. Preserve the exact approved sidebar order from `specs/pages.yaml`: Home; Landscape & Availability; Performance; Jobs & Processes; Database & Storage; Security & Authorization; Logs & Dumps; Interfaces & Connectivity; Transports & Changes; Backup & Recovery; System Operations; Reports; Settings.
+2. The ten operational islands and current approved UI routes are:
+   1. Landscape & Availability — `/landscape`
+   2. Performance & Workload — `/performance`
+   3. Jobs & Background Processing — `/jobs-processes`
+   4. Database & Storage — `/database`
+   5. Security & Authorization — `/security`
+   6. Logs, Dumps & Events — `/alerts-events`
+   7. Interfaces & Connectivity — `/interfaces-connectivity`
+   8. Transports & Changes — `/transports`
+   9. Backup & Recovery — `/backup-recovery`
+   10. System Operations — `/system-operations`
+3. Home, Reports, and Settings are general destinations, not additional islands. Preserve the previously approved Home composition and the removal of the welcome banner, Home footer, and the former Overview destination. Do not restore those removed regions or create another Overview route.
+4. M/W/E are capability tracks embedded in each page’s task context. They are not three global application modes, three copies of every page, or new sidebar destinations.
+5. Phase 1: Monitoring is the only operationally active track and is read-only. No SAP, OS, database, network, job, transport, security, backup, or other real mutation is allowed. Do not use production credentials or call real operational endpoints.
+6. Warning: implement the UI, rule registry structure, evaluation pipeline, evidence explanation, lifecycle fields, and test seams. A rule may evaluate only if its inputs, source mapping, threshold/policy, scope, time window, and lifecycle semantics are approved and validated. Otherwise show the rule as “Not configured” / “Not evaluated” with the precise missing prerequisite. Never invent a warning or claim a real alert from an unverified fixture.
+7. Execution: build the required UX and action contract now, but all SAP/OS/system-changing controls remain disabled in Phase 1. Each disabled action must state the specific unmet activation gates. A disabled UI button is not an execution implementation.
+8. No guessed fields, KPI formulas, units, thresholds, status normalization, source connectivity, alert severity, topology, causal correlation, identity, or operational claim. Unknown is not zero or healthy.
+9. Preserve the agreed visual style: dark navy/blue, cyan accents, compact enterprise density, restrained status colors, meaningful page-specific visualization. Avoid list-only pages and generic CRUD templates.
+10. English and Persian are first-class locales; RTL/LTR must work across all M/W/E surfaces, charts, dialogs, filters, and disabled-action explanations. Use CSS logical properties and isolate technical identifiers as LTR.
+11. Apply the project-wide terminology requirement already defined by the current reconstruction prompt: do not reintroduce removed DEMO / EXTRACTED SNAPSHOT labels or derivatives, and never claim “Live” or “Connected” without verified evidence.
+12. All controls must be real and consistent. No decorative tabs, dead buttons, simulated successful execution, or UI-only state that is disconnected from shared application state.
+
+## 3. Meaning of the three capability tracks
+
+### M — Monitoring (active in Phase 1)
+Read-only observation and evidence:
+- inspect source-backed records and latest reported state;
+- filter, search, sort, compare compatible observations;
+- view trends only where multiple comparable timestamped observations exist;
+- inspect raw and approved normalized values;
+- see source, system/scope, observation timestamp/timezone, data quality, freshness and source coverage;
+- open detail drawer and navigate to related records using deterministic identifiers or approved correlation rules;
+- preserve context between Home and authoritative island pages;
+- display loading, valid empty, partial, stale, unavailable, not-supported, unauthorized, and error states distinctly.
+
+### W — Warning (implemented as a capability; evaluation gated)
+Rule-driven detection and explanation:
+- rule registry with stable ID, version, island, purpose, enabled/configuration status, required source fields, threshold/policy, evaluation window, scope, severity, owner, cadence, suppression/deduplication key, clear/reset behavior, evidence requirements, and test cases;
+- evaluate only when every required input and policy is approved and current;
+- show observed value, threshold, unit, time window, rule ID/version, exact evidence, source timestamp, confidence/coverage and missing-data caveats;
+- show priority and impact only under documented formulas/policies;
+- support lifecycle status only if lifecycle events/records exist;
+- distinguish “no matching findings under confirmed coverage” from “not evaluated”, “unknown”, and “source unavailable”;
+- do not infer root cause from temporal proximity;
+- do not enable arbitrary numeric thresholds or severity defaults.
+
+### E — Execution (UX/contracts present, actual actions disabled in Phase 1)
+Controlled action design:
+- an island-specific action catalog with action ID/name, target entity, purpose, expected impact, risk level, preconditions, required permission, approval requirements, maintenance/change window, concurrency/idempotency rules, rollback/compensation plan, timeout policy, audit fields, and post-action verification criteria;
+- a consistent action detail/preview drawer showing target, current evidence, expected impact, preflight checks, permission/approval requirements, and why the action is unavailable;
+- disabled action controls with localized reason, e.g. “Unavailable in Phase 1 — read-only” plus missing adapter/authorization/policy gates;
+- a planned lifecycle contract: requested → preflight → awaiting authorization/approval → executing → succeeded / failed / outcome unknown → verified, but do not simulate these states as real executions;
+- no callable write handler, no external action request, no fake success toast, no real network request;
+- when a future action is approved, it must be activated only after an authorized action adapter, least-privilege permission checks, target revalidation, preconditions, impact preview, explicit confirmation, required approval, idempotency/concurrency controls, timeout handling, audit trail, rollback/compensation where applicable, and post-action verification are implemented and tested.
+
+## 4. Page layout pattern for M/W/E
+
+Do not put three large tabs at the top that split each page into separate modes. The page is one operational workspace; its M/W/E features appear where they are relevant.
+
+For every island, implement the following visual organization, customized to the exact page:
+1. **Page header:** island title and purpose; context-aware actions; compact capability status showing M active, W configured/not configured, and E disabled in Phase 1. Do not imply W is active if rules have not passed their gates.
+2. **Context/filter bar:** system/SID, instance, time window, source, status/severity, or other fields only when supported by the source. Filters update all dependent M and W panels and preserve context on navigation.
+3. **M monitoring layer:** page-specific KPIs (only approved), primary visualization/topology/timeline/matrix, supporting evidence panel, searchable/sortable operational records, and a selected-record detail drawer.
+4. **W warning layer:** a compact, clearly separated “Warning Rules / Findings” panel placed beside the primary visualization or directly below it according to the page layout. Show configured rule coverage, evaluation status, and evidence-backed findings. For rules not ready, show a concise list of unconfigured rules and the missing prerequisites; do not fabricate alerts. A click opens rule details and the exact evidence.
+5. **E execution layer:** a contextual “Controlled Actions” panel/drawer associated with the selected system/job/database/event/etc., normally on the right or opened from a selected record. Show relevant planned actions, preflight requirements and disabled status. Do not clutter the page with unrelated actions. If no action is appropriate for that island, show “No approved action catalog for this context” instead of inventing an action.
+6. **Evidence and traceability:** every W finding and E action preview must link back to source records and show source identity, observation time, quality/freshness, and supported related entities.
+7. **Responsive layout:** desktop 12-column grid with primary monitoring visual normally 8/12 and secondary warning/evidence panel 4/12; action details use a drawer or contextual side panel. At tablet/mobile, stack panels in task order and retain usability without horizontal overflow.
+8. **Clear state distinction:** M = observed facts; W = rule-derived finding with rule/evidence; E = proposed controlled action requiring future authorization. Use labels, icons and color consistently, but never rely on color alone.
+
+## 5. Page-by-page feature/function and layout requirements
+
+Implement each island with its own specific composition below. Reuse shared components, but do not render identical layouts or replace the primary visual with a generic list.
+
+### Island 01 — Landscape & Availability (`/landscape`)
+
+**M — Monitoring**
+- KPI row: distinct known systems, distinct known instances, reported-state distribution, and latest/oldest observation age or source coverage only when source semantics support it.
+- Primary visual: evidence-backed system → instance → host topology/environment view. Every edge must trace to a source record; unknown relationships are omitted or marked unknown.
+- Secondary panel: selected-system summary, source coverage/freshness, and recent related events.
+- Bottom full-width instance inventory table with only source-mapped columns: SID/system, environment, instance, host, reported state, observed-at, source, quality/freshness.
+- Filters: environment, SID/system, instance, reported state where fields exist.
+- Detail drawer: raw source evidence, source locator, observation time, quality/freshness and related record links.
+- Preserve selected SID/instance while linking to Performance, Jobs, Database and Events.
+
+**W — Warning**
+- Candidate rule categories: missing inventory, stale observation, source-explicit unavailable state, contradictory system/instance mapping.
+- Do not warn merely because a record is absent unless an approved expected-inventory and source-coverage policy proves collection was expected.
+- Every finding includes rule ID/version, observed evidence, observation time, coverage caveat and evaluation state.
+- Keep rules Not configured until inventory expectation, freshness threshold, and contradiction semantics are approved.
+
+**E — Execution**
+- Contextual catalog may describe approved diagnostic refresh or controlled service-operation runbooks.
+- All controls disabled in Phase 1.
+- Before future activation require target identity, impact preview, authorization, maintenance-window/precondition checks, explicit confirmation, audit and post-action observation.
+- Never show a generic “Restart” action on a system/instance card without an approved, target-specific action definition.
+
+**Layout:** KPI strip → topology (8/12) + selected-system/evidence & warning panel (4/12) → inventory table → contextual action drawer for selected entity.
+
+### Island 02 — Performance & Workload (`/performance`)
+
+**M — Monitoring**
+- KPI strip only for metrics with approved source, unit, scope and observation time.
+- Main visual: large time-series chart with metric selector restricted to implemented metrics, explicit units/time buckets, gaps for missing observations.
+- Side panel: per-instance comparison/ranked resources only where units, time windows and scopes are comparable.
+- Bottom: work-process table or workload breakdown only where mapped fields exist; row detail includes raw source value and collection gaps.
+- Filters: system, instance, metric and time range; all panels update together.
+- A single SM50/SM66-like snapshot must not be presented as historical trend.
+
+**W — Warning**
+- Candidate categories: approved threshold breach, sustained high utilization, workload/response deviation, work-process saturation, missing metric collection.
+- Requires approved metric semantics, baseline, threshold, evaluation window, source freshness and alert lifecycle. Missing-collection findings require explicit expected-source coverage.
+- Never infer root cause from coincident CPU/memory/response-time changes.
+- Show exact metric, observed value/unit, threshold, evaluation window, evidence points and missing-data caveat.
+
+**E — Execution**
+- Contextual future actions may include diagnostic capture or an approved workload/service operation only when the action catalog defines it.
+- All controls disabled. No tuning/restart action based solely on a chart spike.
+- Future gates: action adapter, permissions, target resolution, preflight safety checks, impact preview, audit and verification.
+
+**Layout:** KPI strip → large trend chart (8/12) + comparable instance comparison and W rule status (4/12) → work-process/workload records → selected-point evidence drawer → disabled contextual action drawer.
+
+### Island 03 — Jobs & Background Processing (`/jobs-processes`)
+
+**M — Monitoring**
+- Read-only job search/history, status and time inspection, source traceability, raw/normalized status side-by-side, source limitations.
+- Table supports name, creator, status, date/time, duration and client filters only for confirmed fields; preserve raw Jalali date/time until calendar/timezone policy is approved.
+- Show details/source values only when present; do not fabricate end time, target server, job log, spool, delay unit, or job-run identity.
+- Status chart/counts remain disabled until unique row identity, deduplication, extraction alignment and status mapping pass validation.
+- Preserve Home-to-detail filters and selected job context.
+
+**W — Warning**
+- Candidate categories: canceled job, policy-confirmed long-running job, validated start delay, repeated failures, stale/missing collection.
+- Every rule needs approved severity, evaluation window, duplicate suppression, clear/reset behavior and evidence.
+- Do not rank on “Delay” until its meaning/unit is confirmed; do not infer repeated failures without stable run identity.
+
+**E — Execution**
+- Planned future actions: re-run, cancel, release only where approved and supported.
+- All controls disabled in Phase 1. Future activation requires SAP-authorized action API, job-run revalidation, permissions, preconditions, duplicate-run/idempotency guard, impact confirmation, audit and post-execution verification.
+- Never simulate job rerun or show success.
+
+**Layout:** KPI strip only when counts pass validation → primary searchable/sortable job table (full width) → optional status distribution only when gates pass → detail drawer with source evidence → warning rules/findings panel → disabled action controls in selected-job context.
+
+### Island 04 — Database & Storage (`/database`)
+
+**M — Monitoring**
+- KPI strip: database identity/type, capacity, resource/response metrics only when validated.
+- Main left: capacity/storage trend only with multiple dated observations and consistent units.
+- Main right: database/storage evidence panel with source, timestamp, data quality and selected entity.
+- Bottom: source-backed database/volume table; link to backup records with context preserved.
+- Explicitly distinguish database metrics from host filesystem/storage metrics. Never assume HANA.
+
+**W — Warning**
+- Candidate categories: capacity threshold, rapid growth, stale/missing database telemetry, source-reported database event.
+- Requires approved units, threshold/schedule, scope, observation window and data source. Growth requires comparable dated observations.
+- No warning threshold is to be invented.
+
+**E — Execution**
+- Future approved database diagnostic/capacity-management runbooks only.
+- No delete, resize, restart or configuration mutation in Phase 1.
+- Future gates: database-specific action adapter, authorization, impact/rollback plan, maintenance policy, audit and verification.
+
+**Layout:** KPI strip → capacity/storage trend (8/12) + selected database/evidence and W rule status (4/12) → database/volume records table → selected-record detail and related backup evidence → disabled action drawer.
+
+### Island 05 — Security & Authorization (`/security`)
+
+**M — Monitoring**
+- KPI strip for observed sessions, lock records and confirmed security events, keeping entity types and scopes separate.
+- Main left: user/session table from supported SM04 evidence.
+- Main right: lock summary/list/detail from supported SM12 evidence.
+- Bottom: available system-log/security evidence from mapped SM21 records.
+- Display redaction/access limitations. Authorization/audit section is Not supported/Not configured until a suitable source exists.
+- Filters only for mapped user, system/client, transaction and time fields.
+
+**W — Warning**
+- Candidate categories: policy-defined long-held locks, suspicious session patterns, security-relevant source log records.
+- Activate only after security owner approves rules and evidence requirements.
+- An active session alone is not a security violation. No invented failed logons, blocked users, roles, authorization changes or security score.
+
+**E — Execution**
+- Future session termination or lock remediation only if separately approved.
+- Disabled in Phase 1. Future gates: security approval, strong authorization, target revalidation, user/business impact preview, confirmation, immutable audit and post-action verification.
+- Never show an enabled user unlock/termination action based on a guessed signal.
+
+**Layout:** KPI strip → sessions (8/12) + locks/evidence (4/12) → system-log evidence table → selected-record drawer → W findings and disabled E action panel, with sensitive details redacted according to role.
+
+### Island 06 — Logs, Dumps & Events (`/alerts-events`)
+
+**M — Monitoring**
+- KPI strip for source-backed event, dump and update-error counts only with independent counting rules.
+- Primary visual: time-ordered event timeline with time buckets and visible coverage gaps.
+- Secondary/bottom: searchable event table with SM21/ST22/SM13/RZ20 source filters only where those sources are available.
+- Detail drawer shows source record, timestamp, reported severity, raw technical context, provenance and supported related links.
+- Filters: source/type, severity, system and time only when fields exist.
+- Preserve navigation to Jobs, Performance, Security and Database.
+
+**W — Warning**
+- Candidate categories: source-reported critical event, recurring dump/update-error pattern, rule-based correlation after approved classification/deduplication/time policy.
+- Do not combine unlike event types into one count without a defined rule. Do not infer root cause from temporal proximity.
+- Each warning shows rule and event evidence, time window, deduplication/correlation policy and coverage caveat.
+
+**E — Execution**
+- Contextual future runbook recommendations and remediation links only if an approved runbook exists.
+- Disabled in Phase 1; no generic “Fix event” action.
+- Future gates: explicit preconditions, permissions, approval, impact/rollback, idempotency, audit and verification.
+
+**Layout:** KPI strip → timeline (8/12) + warning priority/evidence panel (4/12) → searchable event records → selected event detail drawer → disabled action/runbook drawer.
+
+### Island 07 — Interfaces & Connectivity (`/interfaces-connectivity`)
+
+**M — Monitoring**
+- Dedicated full page; never hide connectivity inside the system inventory page.
+- KPI strip for gateway/connection counts or errors only if SMGW or another mapped source provides the required fields.
+- Primary: connection/partner table with source-confirmed fields and status distribution only if stable records support it.
+- Secondary: connection topology/status matrix only where relationships exist; otherwise show an evidence and source-coverage panel.
+- Bottom: connectivity events from supported SMGW/SM21 evidence.
+- Coverage panel for RFC, IDoc, qRFC, tRFC, HTTP and external endpoints. Unsupported categories show Not supported/Not configured, not invented counts.
+- No real connection test or network command.
+
+**W — Warning**
+- Candidate categories: source-confirmed abnormal connection state, recurring gateway event, stale collection; queue/partner failures only after dedicated source mapping.
+- No whole-network health inference from SMGW alone.
+- Findings must identify exact source, target/partner if mapped, status mapping and coverage limitation.
+
+**E — Execution**
+- Future connection reinitialization or queue operation only with domain-specific approved service.
+- Disabled in Phase 1; no test/restart/reprocess command.
+- Future gates: target checks, authorization, impact preview, duplicate/concurrency protection, approval, audit and post-action verification.
+
+**Layout:** KPI strip → connection/partner visualization or evidence coverage (8/12) + W rule/coverage panel (4/12) → connection table → event records and selected connection drawer → disabled contextual actions.
+
+### Island 08 — Transports & Changes (`/transports`)
+
+**M — Monitoring**
+- KPI strip for request/import counts by verified source status and time window.
+- Main visual: transport queue/status visualization plus searchable transport table.
+- Supporting import history/status distribution only with multiple records and stable mappings.
+- Detail drawer: request identifier, source/target, timestamps, import log/messages/return code only where present.
+- Distinguish transport request lifecycle from actual import result.
+- Filters for request, target, status and time only where mapped.
+
+**W — Warning**
+- Candidate categories: source-confirmed import failure, blocked/pending beyond approved age, repeated failure to same target, stale source.
+- Requires explicit rule, scope, severity, duplicate suppression and clear/reset semantics.
+- Correlate events only with verified identifiers or approved rules.
+
+**E — Execution**
+- Future release/import/re-import actions only after approved SAP integration.
+- Disabled in Phase 1; no executable release/import/approval controls.
+- Future gates: authorization, target/client validation, dependency/conflict checks, change window, impact preview, explicit confirmation/approval, audit and post-import verification.
+
+**Layout:** KPI strip → transport queue/status visualization (8/12) + import evidence/W status (4/12) → searchable request/import records → selected transport drawer → disabled action panel.
+
+### Island 09 — Backup & Recovery (`/backup-recovery`)
+
+**M — Monitoring**
+- KPI strip: latest backup evidence, last observed status, age and coverage only when source fields exist.
+- Main: backup history table; adjacent status/timeline visualization only with multiple consistent timestamped records.
+- Secondary panel: recovery readiness evidence separate from backup success.
+- Detail drawer: source record, scope, timestamp, result/return code and restore-test evidence where present.
+- Preserve links to database/system records.
+
+**W — Warning**
+- Candidate categories: failed/overdue backup or policy breach only after schedule, expected runs, retention, timezone and source status are validated.
+- Missing restore test can trigger “evidence missing” only if approved policy requires it. Missing evidence is not proof of recovery failure.
+- Do not invent RPO/RTO or overdue thresholds.
+
+**E — Execution**
+- Future approved backup retry, verification or restore workflow only.
+- Disabled in Phase 1. Restore is high impact and requires change/incident approval, isolated target confirmation, preflight capacity/dependency checks, recovery-point selection, explicit approval, audit and post-restore validation.
+- No backup/restore/failover operation may be callable.
+
+**Layout:** KPI strip → backup history (8/12) + recovery-readiness evidence and W status (4/12) → backup records → selected-record detail → disabled high-impact action drawer with explicit safety gates.
+
+### Island 10 — System Operations (`/system-operations`)
+
+This is the cross-domain coordination workspace, not a replacement Overview page and not a list of links.
+
+**M — Monitoring**
+- Unified operational queue and shared filters.
+- Visual readiness/evidence matrix with one row per ten island domains, showing source-reported state, validated open findings, latest observation/freshness and evidence coverage only where available.
+- Cross-domain event timeline and drill-down to authoritative island records.
+- Every aggregate reuses the owning island’s exact data contract and metric definition.
+
+**W — Warning**
+- Prioritized queue assembled only from approved island warning rules.
+- Shared suppression/deduplication and lifecycle rules with the source island and Home.
+- Explain priority, evidence, scope, confidence/coverage and next navigation target.
+- No separate overall-health formula or duplicate warning engine.
+
+**E — Execution**
+- Future runbook catalog and controlled orchestration entry point; disabled in Phase 1.
+- No multi-domain operation until every child action has an approved control. Future orchestration requires permissions/preconditions for all actions, dependency order, partial-failure handling, rollback/compensation, approval and complete audit trail.
+
+**Layout:** coordination KPI strip only for approved aggregates → ten-domain readiness/evidence matrix (8/12) + prioritized warning queue (4/12) → cross-domain event/issue workspace → selected issue detail with owning island evidence → disabled action/runbook panel.
+
+## 6. Cross-island shared components and contracts
+
+Build shared reusable components, but ensure each page’s composition remains page-specific:
+- `CapabilityTrackStatus`: per island, M active/read-only, W configured/not configured/not evaluated, E disabled in Phase 1.
+- `WarningRulePanel`: rule state, rule ID/version, prerequisites, last evaluation only if real, evidence, priority/severity only if approved.
+- `WarningFindingDetail`: observed value, threshold/unit, window, evidence, coverage and confidence only if the rule contract supports them.
+- `ControlledActionPanel`: action catalog, target, risk, preconditions, permissions, approval, impact preview, disabled reason and verification contract.
+- `ActionPreflightChecklist`: non-executable display of required future gates; never pretend the gates have run.
+- `SourceEvidenceDrawer`: raw fields, source locator, observation time/timezone, quality, freshness and related records.
+- `DataStateIndicator`: loading, valid empty, partial, stale, unavailable, not supported, unauthorized and error.
+- Shared filter/context store and context-preserving route navigation.
+- Shared metric and warning-rule registries; no page-specific duplicate formulas.
+
+Every metric must have a registry entry or remain non-numeric/unavailable. Every warning rule must have an explicit rule contract. Every execution action must have an explicit action contract even while disabled.
+
+## 7. Warning rule registry — required schema
+
+Create or extend a typed, validated registry. Every rule entry must define:
+- `rule_id`, `version`, `island_id`, `name_key`, `description_key`
+- `status`: proposed / not_configured / ready / enabled / disabled / not_evaluated / error
+- required source contracts and fields
+- input metric/record identity and unit
+- threshold or policy reference (never a guessed literal)
+- evaluation window and scope
+- severity and impact policy references
+- expected-source/coverage policy if missing collection is evaluated
+- deduplication/suppression key and duration
+- clear/reset semantics and lifecycle storage requirements
+- owner/approval reference
+- evidence requirements and confidence/coverage method
+- test cases including missing, stale, partial, duplicate, boundary and recovery scenarios.
+
+Default rules must be unconfigured unless the repository proves their policy and evidence are approved. Do not run “example” rules against synthetic values and present results as actual findings.
+
+## 8. Execution action registry — required schema
+
+Create or extend a typed action catalog. Each action must define:
+- `action_id`, `version`, `island_id`, `name_key`, `description_key`
+- target entity type and stable target identity requirements
+- purpose, expected outcome, impact/risk level
+- preconditions and preflight checks
+- adapter/service identifier and approved endpoint contract (absent in Phase 1)
+- least-privilege permission and role requirements
+- explicit confirmation and approval policy
+- maintenance/change window requirements
+- dependency/conflict checks
+- idempotency key, duplicate and concurrency handling
+- timeout and unknown-outcome handling
+- rollback/compensation policy where applicable
+- audit fields: actor, target, requested/approved/executed timestamps, reason, correlation ID, result
+- post-action verification checks and evidence source
+- phase availability and disabled reason.
+
+Phase 1 rule: action catalog and UI may be present, but adapter is absent, controls are disabled, and no write handler/network call is registered. Do not simulate a transition to running/succeeded. An action is not enabled merely because a button exists or the UI can render its form.
+
+## 9. Data integrity and safety invariants
+
+- One shared normalized data layer for Home and all islands.
+- Home cards, warning counts and island detail panels use identical source contracts, filters, scope, identity, deduplication, formula, freshness and state rules.
+- Raw source values remain traceable beside normalized values; preserve source calendar/timezone where not approved.
+- Missing values never become zero, green, healthy or a successful action.
+- A valid empty result is distinct from source unavailable or not evaluated.
+- A single snapshot never becomes a trend.
+- Time proximity is not causality.
+- Do not add together unlike entity types or event types without a defined aggregation rule.
+- Never claim “no warnings” when warning evaluation was not performed or coverage is unknown.
+- Never claim recovery readiness based only on backup success.
+- Never claim overall system/network health from a single narrow source.
+- Locale changes presentation only; filters, selected record and metric values stay invariant.
+- All warnings and action details link to their authoritative source/island.
+
+## 10. Implementation sequence
+
+1. Inspect the current implementation and create a page-by-page gap map against this prompt and the existing ten-island functional specification.
+2. Correct route and sidebar mapping without changing approved order or restoring removed destinations/regions.
+3. Implement shared typed capability, rule, action, provenance and context contracts.
+4. Implement reusable M/W/E status, warning, action, evidence and data-state components.
+5. Rebuild each island’s M layout to the specified visual hierarchy using only valid available data.
+6. Add each island’s W rule panel and rule registry entries; keep unapproved rules unconfigured and evaluation safely gated.
+7. Add each island’s E contextual action panel/catalog; disable every operation in Phase 1 and ensure there is no callable mutation path.
+8. Ensure Home summaries and island detail use the same source of truth and context.
+9. Complete Persian/English translations, RTL/LTR, keyboard/accessibility and responsive layouts.
+10. Add automated tests, run type-check/lint/tests/build, fix failures, and update implementation documentation. Do not stop after the gap map.
+
+## 11. Required acceptance tests
+
+### Architecture and navigation
+- Exact approved sidebar order remains unchanged.
+- Exactly ten operational islands have unique routes and page identities.
+- M/W/E are embedded capability tracks, not global mode pages or sidebar items.
+- Removed Overview destination, welcome banner and Home footer remain absent.
+
+### Monitoring
+- M is usable and read-only on every island.
+- Every displayed data value has valid provenance/quality/freshness behavior.
+- Tables, filters, visualizations, selection details and cross-links function.
+- No chart/count appears when identity, unit, mapping, or source prerequisites fail.
+- Counts reconcile to authoritative filtered records.
+
+### Warning
+- Every island contains the required warning capability panel.
+- Unconfigured rules visibly state the missing policy/source prerequisites and do not generate invented findings.
+- Configured rule output includes rule ID/version and source evidence.
+- “No findings” is shown only when evaluation succeeded with adequate coverage.
+- Deduplication, suppression, lifecycle and clear/reset behavior have tests wherever implemented.
+- Missing/stale/partial data cannot silently create a healthy result.
+
+### Execution
+- Each island exposes only contextually relevant planned actions or explicitly states that no approved action catalog exists.
+- All action controls are disabled in Phase 1 and have a clear localized reason.
+- No SAP/OS/network/database mutation endpoint, write handler, credential use or operational request can be invoked.
+- No fake success messages or simulated execution lifecycle.
+- Tests verify disabled state and absence of mutation calls.
+- Action contracts document all future safety gates.
+
+### UX and localization
+- Each island has a distinct, purpose-built layout, not just a list/table with a title.
+- M, W and E are visually distinguishable without color-only signaling.
+- Persian RTL and English LTR work across tables, charts, drawers, warning panels and action panels.
+- Responsive layouts are tested at 1536×1024, 1280×800, 768×1024 and 390×844.
+- No dead controls, broken links, console errors or layout overflow.
+
+### Engineering checks
+Run all checks available in the repository: install/validation, type-check, lint, tests, production build, and case-insensitive searches for forbidden UI terminology. Report only checks that were actually executed; if tooling is unavailable, say so. Do not claim runtime or screenshot verification without evidence.
+
+## 12. Final report format
+
+After implementation, report:
+1. Changed files and architecture changes.
+2. Per-island summary of M, W, E features and their visual placement.
+3. Which Warning rules are configured versus blocked by missing approved policies/mappings.
+4. Confirmation that all Execution controls remain disabled and no mutation path exists in Phase 1.
+5. Tests/build/searches actually run and results.
+6. Remaining blockers stated precisely, without guessing.
+
+**Now implement this prompt in the existing BASIS_02 project. Do not ask questions, do not merely describe intended changes, and do not claim anything has passed unless it was actually tested.**
