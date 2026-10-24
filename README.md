@@ -44,6 +44,9 @@ This is the target vision, not a claim that the Fiori app inventory has already 
 Visual architecture and navigation baseline are documented from the supplied reference. This is a specification update, not a claim that a running UI exists or that tests/builds have passed.
 
 
+## Ten-island design package — KPI + Monitoring / Warning / Execution
+- [Complete ten-island layout, data, KPI and E/M/W functional specification](docs/TEN_ISLANDS_EMW_KPI_FUNCTIONAL_SPEC.md) — proposed design baseline for all ten islands; includes KPI formulas and data gates, page layouts, Monitoring/Warning capabilities, future Execution controls, and cross-page acceptance rules.
+
 ## SM37 validation slice — current artifacts
 - Source mapping: [docs/SM37_SOURCE_FIELD_MAPPING.md](docs/SM37_SOURCE_FIELD_MAPPING.md)
 - DEMO fixture: [fixtures/sm37-extracted-snapshot.sample.json](fixtures/sm37-extracted-snapshot.sample.json)
