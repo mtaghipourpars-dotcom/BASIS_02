@@ -86,5 +86,8 @@ Every user-visible string, accessible name, tooltip, chart title/axis/legend/too
 - Unknown/missing data must not be shown as zero or healthy.
 - Backend agents, SAP services, API security and SAP-side implementation remain owned by the product owner and are not delegated to frontend LLM work.
 
-## 9. Current repository readiness
+## 9. Ten-island design package
+`docs/TEN_ISLANDS_EMW_KPI_FUNCTIONAL_SPEC.md` now defines each of the ten islands' layouts, candidate KPI definitions/formulas, source-validation gates, Monitoring and Warning features, future Execution controls, and cross-page acceptance criteria. Candidate metrics remain non-approved until source mapping, units, scope, freshness, deduplication and applicable policy are validated. Phase 1 remains read-only; Execution remains disabled.
+
+## 10. Current repository readiness
 The repository has a useful narrative baseline and structured templates. It is **not yet a zero-ambiguity implementation package** because the widget registry is empty, metric registry has no approved metrics, and source mappings / asset approval / some runtime decisions remain pending. The next step is to complete and approve those registries page-by-page, beginning with Home, before asking an LLM to implement that slice.
