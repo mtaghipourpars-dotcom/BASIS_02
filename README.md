@@ -47,6 +47,9 @@ The deprecated Overview route has been completely removed.
 All ten operational islands are implemented as dedicated, navigable views with unified data consistency.
 
 
+
+- [M/W/E Implementation Prompt](GOOGLE_AI_STUDIO_EMW_IMPLEMENTATION_PROMPT.md) — page-by-page implementation contract for Monitoring, Warning, and Execution across all ten islands; Phase 1 keeps monitoring read-only and all execution actions disabled.
+
 ## Ten-island design package — KPI + Monitoring / Warning / Execution
 - [Complete ten-island layout, data, KPI and E/M/W functional specification](docs/TEN_ISLANDS_EMW_KPI_FUNCTIONAL_SPEC.md) — proposed design baseline for all ten islands; includes KPI formulas and data gates, page layouts, Monitoring/Warning capabilities, future Execution controls, and cross-page acceptance rules.
 
