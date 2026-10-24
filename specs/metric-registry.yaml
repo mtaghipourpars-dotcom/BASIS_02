@@ -1,5 +1,5 @@
 schema_version: 1
-status: "no-metrics-approved-yet"
+status: "candidate-definitions-documented; no metrics approved for production use"
 required_fields:
   - id
   - display_name
@@ -20,5 +20,23 @@ rules:
   row_count_is_not_automatically_entity_count: true
   summed_sessions_are_not_automatically_active_gui_sessions: true
   unverified_semantics_must_not_be_presented_as_authoritative: true
+# Candidate IDs are catalogued for traceability only. Full candidate definitions, formulas,
+# units, source gates, null/deduplication rules and acceptance criteria live in
+# docs/TEN_ISLANDS_EMW_KPI_FUNCTIONAL_SPEC.md. None is APPROVED for production use.
+candidate_catalog:
+  document_ref: "docs/TEN_ISLANDS_EMW_KPI_FUNCTIONAL_SPEC.md"
+  status: "PROPOSED"
+  rule: "Do not implement a numeric KPI as authoritative until its source fields, unit, scope, time window, null/duplicate handling and freshness policy are validated."
+  islands:
+    landscape: [LAN-01, LAN-02, LAN-03, LAN-04, LAN-05, LAN-06]
+    performance: [PERF-01, PERF-02, PERF-03, PERF-04, PERF-05, PERF-06, PERF-07, PERF-08]
+    jobs-processes: [JOB-01, JOB-02, JOB-03, JOB-04, JOB-05, JOB-06, JOB-07, JOB-08, JOB-09, JOB-10]
+    database: [DB-01, DB-02, DB-03, DB-04, DB-05, DB-06, DB-07, DB-08]
+    security: [SEC-01, SEC-02, SEC-03, SEC-04, SEC-05, SEC-06, SEC-07]
+    alerts-events: [EVT-01, EVT-02, EVT-03, EVT-04, EVT-05, EVT-06, EVT-07]
+    connectivity: [CON-01, CON-02, CON-03, CON-04, CON-05, CON-06]
+    transports: [TRN-01, TRN-02, TRN-03, TRN-04, TRN-05, TRN-06]
+    backup-recovery: [BAK-01, BAK-02, BAK-03, BAK-04, BAK-05, BAK-06, BAK-07]
+    system-operations: [OPS-01, OPS-02, OPS-03, OPS-04, OPS-05, OPS-06, OPS-07]
 metrics: []
-# Populate only from confirmed source evidence and approved business definitions.
+# Populate metrics[] only after the relevant source mappings and business definitions are approved.
