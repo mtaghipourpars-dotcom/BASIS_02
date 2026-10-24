@@ -103,5 +103,14 @@ pages:
   - id: settings
     route: /settings
     label_key: nav.settings
-    status: "navigation-defined-layout-pending"
-    acceptance: ["Route resolves with correct active navigation state.", "Page content is localized in both supported locales."]
+    status: "settings-functional-spec-defined; UI-implementation-pending"
+    spec_ref: "docs/SETTINGS_AND_PREFERENCES_SPEC.md"
+    acceptance:
+      - "Route resolves with correct active navigation state and preserves the fixed sidebar order."
+      - "Language supports Persian RTL and English LTR across all settings and app pages."
+      - "Theme, font family/size, density, layout preference, contrast and reduced motion are configurable."
+      - "Connection profiles are configuration-only in MVP; no direct SAP connection or network call is attempted."
+      - "Secrets are never stored in browser preferences, fixtures, logs or diagnostics."
+      - "MVP data mode defaults to DEMO/REFERENCE and LIVE cannot be activated without verified connector evidence."
+      - "Settings persist locally where supported and can be reset to defaults."
+      - "Settings changes do not alter KPI formulas, source data, Home baseline or fixed sidebar order."
