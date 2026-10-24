@@ -2,7 +2,7 @@ schema_version: 1
 application:
   id: basis-02
   name: "SAP Basis Operations Dashboard"
-  status: "baseline-scaffold"
+  status: "AI-Studio-MVP-build-authorized; implementation-status-must-be-verified"
   phase: 1
   phase_name: "Monitoring"
   target_landscapes:
@@ -26,16 +26,19 @@ application:
     unknown_data_may_be_healthy: false
     invalid_data_may_be_healthy: false
   technology:
-    frontend_framework: "PENDING"
-    build_tool: "PENDING"
-    package_manager: "PENDING"
-    chart_library: "PENDING"
-    test_runner: "PENDING"
-    decision_required_before_implementation: true
+    frontend_framework: "React + TypeScript (preserve existing working stack if present)"
+    build_tool: "Vite when a new frontend scaffold is required; otherwise preserve existing working build tool"
+    package_manager: "npm"
+    chart_library: "Recharts when chart rendering is required and no equivalent is already installed"
+    test_runner: "Use existing test runner; if none, Vitest + React Testing Library for a new Vite scaffold"
+    decision_required_before_implementation: false
   visual_reference:
-    source: "PENDING"
-    viewport_baselines: []
+    source: "docs/VISUAL_ARCHITECTURE.md and docs/PRODUCT_UI_SCRIPT.md"
+    viewport_baselines: ["1536x1024", "1280x800", "768x1024", "390x844"]
   rules:
     - "Do not invent page inventory, route names, KPI formulas, or source semantics."
     - "Do not add operational actions in phase 1."
     - "A fixture validates only the behavior it actually tests; it does not prove live integration."
+    - "Google AI Studio implementation instructions are in GOOGLE_AI_STUDIO_BUILD_GUIDE.md and GOOGLE_AI_STUDIO_PRIMARY_BUILD_PROMPT.md."
+    - "No product-owner questions are required for routine MVP implementation; use documented defaults and honest unavailable states."
+    - "No direct SAP connection, credentials, server-side connector or live mode is in Phase 1."
