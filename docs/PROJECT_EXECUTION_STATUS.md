@@ -51,3 +51,19 @@ Only after the SM37 vertical slice is integrated and accepted should the same ma
 ## Release status
 
 **Not release-ready.** There is no evidence yet of a running integrated application, live SAP connection, or a successful browser acceptance run. The next meaningful milestone is a green browser suite for the prototype followed by implementation in a real application shell.
+
+
+## Ten-island KPI and E/M/W design update — 2026-10-24
+
+A complete proposed design package was added in `docs/TEN_ISLANDS_EMW_KPI_FUNCTIONAL_SPEC.md` and indexed from `README.md`, `MASTER_SPECIFICATION.md`, and `docs/ISLANDS_VISUAL_SPEC.md`.
+
+Verified repository changes:
+- Defined the layout and information hierarchy for each of the ten islands while preserving the existing routes, Home composition and sidebar inventory.
+- Defined candidate KPIs with IDs, business meaning, formula, units where supportable, and source-validation gates for all ten islands.
+- Defined page-specific Monitoring, Warning and future Execution capabilities.
+- Defined shared Warning rule requirements, future Execution safety controls, and cross-page integrity/acceptance invariants.
+- Added all candidate KPI IDs to `specs/metric-registry.yaml` as a traceability catalog. The production `metrics[]` list intentionally remains empty because source mappings, units, thresholds and policy approvals are not yet established.
+- This work is a design/specification update only. It does not mean that pages, data adapters, warning engines, live SAP collectors or execution handlers have been implemented or tested.
+- Phase 1 remains read-only. Execution is disabled. Unsupported metrics and unvalidated sources must remain UNKNOWN/NOT_CONFIGURED rather than being fabricated.
+
+Next implementation gates remain: validate source schemas and field mappings for each island; add full widget records to `specs/widgets.yaml`; formalize only source-validated metrics in `specs/metric-registry.yaml`; then implement and test the page slices one at a time without changing the approved Home composition.
