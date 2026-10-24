@@ -20,6 +20,7 @@ This document defines how repository specifications fit together; it does not re
 - Approved local images/fonts/icons/sample assets: `ASSET_CATALOG.md` (if absent, assets remain unapproved; use neutral fallback).
 - Source-to-widget mapping: `DATA_SOURCE_CATALOG.md` (if absent, no production source mapping is approved).
 - Human approval, change workflow and no-guessing rules: `docs/CHANGE_CONTROL.md` and `IMPLEMENTATION_RULES.md`.
+- Google AI Studio execution guide and authoritative paste-ready build prompt: `GOOGLE_AI_STUDIO_BUILD_GUIDE.md`, `GOOGLE_AI_STUDIO_PRIMARY_BUILD_PROMPT.md`, and `GOOGLE_AI_STUDIO_CONTINUATION_PROMPT.md`.
 - Acceptance checks: `tests/ACCEPTANCE_CHECKLIST.md`, `tests/VISUAL_I18N_ACCEPTANCE.md`, and `ACCEPTANCE_MATRIX.md`.
 - LLM task instructions: `prompts/IMPLEMENTATION_TASK_TEMPLATE.md`.
 
