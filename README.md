@@ -60,3 +60,11 @@ The prototype is read-only and uses DEMO rows from the user-supplied extraction.
 
 ## Settings and configuration-only SAP connection profiles
 - [Settings & Preferences MVP specification](docs/SETTINGS_AND_PREFERENCES_SPEC.md) — language/RTL, typography, theme, density/layout, accessibility, dashboard preferences, DEMO data mode, and local SAP profile metadata. The MVP makes no SAP network requests.
+
+
+## Google AI Studio — build the first working MVP
+- [Build Guide](GOOGLE_AI_STUDIO_BUILD_GUIDE.md) — how to import this repository in AI Studio Build mode and run the build workflow.
+- [Primary Build Prompt](GOOGLE_AI_STUDIO_PRIMARY_BUILD_PROMPT.md) — paste the complete prompt into AI Studio after importing the repo; it directs the agent to implement the complete UI without routine questions.
+- [Continuation / Repair Prompt](GOOGLE_AI_STUDIO_CONTINUATION_PROMPT.md) — verification and repair prompt for a second pass.
+
+These instructions authorize a web UI MVP with local DEMO fixtures only. Direct SAP connectivity and operational execution are out of scope for Phase 1.
