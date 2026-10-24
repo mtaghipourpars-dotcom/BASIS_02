@@ -233,10 +233,17 @@ export const PerformancePage: React.FC = () => {
           {/* SVG Line / Area Graph */}
           <div className="w-full overflow-hidden pt-2">
             <svg
-              className="w-full h-56 stroke-none"
+              className="w-full h-56 stroke-none overflow-visible"
               viewBox={`0 0 ${chartWidth} ${chartHeight}`}
               preserveAspectRatio="none"
             >
+              <defs>
+                <linearGradient id="mainChartGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={metricConfig.color} stopOpacity="0.35" />
+                  <stop offset="100%" stopColor={metricConfig.color} stopOpacity="0.02" />
+                </linearGradient>
+              </defs>
+
               {/* Background horizontal grid lines */}
               {[0, 0.25, 0.5, 0.75, 1].map((pct) => {
                 const y = paddingY + usableHeight * (1 - pct);
@@ -264,10 +271,10 @@ export const PerformancePage: React.FC = () => {
                 );
               })}
 
-              {/* Area fill */}
-              <path d={areaD} fill={metricConfig.fillColor} />
+              {/* Area */}
+              <path d={areaD} fill="url(#mainChartGrad)" />
 
-              {/* Line path */}
+              {/* Line */}
               <path
                 d={pathD}
                 fill="none"
@@ -280,7 +287,14 @@ export const PerformancePage: React.FC = () => {
               {/* Data points */}
               {points.map((p, i) => (
                 <g key={i}>
-                  <circle cx={p.x} cy={p.y} r="3.5" fill="#0b1727" stroke={metricConfig.color} strokeWidth="2" />
+                  <circle
+                    cx={p.x}
+                    cy={p.y}
+                    r="3.5"
+                    fill="#0b1727"
+                    stroke={metricConfig.color}
+                    strokeWidth="2"
+                  />
                   <text
                     x={p.x}
                     y={chartHeight - 6}
