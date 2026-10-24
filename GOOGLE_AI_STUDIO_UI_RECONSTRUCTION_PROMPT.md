@@ -36,7 +36,7 @@ You are editing the existing BASIS_02 application imported from GitHub. Its ten 
    10 System Operations — `/system-operations`
    Home, Reports, Settings are general destinations, not islands.
 4. Phase 1 is read-only. Do not connect to SAP, call production endpoints, use credentials/secrets, or perform actual SAP/OS/network/database operations. Future execution affordances, if present, must remain disabled with an explanation.
-5. **No user-facing “DEMO”, “demo environment”, “demo mode”, “sample app”, “mock data”, or “prototype” labels anywhere.** Remove such badges, banners, page titles, status labels, menus, and footer phrases. Do not replace them with “Live”, “Connected”, “Verified”, or similar claims unless real verified evidence supports the claim. Show source, observation timestamp, coverage, freshness and data-quality details where relevant without branding the product as a demo.
+5. **Remove all DEMO / EXTRACTED SNAPSHOT terminology and every variation everywhere in the project.** This is a project-wide deletion requirement, not merely a user-facing copy change. Search and remove the exact phrases and all derivatives, including case variations, badges, page labels, footer text, comments, notes, fixture labels, component strings, constants, documentation notes, translation keys/values, tooltips, accessibility labels, and Persian equivalents such as «دمو»، «تصویر استخراج‌شده» and related wording. Remove associated badge/banner/footer components if they exist solely for these labels. Do not replace them with “Live”, “Connected”, “Verified”, or similar claims unless real verified evidence supports the claim. Preserve legitimate source provenance, timestamps, coverage, freshness, and data-quality metadata, but express these neutrally and never label the application or its data as DEMO / EXTRACTED SNAPSHOT.
 6. Never guess data fields, KPI formulas, units, thresholds, status mappings, trends, relationships, severity, source availability, or root cause. Use approved repository contracts and mapped evidence only. If prerequisites are absent, show a neutral “Unknown”, “Not configured”, “Unavailable”, “Partial”, or “Not supported” state. Do not invent substitute values.
 7. The attached Home screenshot defines visual composition only. Never copy its names, timestamps, counts, percentages or operational statements as real data.
 8. English LTR and Persian RTL must work across every page, chart, tooltip, modal, message, accessibility label and setting. Locale switching must preserve route, selected system, filters and entered form state.
@@ -78,11 +78,11 @@ Use a 12-column desktop grid; when appropriate, primary visualization 8/12 and s
 
 ## 4. Home — match the attached screenshot
 
-Reproduce the screenshot’s overall composition, proportions, density, dark navy palette, header/sidebar, welcome banner, compact KPI row, three-column first content row, three-panel second row, four-panel bottom row and footer. Do not replace it with a generic dashboard.
+Reproduce the screenshot’s overall composition, proportions, density, dark navy palette, header/sidebar, compact KPI row, three-column first content row, three-panel second row, and four-panel bottom row. The welcome banner and Home footer are explicitly removed. Do not replace the page with a generic dashboard.
 
 **A. Header:** product identity/title/subtitle at left; global search centered; notification/help/settings/language controls at right as supported.
 
-**B. Welcome banner:** wide server-room/cabinet visual, greeting and short operational subtitle on the left, three concise value statements on the right. Use approved local artwork or CSS fallback. No demo/live banner; no hardcoded date or invented user identity.
+**B. No welcome banner:** remove the entire top-of-Home welcome banner region. Do not render the greeting (including «عصر بخیر، مهدی...» or any personalized greeting), the «نمای کلی عملیات SAP Basis در یک نگاه» subtitle, a «داده زنده / Live Data» badge, or the three value statements «سیستم‌های پایدار»، «عملیات قابل اعتماد» and «دسترسی‌پذیری بالاتر». Do not leave an empty reserved gap or replace it with another banner. Start the Home content directly below the global header with the four KPI cards, adjusting vertical spacing to match the screenshot’s remaining composition.
 
 **C. Four KPI cards, one desktop row:**
 1. Total Systems
@@ -107,9 +107,9 @@ Each has icon, primary value, concise secondary context, and ring/sparkline only
 - **Transports & Changes:** pending/import/failure summaries based on mapped records.
 - **Backup & Recovery:** latest observed backup result and separate recovery evidence; backup success is not proof of restore readiness.
 
-**G. Footer:** compact, reference-consistent footer with no demo/mock/prototype wording and no false live claim.
+**G. No Home footer:** remove the bottom Home footer completely, including any bar, text, environment label, «[DEMO]» marker, demo-environment title, or similar element. Do not replace it with a different footer or leave reserved blank space. The global application shell may retain a footer only if it is independently required by an approved specification; it must not contain DEMO / EXTRACTED SNAPSHOT terminology or an environment claim.
 
-Home acceptance: the reference composition is recognizable at first glance; no generic stacked list layout; all widgets navigate correctly with context; all counts reconcile; unsupported values show neutral states; no demo-related user-facing labels and no unverified live claims.
+Home acceptance: the reference composition is recognizable at first glance except that the welcome banner and Home footer are intentionally absent; the first content row begins with the four KPI cards directly below the header; no empty space is left for removed regions; no generic stacked list layout; all widgets navigate correctly with context; all counts reconcile; unsupported values show neutral states; no DEMO / EXTRACTED SNAPSHOT terminology or derivatives remain anywhere in the project; no unverified live claims.
 
 ## 5. Island-specific page outputs
 
@@ -226,9 +226,9 @@ Settings must actually change the whole UI: language, direction, theme, font sca
 
 Localize page headings, KPI labels/units, table columns, filters, status labels, chart axes/legends/tooltips, empty/unavailable/partial/stale/error states, drawers, dialogs, notifications, menus and accessibility text. Use CSS logical properties. Keep SAP IDs, SIDs, hostnames, job/database IDs and transaction codes LTR-isolated in Persian. Preserve keyboard navigation, visible focus, contrast and reduced-motion preferences.
 
-## 8. Remove demo branding without claiming live operation
+## 8. Project-wide removal of DEMO / EXTRACTED SNAPSHOT terminology
 
-Search all user-facing components, strings, translations, tooltips and footers. Remove “DEMO”, “demo”, “mock”, “prototype” and equivalent labels. Do not replace them with “Live”, “Connected”, “Verified”, or similar unless actual verified evidence supports that statement. Use neutral source/observation/freshness/coverage/data-quality details. Internal engineering docs and test names may still accurately describe fixture data.
+Perform a repository-wide search, not only a UI search. Remove every occurrence and derivative of “DEMO”, “EXTRACTED SNAPSHOT”, their case variants, related badges/labels/notes, and Persian equivalents such as «دمو» and «تصویر استخراج‌شده» from source code, components, data fixtures, constants, comments, docs, translation files/keys/values, tests, tooltips, accessibility labels, menus, and footer strings. Delete obsolete UI components and translations if they exist only to display these terms. Do not leave explanatory notes about their removal inside the application. Preserve the underlying technical data structures and source-provenance facts only where required, but remove the forbidden labels themselves. Do not replace them with “Live”, “Connected”, “Verified”, or similar claims unless actual verified evidence supports that statement. Use neutral source, observation timestamp, freshness, coverage, and data-quality details instead. After editing, run case-insensitive repository searches for each English and Persian phrase family and confirm that no forbidden occurrences remain in project files; report the search scope and any unavoidable matches honestly.
 
 ## 9. Execution order
 
@@ -247,13 +247,13 @@ Search all user-facing components, strings, translations, tooltips and footers. 
 Run available dependency validation/install, TypeScript, lint, automated tests and production build. Add tests where missing. Verify:
 - exact Sidebar order and no Overview route/item/link;
 - all ten islands have distinct, page-specific visualizations, not just lists/KPI cards;
-- Home matches reference composition at desktop sizes;
+- Home matches the reference composition at desktop sizes with the entire welcome banner and Home footer removed and no reserved gaps;
 - charts are omitted/disabled when source prerequisites are absent;
 - counts reconcile with detail rows;
 - filters and navigation preserve context;
 - missing/stale data never becomes a healthy/zero result;
 - no unsupported data or live claim is invented;
-- no user-facing DEMO/demo/mock/prototype labels remain;
+- no DEMO / EXTRACTED SNAPSHOT terminology or derivatives remain anywhere in project files, including code, fixtures, docs, tests, and translations;
 - no dead buttons, broken routes or console/build errors;
 - English LTR and Persian RTL work on every route;
 - settings affect the actual UI;
