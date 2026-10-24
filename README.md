@@ -56,3 +56,7 @@ Visual architecture and navigation baseline are documented from the supplied ref
 - Acceptance record: [tests/SM37_HOME_TO_DETAIL_ACCEPTANCE.md](tests/SM37_HOME_TO_DETAIL_ACCEPTANCE.md)
 
 The prototype is read-only and uses DEMO rows from the user-supplied extraction. It is not an integrated application route and does not represent live SAP data. Counts/charts remain gated pending row identity, deduplication, extraction alignment and status mapping validation.
+
+
+## Settings and configuration-only SAP connection profiles
+- [Settings & Preferences MVP specification](docs/SETTINGS_AND_PREFERENCES_SPEC.md) — language/RTL, typography, theme, density/layout, accessibility, dashboard preferences, DEMO data mode, and local SAP profile metadata. The MVP makes no SAP network requests.
