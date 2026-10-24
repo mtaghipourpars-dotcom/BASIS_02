@@ -19,6 +19,10 @@ import {
   Layers,
   FileCheck,
 } from 'lucide-react';
+import { CapabilityTrackStatus } from '../common/CapabilityTrackStatus';
+import { WarningRulePanel } from '../common/WarningRulePanel';
+import { ControlledActionPanel } from '../common/ControlledActionPanel';
+import { WARNING_RULES, CONTROLLED_ACTIONS } from '../../data/mweRegistry';
 
 export const BackupRecoveryPage: React.FC = () => {
   const { t } = useApp();
@@ -48,7 +52,12 @@ export const BackupRecoveryPage: React.FC = () => {
           </h1>
           <p className="text-xs text-[#91a6bc] mt-1">{t('backupSub')}</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3 flex-wrap">
+          <CapabilityTrackStatus
+            islandName={t('backupTitle')}
+            wStatus="Configured"
+            activeFindingsCount={WARNING_RULES.filter((r) => r.islandId === 'backup-recovery').flatMap((r) => r.findings || []).length}
+          />
           <span className="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-950 text-emerald-300 border border-emerald-800 flex items-center gap-1.5">
             <ShieldCheck className="w-3.5 h-3.5" />
             <span>Catalog Consistency Verified</span>
@@ -197,6 +206,21 @@ export const BackupRecoveryPage: React.FC = () => {
           <div className="p-3 rounded-lg bg-amber-950/20 border border-amber-800/40 text-amber-200 text-[11px]">
             <strong>Phase 1 Read-Only:</strong> Database recovery, point-in-time restore, or taking ad-hoc database backups is disabled.
           </div>
+        </div>
+      </div>
+
+      {/* M / W / E Capability Layer: Warning Rules & Controlled Actions */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        <div className="lg:col-span-7">
+          <WarningRulePanel
+            rules={WARNING_RULES.filter((r) => r.islandId === 'backup-recovery')}
+          />
+        </div>
+        <div className="lg:col-span-5">
+          <ControlledActionPanel
+            actions={CONTROLLED_ACTIONS.filter((a) => a.islandId === 'backup-recovery')}
+            selectedEntityName={selectedBackup ? `${selectedBackup.backupId} (${selectedBackup.sid})` : undefined}
+          />
         </div>
       </div>
 

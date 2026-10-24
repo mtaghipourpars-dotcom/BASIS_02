@@ -18,6 +18,10 @@ import {
   Info,
   CheckCircle2,
 } from 'lucide-react';
+import { CapabilityTrackStatus } from '../common/CapabilityTrackStatus';
+import { WarningRulePanel } from '../common/WarningRulePanel';
+import { ControlledActionPanel } from '../common/ControlledActionPanel';
+import { WARNING_RULES, CONTROLLED_ACTIONS } from '../../data/mweRegistry';
 
 export const SecurityPage: React.FC = () => {
   const { t } = useApp();
@@ -48,7 +52,12 @@ export const SecurityPage: React.FC = () => {
           </h1>
           <p className="text-xs text-[#91a6bc] mt-1">{t('securitySub')}</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3 flex-wrap">
+          <CapabilityTrackStatus
+            islandName={t('securityTitle')}
+            wStatus="Configured"
+            activeFindingsCount={WARNING_RULES.filter((r) => r.islandId === 'security').flatMap((r) => r.findings || []).length}
+          />
           <span className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-950 text-blue-300 border border-blue-800">
             STRUST PKI Monitored
           </span>
@@ -194,6 +203,21 @@ export const SecurityPage: React.FC = () => {
           <div className="p-3 rounded-lg bg-amber-950/20 border border-amber-800/40 text-amber-200 text-[11px]">
             <strong>Phase 1 Read-Only:</strong> Releasing or deleting lock entries via SM12 is disabled.
           </div>
+        </div>
+      </div>
+
+      {/* M / W / E Capability Layer: Warning Rules & Controlled Actions */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        <div className="lg:col-span-7">
+          <WarningRulePanel
+            rules={WARNING_RULES.filter((r) => r.islandId === 'security')}
+          />
+        </div>
+        <div className="lg:col-span-5">
+          <ControlledActionPanel
+            actions={CONTROLLED_ACTIONS.filter((a) => a.islandId === 'security')}
+            selectedEntityName={selectedSession ? `Session: ${selectedSession.user}` : selectedLock ? `Lock: ${selectedLock.table}` : undefined}
+          />
         </div>
       </div>
 

@@ -17,6 +17,10 @@ import {
   BarChart3,
   PieChart,
 } from 'lucide-react';
+import { CapabilityTrackStatus } from '../common/CapabilityTrackStatus';
+import { WarningRulePanel } from '../common/WarningRulePanel';
+import { ControlledActionPanel } from '../common/ControlledActionPanel';
+import { WARNING_RULES, CONTROLLED_ACTIONS } from '../../data/mweRegistry';
 
 export const JobsProcessesPage: React.FC = () => {
   const { navigate, locale, selectedJobId, setSelectedJobId, t } = useApp();
@@ -98,15 +102,22 @@ export const JobsProcessesPage: React.FC = () => {
           </h1>
           <p className="text-xs text-[#91a6bc] mt-1">{t('jobsSub')}</p>
         </div>
-        <button
-          type="button"
-          id="backHome"
-          onClick={() => navigate('home')}
-          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#13283d] hover:bg-[#1a3551] border border-[#33516d] text-xs font-semibold text-cyan-200 transition-colors cursor-pointer"
-        >
-          <ArrowLeft className="w-3.5 h-3.5 rtl:rotate-180" />
-          <span>{t('backHome')}</span>
-        </button>
+        <div className="flex items-center gap-3 flex-wrap">
+          <CapabilityTrackStatus
+            islandName={t('jobsTitle')}
+            wStatus="Configured"
+            activeFindingsCount={WARNING_RULES.filter((r) => r.islandId === 'jobs-processes').flatMap((r) => r.findings || []).length}
+          />
+          <button
+            type="button"
+            id="backHome"
+            onClick={() => navigate('home')}
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#13283d] hover:bg-[#1a3551] border border-[#33516d] text-xs font-semibold text-cyan-200 transition-colors cursor-pointer"
+          >
+            <ArrowLeft className="w-3.5 h-3.5 rtl:rotate-180" />
+            <span>{t('backHome')}</span>
+          </button>
+        </div>
       </div>
 
       {/* Context Metadata Strip */}
@@ -223,6 +234,21 @@ export const JobsProcessesPage: React.FC = () => {
               </div>
             ))}
           </div>
+        </div>
+      </div>
+
+      {/* M / W / E Capability Layer: Warning Rules & Controlled Actions */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        <div className="lg:col-span-7">
+          <WarningRulePanel
+            rules={WARNING_RULES.filter((r) => r.islandId === 'jobs-processes')}
+          />
+        </div>
+        <div className="lg:col-span-5">
+          <ControlledActionPanel
+            actions={CONTROLLED_ACTIONS.filter((a) => a.islandId === 'jobs-processes')}
+            selectedEntityName={selectedJob ? `${selectedJob.name} (${selectedJob.id})` : undefined}
+          />
         </div>
       </div>
 

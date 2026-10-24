@@ -19,6 +19,10 @@ import {
   Activity,
   FileCheck,
 } from 'lucide-react';
+import { CapabilityTrackStatus } from '../common/CapabilityTrackStatus';
+import { WarningRulePanel } from '../common/WarningRulePanel';
+import { ControlledActionPanel } from '../common/ControlledActionPanel';
+import { WARNING_RULES, CONTROLLED_ACTIONS } from '../../data/mweRegistry';
 
 export const DatabasePage: React.FC = () => {
   const { t } = useApp();
@@ -35,7 +39,12 @@ export const DatabasePage: React.FC = () => {
           </h1>
           <p className="text-xs text-[#91a6bc] mt-1">{t('databaseSub')}</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3 flex-wrap">
+          <CapabilityTrackStatus
+            islandName={t('databaseTitle')}
+            wStatus="Configured"
+            activeFindingsCount={WARNING_RULES.filter((r) => r.islandId === 'database').flatMap((r) => r.findings || []).length}
+          />
           <span className="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-950 text-emerald-300 border border-emerald-800 flex items-center gap-1.5">
             <CheckCircle2 className="w-3.5 h-3.5" />
             <span>{DATABASE_STATUS.replicationStatus}</span>
@@ -209,6 +218,21 @@ export const DatabasePage: React.FC = () => {
           <div className="p-3 rounded-lg bg-[#091522] border border-[#15283e] text-[11px] text-[#718aa6]">
             HANA System Replication (HSR) tier 2 in SYNCMEM mode active to host hana-prd-02.corp.local.
           </div>
+        </div>
+      </div>
+
+      {/* M / W / E Capability Layer: Warning Rules & Controlled Actions */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        <div className="lg:col-span-7">
+          <WarningRulePanel
+            rules={WARNING_RULES.filter((r) => r.islandId === 'database')}
+          />
+        </div>
+        <div className="lg:col-span-5">
+          <ControlledActionPanel
+            actions={CONTROLLED_ACTIONS.filter((a) => a.islandId === 'database')}
+            selectedEntityName={selectedVol ? selectedVol.volumeName : DATABASE_STATUS.sid}
+          />
         </div>
       </div>
 

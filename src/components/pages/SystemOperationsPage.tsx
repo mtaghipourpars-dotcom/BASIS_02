@@ -22,6 +22,10 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import { PageId } from '../../types';
+import { CapabilityTrackStatus } from '../common/CapabilityTrackStatus';
+import { WarningRulePanel } from '../common/WarningRulePanel';
+import { ControlledActionPanel } from '../common/ControlledActionPanel';
+import { WARNING_RULES, CONTROLLED_ACTIONS } from '../../data/mweRegistry';
 
 interface DomainMatrixItem {
   id: PageId;
@@ -169,6 +173,13 @@ export const SystemOperationsPage: React.FC = () => {
           <p className="text-xs text-[#91a6bc] mt-1">
             Cross-domain operational coordination matrix tracking all ten operational islands.
           </p>
+        </div>
+        <div className="flex items-center gap-3 flex-wrap">
+          <CapabilityTrackStatus
+            islandName={t('systemOperations')}
+            wStatus="Configured"
+            activeFindingsCount={WARNING_RULES.filter((r) => r.islandId === 'system-operations').flatMap((r) => r.findings || []).length}
+          />
         </div>
       </div>
 
@@ -354,6 +365,21 @@ export const SystemOperationsPage: React.FC = () => {
           <div className="p-3 rounded-lg bg-[#091522] border border-[#15283e] text-[11px] text-[#718aa6]">
             Cross-domain state rule: Lowest denominator status determines island health. All links preserve system context.
           </div>
+        </div>
+      </div>
+
+      {/* M / W / E Capability Layer: Warning Rules & Controlled Actions */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        <div className="lg:col-span-7">
+          <WarningRulePanel
+            rules={WARNING_RULES.filter((r) => r.islandId === 'system-operations')}
+          />
+        </div>
+        <div className="lg:col-span-5">
+          <ControlledActionPanel
+            actions={CONTROLLED_ACTIONS.filter((a) => a.islandId === 'system-operations')}
+            selectedEntityName={selectedDomain ? `${selectedDomain.domainNumber} (${selectedDomain.id})` : 'Landscape Incident Coordinator'}
+          />
         </div>
       </div>
 

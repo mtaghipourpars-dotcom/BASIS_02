@@ -19,6 +19,10 @@ import {
   Layers,
   Network,
 } from 'lucide-react';
+import { CapabilityTrackStatus } from '../common/CapabilityTrackStatus';
+import { WarningRulePanel } from '../common/WarningRulePanel';
+import { ControlledActionPanel } from '../common/ControlledActionPanel';
+import { WARNING_RULES, CONTROLLED_ACTIONS } from '../../data/mweRegistry';
 
 export const InterfacesConnectivityPage: React.FC = () => {
   const { t } = useApp();
@@ -51,6 +55,13 @@ export const InterfacesConnectivityPage: React.FC = () => {
           <p className="text-xs text-[#91a6bc] mt-1">
             RFC destinations (SM59), IDoc queues (WE02/SM58), Internet Communication Manager (SICF/ICM), and messaging interfaces.
           </p>
+        </div>
+        <div className="flex items-center gap-3 flex-wrap">
+          <CapabilityTrackStatus
+            islandName={t('interfacesConnTitle')}
+            wStatus="Configured"
+            activeFindingsCount={WARNING_RULES.filter((r) => r.islandId === 'interfaces-connectivity').flatMap((r) => r.findings || []).length}
+          />
         </div>
       </div>
 
@@ -197,6 +208,21 @@ export const InterfacesConnectivityPage: React.FC = () => {
           <div className="p-3 rounded-lg bg-amber-950/20 border border-amber-800/40 text-amber-200 text-[11px]">
             <strong>Phase 1 Read-Only:</strong> Real network connection test ping (SM59 Connection Test) or resetting gateway handles is disabled.
           </div>
+        </div>
+      </div>
+
+      {/* M / W / E Capability Layer: Warning Rules & Controlled Actions */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        <div className="lg:col-span-7">
+          <WarningRulePanel
+            rules={WARNING_RULES.filter((r) => r.islandId === 'interfaces-connectivity')}
+          />
+        </div>
+        <div className="lg:col-span-5">
+          <ControlledActionPanel
+            actions={CONTROLLED_ACTIONS.filter((a) => a.islandId === 'interfaces-connectivity')}
+            selectedEntityName={selectedInterface ? selectedInterface.name : undefined}
+          />
         </div>
       </div>
 

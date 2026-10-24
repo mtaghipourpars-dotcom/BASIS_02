@@ -16,10 +16,13 @@ import {
   X,
   TrendingUp,
   AlertTriangle,
-  Info,
   Server,
   ChevronRight,
 } from 'lucide-react';
+import { CapabilityTrackStatus } from '../common/CapabilityTrackStatus';
+import { WarningRulePanel } from '../common/WarningRulePanel';
+import { ControlledActionPanel } from '../common/ControlledActionPanel';
+import { WARNING_RULES, CONTROLLED_ACTIONS } from '../../data/mweRegistry';
 
 export const PerformancePage: React.FC = () => {
   const { t, selectedSystem, setSelectedSystem } = useApp();
@@ -128,11 +131,18 @@ export const PerformancePage: React.FC = () => {
             Validated measures over time across instances: ST03N dialog profiles, ST06 CPU, ST02 memory buffers, and SM50 process states.
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-[#718aa6]">Scoped System:</span>
-          <span className="px-2.5 py-1 rounded-md bg-[#10233b] border border-[#1d3859] text-cyan-300 font-bold text-xs tech-id">
-            {selectedSystem === 'ALL' ? 'PRD01 (Primary)' : selectedSystem}
-          </span>
+        <div className="flex items-center gap-3 flex-wrap">
+          <CapabilityTrackStatus
+            islandName={t('performanceOverviewTitle')}
+            wStatus="Configured"
+            activeFindingsCount={WARNING_RULES.filter((r) => r.islandId === 'performance').flatMap((r) => r.findings || []).length}
+          />
+          <div className="flex items-center gap-1.5">
+            <span className="text-xs text-[#718aa6]">Scoped System:</span>
+            <span className="px-2.5 py-1 rounded-md bg-[#10233b] border border-[#1d3859] text-cyan-300 font-bold text-xs tech-id">
+              {selectedSystem === 'ALL' ? 'PRD01 (Primary)' : selectedSystem}
+            </span>
+          </div>
         </div>
       </div>
 
@@ -350,6 +360,21 @@ export const PerformancePage: React.FC = () => {
           <div className="p-3 rounded-lg bg-[#091522] border border-[#15283e] text-[11px] text-[#718aa6]">
             Instance PRD-D02 (AAS) is currently carrying peak batch and dialog load from batch schedule /BUILD/REORG.
           </div>
+        </div>
+      </div>
+
+      {/* M / W / E Capability Layer: Warning Rules & Controlled Actions */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        <div className="lg:col-span-7">
+          <WarningRulePanel
+            rules={WARNING_RULES.filter((r) => r.islandId === 'performance')}
+          />
+        </div>
+        <div className="lg:col-span-5">
+          <ControlledActionPanel
+            actions={CONTROLLED_ACTIONS.filter((a) => a.islandId === 'performance')}
+            selectedEntityName={selectedWP ? `WP ${selectedWP.no} (${selectedWP.type})` : undefined}
+          />
         </div>
       </div>
 

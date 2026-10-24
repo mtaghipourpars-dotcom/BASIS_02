@@ -18,6 +18,10 @@ import {
   BarChart3,
   ExternalLink,
 } from 'lucide-react';
+import { CapabilityTrackStatus } from '../common/CapabilityTrackStatus';
+import { WarningRulePanel } from '../common/WarningRulePanel';
+import { ControlledActionPanel } from '../common/ControlledActionPanel';
+import { WARNING_RULES, CONTROLLED_ACTIONS } from '../../data/mweRegistry';
 
 export const AlertsEventsPage: React.FC = () => {
   const { t, selectedSeverity, setSelectedSeverity, navigate } = useApp();
@@ -50,6 +54,13 @@ export const AlertsEventsPage: React.FC = () => {
           <p className="text-xs text-[#91a6bc] mt-1">
             Correlated event logs from SM21 (System Log), ST22 (ABAP Runtime Dumps), and SM13 (Update Task Errors).
           </p>
+        </div>
+        <div className="flex items-center gap-3 flex-wrap">
+          <CapabilityTrackStatus
+            islandName={`${t('logsDumpsTitle')} & Events`}
+            wStatus="Configured"
+            activeFindingsCount={WARNING_RULES.filter((r) => r.islandId === 'alerts-events').flatMap((r) => r.findings || []).length}
+          />
         </div>
       </div>
 
@@ -135,6 +146,21 @@ export const AlertsEventsPage: React.FC = () => {
               <span className="text-xs font-mono text-[#7d96b2]">{item.time}:00</span>
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* M / W / E Capability Layer: Warning Rules & Controlled Actions */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        <div className="lg:col-span-7">
+          <WarningRulePanel
+            rules={WARNING_RULES.filter((r) => r.islandId === 'alerts-events')}
+          />
+        </div>
+        <div className="lg:col-span-5">
+          <ControlledActionPanel
+            actions={CONTROLLED_ACTIONS.filter((a) => a.islandId === 'alerts-events')}
+            selectedEntityName={selectedEvent ? `Event: ${selectedEvent.code} (${selectedEvent.source})` : undefined}
+          />
         </div>
       </div>
 

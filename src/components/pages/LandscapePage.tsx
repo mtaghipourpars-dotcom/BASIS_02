@@ -24,6 +24,10 @@ import {
   Clock,
   ExternalLink,
 } from 'lucide-react';
+import { CapabilityTrackStatus } from '../common/CapabilityTrackStatus';
+import { WarningRulePanel } from '../common/WarningRulePanel';
+import { ControlledActionPanel } from '../common/ControlledActionPanel';
+import { WARNING_RULES, CONTROLLED_ACTIONS } from '../../data/mweRegistry';
 
 export const LandscapePage: React.FC = () => {
   const { t, locale, selectedSystem, setSelectedSystem, navigate } = useApp();
@@ -64,7 +68,12 @@ export const LandscapePage: React.FC = () => {
             Authoritative system &amp; instance directory (SM51), host bindings, and reported telemetry states.
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3 flex-wrap">
+          <CapabilityTrackStatus
+            islandName={t('systemLandscapeTitle')}
+            wStatus="Configured"
+            activeFindingsCount={WARNING_RULES.filter((r) => r.islandId === 'landscape').flatMap((r) => r.findings || []).length}
+          />
           {selectedSystem !== 'ALL' && (
             <button
               type="button"
@@ -375,6 +384,21 @@ export const LandscapePage: React.FC = () => {
           <div className="p-3 rounded-lg bg-[#091522] border border-[#15283e] text-[11px] text-[#718aa6]">
             Phase 1 monitoring baseline · RFC ping test verified across configured routing tables.
           </div>
+        </div>
+      </div>
+
+      {/* M / W / E Capability Layer: Warning Rules & Controlled Actions */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        <div className="lg:col-span-7">
+          <WarningRulePanel
+            rules={WARNING_RULES.filter((r) => r.islandId === 'landscape')}
+          />
+        </div>
+        <div className="lg:col-span-5">
+          <ControlledActionPanel
+            actions={CONTROLLED_ACTIONS.filter((a) => a.islandId === 'landscape')}
+            selectedEntityName={selectedInstance?.instanceId || activeSystemData?.id}
+          />
         </div>
       </div>
 
