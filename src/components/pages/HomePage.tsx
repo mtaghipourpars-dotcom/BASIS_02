@@ -38,6 +38,42 @@ import {
   BACKUP_DATA,
 } from '../../data/fixtures';
 
+// Modern smooth SVG path calculator adjusted to real metric time-series values
+const getSparklinePaths = (points: number[], width = 100, height = 28, padding = 3) => {
+  if (!points || points.length === 0) {
+    return { linePath: '', areaPath: '', lastX: 0, lastY: 0 };
+  }
+  const min = Math.min(...points);
+  const max = Math.max(...points);
+  const range = max - min === 0 ? 1 : max - min;
+
+  const coords = points.map((val, idx) => {
+    const x = (idx / (points.length - 1)) * width;
+    const y = height - padding - ((val - min) / range) * (height - 2 * padding);
+    return { x: Math.round(x * 10) / 10, y: Math.round(y * 10) / 10 };
+  });
+
+  let linePath = `M ${coords[0].x},${coords[0].y}`;
+  for (let i = 0; i < coords.length - 1; i++) {
+    const p0 = coords[i];
+    const p1 = coords[i + 1];
+    const cpX = (p0.x + p1.x) / 2;
+    linePath += ` C ${cpX},${p0.y} ${cpX},${p1.y} ${p1.x},${p1.y}`;
+  }
+
+  const areaPath = `${linePath} L ${coords[coords.length - 1].x},${height} L ${coords[0].x},${height} Z`;
+  const lastPoint = coords[coords.length - 1];
+
+  return { linePath, areaPath, lastX: lastPoint.x, lastY: lastPoint.y };
+};
+
+const METRIC_THEMES = [
+  { stroke: '#38bdf8', stopColor: '#38bdf8', hoverBorder: 'hover:border-cyan-500/40' },
+  { stroke: '#a855f7', stopColor: '#a855f7', hoverBorder: 'hover:border-purple-500/40' },
+  { stroke: '#f59e0b', stopColor: '#f59e0b', hoverBorder: 'hover:border-amber-500/40' },
+  { stroke: '#10b981', stopColor: '#10b981', hoverBorder: 'hover:border-emerald-500/40' },
+];
+
 export const HomePage: React.FC = () => {
   const { navigate, t } = useApp();
 
@@ -65,14 +101,27 @@ export const HomePage: React.FC = () => {
               </div>
             </div>
           </div>
-          {/* Sparkline curve */}
-          <div className="w-16 h-8 flex items-center justify-end text-cyan-400">
-            <svg className="w-14 h-6 stroke-cyan-400 fill-none" viewBox="0 0 60 25">
+          {/* Modern Activity Telemetry Sparkline */}
+          <div className="w-18 h-9 flex items-center justify-end">
+            <svg className="w-16 h-8 overflow-visible" viewBox="0 0 64 26">
+              <defs>
+                <linearGradient id="totalSysGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.4" />
+                  <stop offset="100%" stopColor="#0070f2" stopOpacity="0.0" />
+                </linearGradient>
+              </defs>
               <path
-                d="M 2 20 Q 15 5, 30 18 T 58 8"
-                strokeWidth="2.5"
-                strokeLinecap="round"
+                d="M 2,19 C 12,19 16,11 26,13 C 36,15 42,6 62,8 L 62,26 L 2,26 Z"
+                fill="url(#totalSysGrad)"
               />
+              <path
+                d="M 2,19 C 12,19 16,11 26,13 C 36,15 42,6 62,8"
+                stroke="#38bdf8"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                fill="none"
+              />
+              <circle cx="62" cy="8" r="2.5" fill="#38bdf8" className="opacity-90" />
             </svg>
           </div>
         </div>
@@ -96,22 +145,27 @@ export const HomePage: React.FC = () => {
               </div>
             </div>
           </div>
-          {/* Ring Indicator */}
+          {/* Ring Indicator dynamically bound to healthyPercent */}
           <div className="relative w-11 h-11 flex items-center justify-center">
             <svg className="w-11 h-11 -rotate-90" viewBox="0 0 36 36">
+              <defs>
+                <linearGradient id="healthyRingGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stopColor="#10b981" />
+                  <stop offset="100%" stopColor="#34d399" />
+                </linearGradient>
+              </defs>
               <path
                 className="text-[#13253b]"
-                strokeWidth="3.5"
+                strokeWidth="3.2"
                 stroke="currentColor"
                 fill="none"
                 d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
               />
               <path
-                className="text-emerald-400"
-                strokeDasharray="75, 100"
-                strokeWidth="3.5"
+                stroke="url(#healthyRingGrad)"
+                strokeDasharray={`${TOP_KPIS.healthyPercent}, 100`}
+                strokeWidth="3.2"
                 strokeLinecap="round"
-                stroke="currentColor"
                 fill="none"
                 d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
               />
@@ -138,22 +192,27 @@ export const HomePage: React.FC = () => {
               </div>
             </div>
           </div>
-          {/* Ring Indicator */}
+          {/* Ring Indicator dynamically bound to warningsPercent */}
           <div className="relative w-11 h-11 flex items-center justify-center">
             <svg className="w-11 h-11 -rotate-90" viewBox="0 0 36 36">
+              <defs>
+                <linearGradient id="warningRingGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stopColor="#f59e0b" />
+                  <stop offset="100%" stopColor="#fbbf24" />
+                </linearGradient>
+              </defs>
               <path
                 className="text-[#13253b]"
-                strokeWidth="3.5"
+                strokeWidth="3.2"
                 stroke="currentColor"
                 fill="none"
                 d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
               />
               <path
-                className="text-amber-400"
-                strokeDasharray="12, 100"
-                strokeWidth="3.5"
+                stroke="url(#warningRingGrad)"
+                strokeDasharray={`${TOP_KPIS.warningsPercent}, 100`}
+                strokeWidth="3.2"
                 strokeLinecap="round"
-                stroke="currentColor"
                 fill="none"
                 d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
               />
@@ -180,25 +239,34 @@ export const HomePage: React.FC = () => {
               </div>
             </div>
           </div>
-          {/* Ring Indicator */}
+          {/* Ring Indicator dynamically bound to criticalPercent */}
           <div className="relative w-11 h-11 flex items-center justify-center">
             <svg className="w-11 h-11 -rotate-90" viewBox="0 0 36 36">
+              <defs>
+                <linearGradient id="criticalRingGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stopColor="#f43f5e" />
+                  <stop offset="100%" stopColor="#fb7185" />
+                </linearGradient>
+              </defs>
               <path
                 className="text-[#13253b]"
-                strokeWidth="3.5"
+                strokeWidth="3.2"
                 stroke="currentColor"
                 fill="none"
                 d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
               />
-              <path
-                className="text-rose-500"
-                strokeDasharray="12, 100"
-                strokeWidth="3.5"
-                strokeLinecap="round"
-                stroke="currentColor"
-                fill="none"
-                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-              />
+              {TOP_KPIS.criticalPercent > 0 ? (
+                <path
+                  stroke="url(#criticalRingGrad)"
+                  strokeDasharray={`${TOP_KPIS.criticalPercent}, 100`}
+                  strokeWidth="3.2"
+                  strokeLinecap="round"
+                  fill="none"
+                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                />
+              ) : (
+                <circle cx="18" cy="18" r="2" className="fill-emerald-400/80" />
+              )}
             </svg>
           </div>
         </div>
@@ -329,43 +397,60 @@ export const HomePage: React.FC = () => {
 
             {/* 2x2 Performance Cards */}
             <div className="grid grid-cols-2 gap-3">
-              {Object.values(PERFORMANCE_METRICS).map((metric, idx) => (
-                <div
-                  key={idx}
-                  onClick={() => navigate('performance')}
-                  className="p-3 rounded-lg bg-[#0e1d2f] border border-[#1a2d45] hover:border-cyan-500/50 cursor-pointer transition-all"
-                >
-                  <div className="text-[10px] text-[#7d97b3] font-medium">{metric.name}</div>
-                  <div className="text-xl font-bold text-white mt-0.5 tech-id">
-                    {metric.value} {metric.unit}
-                  </div>
+              {Object.values(PERFORMANCE_METRICS).map((metric, idx) => {
+                const theme = METRIC_THEMES[idx % METRIC_THEMES.length];
+                const chart = getSparklinePaths(metric.points, 100, 28);
+
+                return (
                   <div
-                    className={`text-[10px] font-semibold flex items-center gap-1 mt-0.5 ${
-                      metric.isPositive ? 'text-emerald-400' : 'text-amber-400'
-                    }`}
+                    key={idx}
+                    onClick={() => navigate('performance')}
+                    className={`p-3 rounded-lg bg-[#0e1d2f] border border-[#1a2d45] ${theme.hoverBorder} cursor-pointer transition-all group`}
                   >
-                    <span>
-                      {metric.changePercent > 0 ? '↑ +' : '↑ '}
-                      {metric.changePercent}%
-                    </span>
+                    <div className="text-[10px] text-[#7d97b3] font-medium">{metric.name}</div>
+                    <div className="text-xl font-bold text-white mt-0.5 tech-id">
+                      {metric.value} {metric.unit}
+                    </div>
+                    <div
+                      className={`text-[10px] font-semibold flex items-center gap-1 mt-0.5 ${
+                        metric.isPositive ? 'text-emerald-400' : 'text-amber-400'
+                      }`}
+                    >
+                      <span>
+                        {metric.changePercent > 0 ? '↑ +' : '↑ '}
+                        {metric.changePercent}%
+                      </span>
+                    </div>
+                    {/* Mini Area Chart adjusted dynamically to metric.points */}
+                    <div className="w-full h-7 mt-2">
+                      <svg className="w-full h-full overflow-visible" viewBox="0 0 100 28" preserveAspectRatio="none">
+                        <defs>
+                          <linearGradient id={`perfAreaGrad-${idx}`} x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor={theme.stopColor} stopOpacity="0.32" />
+                            <stop offset="100%" stopColor={theme.stopColor} stopOpacity="0.02" />
+                          </linearGradient>
+                        </defs>
+                        <path d={chart.areaPath} fill={`url(#perfAreaGrad-${idx})`} />
+                        <path
+                          d={chart.linePath}
+                          stroke={theme.stroke}
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          fill="none"
+                        />
+                        <circle
+                          cx={chart.lastX}
+                          cy={chart.lastY}
+                          r="2.5"
+                          fill={theme.stroke}
+                          className="opacity-90"
+                        />
+                      </svg>
+                    </div>
                   </div>
-                  {/* Mini Area Chart */}
-                  <div className="w-full h-7 mt-2">
-                    <svg className="w-full h-full" viewBox="0 0 100 30" preserveAspectRatio="none">
-                      <path
-                        d="M0,25 Q20,10 40,18 T80,12 T100,20 L100,30 L0,30 Z"
-                        fill={idx === 2 ? 'rgba(168,85,247,0.15)' : idx === 3 ? 'rgba(245,158,11,0.15)' : 'rgba(0,112,242,0.15)'}
-                      />
-                      <path
-                        d="M0,25 Q20,10 40,18 T80,12 T100,20"
-                        stroke={idx === 2 ? '#a855f7' : idx === 3 ? '#f59e0b' : '#38bdf8'}
-                        strokeWidth="2"
-                        fill="none"
-                      />
-                    </svg>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
