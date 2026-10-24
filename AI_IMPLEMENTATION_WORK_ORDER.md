@@ -1,13 +1,13 @@
 # BASIS_02 — AI IMPLEMENTATION WORK ORDER
 Document ID: AI-WORK-ORDER-BASIS02-001
 Version: 1.0
-Status: PROPOSED — requires product-owner approval before implementation
-Purpose: The implementation agent reads this file and updates the repository specifications for the proposed SAP Basis dashboard UI. This file is a work order, not permission to invent missing facts.
+Status: SPECIFICATION-PREPARATION WORK ORDER — superseded for MVP implementation by GOOGLE_AI_STUDIO_PRIMARY_BUILD_PROMPT.md
+Purpose: Historical work order for specification preparation. For the actual Phase 1 UI build, follow GOOGLE_AI_STUDIO_BUILD_GUIDE.md and GOOGLE_AI_STUDIO_PRIMARY_BUILD_PROMPT.md. Those files authorize implementation of the web UI with local DEMO data and no SAP connectivity. This file remains useful for data/source governance but must not be interpreted as a prohibition on frontend implementation.
 
 ## 0. Mandatory execution protocol
 1. Read `MASTER_SPECIFICATION.md`, `IMPLEMENTATION_RULES.md`, `APPROVED_DECISIONS.md`, `DEVELOPMENT_STANDARD.md`, `docs/PRODUCT_UI_SCRIPT.md`, `docs/VISUAL_ARCHITECTURE.md`, `specs/application.yaml`, `specs/pages.yaml`, `specs/widgets.yaml`, `specs/data-contracts.yaml`, `specs/metric-registry.yaml`, `specs/i18n.yaml`, `tests/VISUAL_I18N_ACCEPTANCE.md`, and the relevant BASIS_01/SRC evidence documents.
 2. Inspect actual current repository files before editing. Do not assume the work order's description is more authoritative than an explicit product-owner decision.
-3. Do not implement frontend code as part of this task. Update/prepare specifications and data mappings only, unless the product owner separately approves implementation.
+3. HISTORICAL SCOPE NOTE: this specification-preparation instruction is superseded for the Google AI Studio MVP build. Implement the frontend as directed by GOOGLE_AI_STUDIO_PRIMARY_BUILD_PROMPT.md; do not implement SAP connectors, backend services, or operational execution.
 4. Do not modify SAP backend, services, Agents, APIs, security, or data-generation logic.
 5. Do not change the approved visual shell, routes, sidebar inventory, page order, or fixed widget layout. End users/admins cannot add, remove, or reorder widgets.
 6. Do not invent fields, KPI formulas, thresholds, endpoints, refresh intervals, units, authentication details, assets, libraries, or live data.
