@@ -65,3 +65,57 @@
   --border-color: #4b6a8e !important;
   --text-muted: #bcd0e6 !important;
 }
+
+/* Light theme overrides */
+.theme-light {
+  --bg-main: #f0f4f8;
+  --panel-bg: #ffffff;
+  --panel-bg-alt: #f8fafc;
+  --border-color: #cbd5e1;
+  --border-subtle: #e2e8f0;
+  --text-primary: #0f172a;
+  --text-muted: #475569;
+  background-color: #f0f4f8 !important;
+  color: #0f172a !important;
+}
+.theme-light header,
+.theme-light aside,
+.theme-light main,
+.theme-light .bg-\[\#0b1727\],
+.theme-light .bg-\[\#101f31\],
+.theme-light .bg-\[\#0e1d2f\],
+.theme-light .bg-\[\#0c1a29\],
+.theme-light .bg-\[\#091322\],
+.theme-light .bg-\[\#070e17\],
+.theme-light .bg-\[\#0a1624\],
+.theme-light .bg-\[\#091524\],
+.theme-light .bg-\[\#091322\] {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+}
+.theme-light .text-white {
+  color: #0f172a !important;
+}
+.theme-light .border-\[\#1b2b40\],
+.theme-light .border-\[\#263a50\],
+.theme-light .border-\[\#18273b\],
+.theme-light .border-\[\#1b2f48\],
+.theme-light .border-\[\#19273a\],
+.theme-light .border-\[\#203349\] {
+  border-color: #cbd5e1 !important;
+}
+
+/* Font scaling */
+.font-scale-compact {
+  font-size: 13px !important;
+}
+.font-scale-large {
+  font-size: 16px !important;
+}
+
+/* Reduced motion */
+.motion-reduce,
+.motion-reduce * {
+  transition: none !important;
+  animation: none !important;
+}

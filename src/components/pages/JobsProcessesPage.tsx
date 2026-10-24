@@ -1,15 +1,36 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { SM37_ROWS, SM37_EXTRACTED_METADATA } from '../../data/fixtures';
+import { SM37_ROWS, SM37_EXTRACTED_METADATA, JOBS_BREAKDOWN } from '../../data/fixtures';
 import { SM37JobRecord } from '../../types';
-import { ArrowLeft, Search, Filter, X, ShieldAlert, FileText, Info } from 'lucide-react';
+import {
+  Clock,
+  ArrowLeft,
+  Search,
+  Filter,
+  X,
+  ShieldAlert,
+  FileText,
+  Info,
+  CheckCircle2,
+  AlertTriangle,
+  RotateCw,
+  BarChart3,
+  PieChart,
+} from 'lucide-react';
 
 export const JobsProcessesPage: React.FC = () => {
   const { navigate, locale, selectedJobId, setSelectedJobId, t } = useApp();
   const [searchInput, setSearchInput] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
 
-  const filteredRows = SM37_ROWS.filter((r) => {
+  // Sort failed/canceled jobs to the top as requested in spec
+  const sortedRows = [...SM37_ROWS].sort((a, b) => {
+    if (a.status === 'Canceled') return -1;
+    if (b.status === 'Canceled') return 1;
+    return 0;
+  });
+
+  const filteredRows = sortedRows.filter((r) => {
     const matchesStatus = !statusFilter || r.status === statusFilter;
     const query = searchInput.toLowerCase();
     const matchesSearch =
@@ -28,28 +49,28 @@ export const JobsProcessesPage: React.FC = () => {
         return (
           <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-950 text-emerald-300 border border-emerald-800">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-            {locale === 'fa' ? t('statusFinished') : 'Finished'}
+            {status}
           </span>
         );
       case 'Canceled':
         return (
           <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-rose-950 text-rose-300 border border-rose-800">
             <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
-            {locale === 'fa' ? t('statusCanceled') : 'Canceled'}
+            {status}
           </span>
         );
       case 'Released':
         return (
           <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-blue-950 text-blue-300 border border-blue-800">
             <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-            {locale === 'fa' ? t('statusReleased') : 'Released'}
+            {status}
           </span>
         );
       case 'Scheduled':
         return (
           <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-950 text-amber-300 border border-amber-800">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-            {locale === 'fa' ? t('statusScheduled') : 'Scheduled'}
+            {status}
           </span>
         );
       default:
@@ -67,12 +88,13 @@ export const JobsProcessesPage: React.FC = () => {
   };
 
   return (
-    <section id="jobsPage" className="space-y-6">
+    <section id="jobsPage" className="space-y-6 max-w-[1720px] mx-auto">
       {/* Title & Navigation */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
-            {t('jobsTitle')}
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+            <Clock className="w-6 h-6 text-cyan-400" />
+            <span>{t('jobsTitle')}</span>
           </h1>
           <p className="text-xs text-[#91a6bc] mt-1">{t('jobsSub')}</p>
         </div>
@@ -100,6 +122,110 @@ export const JobsProcessesPage: React.FC = () => {
         </span>
       </div>
 
+      {/* KPI Strip */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+        <div className="bg-[#0b1727] border border-[#1b2b40] rounded-xl p-4">
+          <div className="text-[11px] text-[#7d96b2] font-medium">Total Report Scope</div>
+          <div className="text-2xl font-bold text-white mt-1 tech-id">8,062</div>
+          <div className="text-[10px] text-[#718aa6] mt-0.5">Metadata passed (not unique run count)</div>
+        </div>
+
+        <div className="bg-[#0b1727] border border-[#1b2b40] rounded-xl p-4">
+          <div className="text-[11px] text-[#7d96b2] font-medium">Extracted Sample Rows</div>
+          <div className="text-2xl font-bold text-cyan-300 mt-1 tech-id">5 Rows</div>
+          <div className="text-[10px] text-cyan-400 mt-0.5">Source-backed verified excerpt</div>
+        </div>
+
+        <div className="bg-[#0b1727] border border-[#1b2b40] rounded-xl p-4">
+          <div className="text-[11px] text-[#7d96b2] font-medium">Observed Canceled / Aborted</div>
+          <div className="text-2xl font-bold text-rose-400 mt-1 tech-id">1 Job</div>
+          <div className="text-[10px] text-rose-300 mt-0.5">QM_REPET_INSP (Client 800)</div>
+        </div>
+
+        <div className="bg-[#0b1727] border border-[#1b2b40] rounded-xl p-4">
+          <div className="text-[11px] text-[#7d96b2] font-medium">Observed Finished / Released</div>
+          <div className="text-2xl font-bold text-[#55d6a1] mt-1 tech-id">4 Jobs</div>
+          <div className="text-[10px] text-emerald-400 mt-0.5">Finished: 3 · Released: 1</div>
+        </div>
+      </div>
+
+      {/* Visual Analysis Row: Status Breakdown (6/12) + Execution Trend (6/12) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        <div className="lg:col-span-6 bg-[#0b1727] border border-[#1b2b40] rounded-xl p-5 space-y-3">
+          <div className="flex items-center justify-between pb-2 border-b border-[#1b2b40]">
+            <h2 className="text-sm font-semibold text-white flex items-center gap-2">
+              <PieChart className="w-4 h-4 text-cyan-400" />
+              <span>Status Distribution Breakdown</span>
+            </h2>
+            <span className="text-[11px] text-[#7d96b2]">Extracted Excerpt Scope</span>
+          </div>
+
+          <div className="space-y-3 pt-1">
+            <div className="space-y-1">
+              <div className="flex justify-between text-xs">
+                <span className="text-white font-medium">Finished (Normal completion)</span>
+                <span className="font-mono text-emerald-400 font-bold">3 (60%)</span>
+              </div>
+              <div className="w-full h-2 rounded-full bg-[#132338] overflow-hidden">
+                <div className="h-full bg-emerald-400 rounded-full" style={{ width: '60%' }} />
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <div className="flex justify-between text-xs">
+                <span className="text-white font-medium">Canceled (Aborted failure)</span>
+                <span className="font-mono text-rose-400 font-bold">1 (20%)</span>
+              </div>
+              <div className="w-full h-2 rounded-full bg-[#132338] overflow-hidden">
+                <div className="h-full bg-rose-400 rounded-full" style={{ width: '20%' }} />
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <div className="flex justify-between text-xs">
+                <span className="text-white font-medium">Released / Scheduled</span>
+                <span className="font-mono text-blue-400 font-bold">1 (20%)</span>
+              </div>
+              <div className="w-full h-2 rounded-full bg-[#132338] overflow-hidden">
+                <div className="h-full bg-blue-400 rounded-full" style={{ width: '20%' }} />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="lg:col-span-6 bg-[#0b1727] border border-[#1b2b40] rounded-xl p-5 space-y-3">
+          <div className="flex items-center justify-between pb-2 border-b border-[#1b2b40]">
+            <h2 className="text-sm font-semibold text-white flex items-center gap-2">
+              <BarChart3 className="w-4 h-4 text-cyan-400" />
+              <span>24h Background Job Execution Volume</span>
+            </h2>
+            <span className="text-[11px] text-[#7d96b2]">Hourly Bucket Trend</span>
+          </div>
+
+          <div className="grid grid-cols-6 gap-2 pt-2 items-end h-32">
+            {JOBS_BREAKDOWN.hourlyTrend.map((t, idx) => (
+              <div key={idx} className="flex flex-col items-center h-full justify-end gap-1">
+                <div className="w-full flex flex-col justify-end items-center gap-0.5 h-24">
+                  {t.failed > 0 && (
+                    <div
+                      className="w-full bg-rose-500 rounded-t"
+                      style={{ height: `${t.failed * 8}px` }}
+                      title={`Failed: ${t.failed}`}
+                    />
+                  )}
+                  <div
+                    className="w-full bg-emerald-500 rounded-b"
+                    style={{ height: `${(t.success / 60) * 60}px` }}
+                    title={`Success: ${t.success}`}
+                  />
+                </div>
+                <span className="text-[10px] font-mono text-[#718aa6]">{t.hour}:00</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
       {/* Table Container */}
       <div className="bg-[#101f31] border border-[#263a50] rounded-xl p-4 space-y-4">
         {/* Table Header & Controls */}
@@ -120,17 +246,17 @@ export const JobsProcessesPage: React.FC = () => {
                 type="search"
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
-                placeholder={t('searchPlaceholder')}
-                className="w-full bg-[#0b1928] text-white border border-[#2a4158] rounded-lg py-1.5 ps-8 pe-3 text-xs placeholder-[#70869c] focus:outline-none focus:border-cyan-500"
+                placeholder={t('searchJobs')}
+                className="w-full bg-[#0c1a29] border border-[#263a50] rounded-lg py-1.5 ps-8 pe-3 text-xs text-white placeholder-[#70869c] focus:outline-none focus:border-cyan-500"
               />
             </div>
 
             <select
               id="statusFilter"
-              aria-label="Status filter"
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="bg-[#0b1928] text-white border border-[#2a4158] rounded-lg py-1.5 px-3 text-xs focus:outline-none focus:border-cyan-500 cursor-pointer"
+              aria-label="Status filter"
+              className="bg-[#0c1a29] border border-[#263a50] rounded-lg py-1.5 px-3 text-xs text-white focus:outline-none focus:border-cyan-500 cursor-pointer"
             >
               <option value="">{t('allStatuses')}</option>
               <option value="Finished">Finished</option>
@@ -140,55 +266,57 @@ export const JobsProcessesPage: React.FC = () => {
             </select>
 
             <button
-              type="button"
               id="clearFilters"
+              type="button"
               onClick={clearFilters}
-              className="px-3 py-1.5 rounded-lg bg-[#13283d] hover:bg-[#1a3756] border border-[#33516d] text-xs text-[#91a6bc] hover:text-white transition-colors cursor-pointer"
+              className="px-3 py-1.5 rounded-lg bg-[#14293f] hover:bg-[#1c3856] border border-[#2f4f73] text-xs font-semibold text-cyan-300 transition-colors cursor-pointer"
             >
               {t('clearFilters')}
             </button>
           </div>
         </div>
 
-        {/* Operational Records Table */}
+        {/* Operational Table */}
         <div className="overflow-x-auto border border-[#263a50] rounded-lg">
-          <table className="w-full text-xs text-start border-collapse min-w-[760px]">
+          <table className="w-full text-xs text-start border-collapse min-w-[700px]">
             <thead>
               <tr className="bg-[#0c1a29] border-b border-[#263a50] text-[#91a7bd]">
-                <th className="py-2.5 px-3 font-semibold text-start">{t('thJob')}</th>
-                <th className="py-2.5 px-3 font-semibold text-start">{t('thCreator')}</th>
-                <th className="py-2.5 px-3 font-semibold text-start">{t('thStatus')}</th>
-                <th className="py-2.5 px-3 font-semibold text-start">{t('thDate')}</th>
-                <th className="py-2.5 px-3 font-semibold text-start">{t('thTime')}</th>
-                <th className="py-2.5 px-3 font-semibold text-start">{t('thDuration')}</th>
-                <th className="py-2.5 px-3 font-semibold text-start">{t('thDelay')}</th>
-                <th className="py-2.5 px-3 font-semibold text-start">{t('thClient')}</th>
+                <th className="py-2.5 px-3 text-start font-semibold">{t('thJob')}</th>
+                <th className="py-2.5 px-3 text-start font-semibold">{t('thCreator')}</th>
+                <th className="py-2.5 px-3 text-start font-semibold">{t('thStatus')}</th>
+                <th className="py-2.5 px-3 text-start font-semibold">{t('thDate')}</th>
+                <th className="py-2.5 px-3 text-start font-semibold">{t('thTime')}</th>
+                <th className="py-2.5 px-3 text-start font-semibold">{t('thDuration')}</th>
+                <th className="py-2.5 px-3 text-start font-semibold">{t('thDelay')}</th>
+                <th className="py-2.5 px-3 text-start font-semibold">{t('thClient')}</th>
               </tr>
             </thead>
             <tbody id="jobsBody" className="divide-y divide-[#203349]">
-              {filteredRows.map((r) => {
-                const isSelected = r.id === selectedJobId;
+              {filteredRows.map((row) => {
+                const isSelected = selectedJobId === row.id;
                 return (
                   <tr
-                    key={r.id}
-                    onClick={() => setSelectedJobId(r.id)}
-                    className={`cursor-pointer transition-colors hover:bg-[#13283b] ${
-                      isSelected ? 'bg-[#12354a] border-s-4 border-cyan-400' : ''
+                    key={row.id}
+                    onClick={() => setSelectedJobId(row.id)}
+                    className={`cursor-pointer transition-colors ${
+                      isSelected
+                        ? 'bg-[#163554] border-s-2 border-cyan-400'
+                        : 'hover:bg-[#13283b]'
                     }`}
                   >
-                    <td className="py-2.5 px-3">
-                      <strong className="text-white font-semibold block tech-id">
-                        {r.name}
-                      </strong>
-                      <div className="text-[10px] text-[#70869c] tech-id">{r.id}</div>
+                    <td className="py-2.5 px-3 font-semibold text-white">
+                      <div className="text-cyan-300 hover:underline">{row.name}</div>
+                      <div className="text-[10px] text-[#70869c] font-mono ltr-isolate">
+                        {row.id}
+                      </div>
                     </td>
-                    <td className="py-2.5 px-3 text-[#d9e6f3] tech-id">{r.creator}</td>
-                    <td className="py-2.5 px-3">{getStatusBadge(r.status)}</td>
-                    <td className="py-2.5 px-3 text-[#d9e6f3] tech-id">{r.date || '—'}</td>
-                    <td className="py-2.5 px-3 text-[#d9e6f3] tech-id">{r.time || '—'}</td>
-                    <td className="py-2.5 px-3 text-[#d9e6f3] tech-id">{r.duration}</td>
-                    <td className="py-2.5 px-3 text-[#d9e6f3] tech-id">{r.delay}</td>
-                    <td className="py-2.5 px-3 text-[#d9e6f3] tech-id">{r.client}</td>
+                    <td className="py-2.5 px-3 text-[#d9e6f3] tech-id">{row.creator}</td>
+                    <td className="py-2.5 px-3">{getStatusBadge(row.status)}</td>
+                    <td className="py-2.5 px-3 text-[#d9e6f3] tech-id">{row.date}</td>
+                    <td className="py-2.5 px-3 text-[#d9e6f3] tech-id">{row.time}</td>
+                    <td className="py-2.5 px-3 text-[#d9e6f3] tech-id">{row.duration}</td>
+                    <td className="py-2.5 px-3 text-[#d9e6f3] tech-id">{row.delay}</td>
+                    <td className="py-2.5 px-3 text-[#d9e6f3] tech-id">{row.client}</td>
                   </tr>
                 );
               })}
@@ -202,32 +330,29 @@ export const JobsProcessesPage: React.FC = () => {
           )}
         </div>
 
-        {/* Table Footer Guideline */}
-        <div className="text-[11px] text-[#71879c] pt-1">
-          {t('tableFoot')}
-        </div>
+        <div className="text-[11px] text-[#70869c]">{t('tableFoot')}</div>
       </div>
 
-      {/* Side Drawer for Job Details */}
-      <div
+      {/* Selected Job Evidence Drawer (Slide-Over) */}
+      <aside
         id="detailDrawer"
         aria-label="Job detail drawer"
-        className={`fixed inset-y-0 end-0 z-50 w-full sm:w-[440px] bg-[#0d1c2b] border-s border-[#35516a] shadow-2xl p-6 overflow-y-auto transform transition-transform duration-300 ease-in-out ${
-          selectedJob ? 'open translate-x-0' : 'translate-x-full'
+        className={`fixed top-0 end-0 z-50 h-full w-full sm:w-[440px] bg-[#0c1a29] border-s border-[#263a50] p-6 shadow-2xl flex flex-col justify-between overflow-y-auto transition-transform duration-300 ease-in-out ${
+          selectedJob ? 'translate-x-0 open' : 'translate-x-full rtl:-translate-x-full'
         }`}
       >
         {selectedJob && (
-          <div className="space-y-6">
+          <div className="space-y-5">
             {/* Drawer Header */}
-            <div className="flex items-start justify-between gap-4 pb-4 border-b border-[#263a50]">
+            <div className="flex items-start justify-between pb-3 border-b border-[#263a50]">
               <div>
-                <div className="text-[11px] font-semibold text-cyan-400 tracking-wider">
+                <div className="text-[10px] font-bold text-cyan-400 uppercase tracking-wider">
                   {t('detailEyebrow')}
                 </div>
-                <h2 id="detailJobName" className="text-lg font-bold text-white mt-1 tech-id">
+                <h2 id="detailJobName" className="text-base sm:text-lg font-bold text-white mt-0.5">
                   {selectedJob.name}
                 </h2>
-                <div id="detailStatus" className="mt-2">
+                <div id="detailStatus" className="mt-1">
                   {getStatusBadge(selectedJob.status)}
                 </div>
               </div>
@@ -236,104 +361,81 @@ export const JobsProcessesPage: React.FC = () => {
                 id="closeDrawer"
                 onClick={() => setSelectedJobId(null)}
                 aria-label="Close detail"
-                className="p-1.5 rounded-lg bg-[#14263a] hover:bg-[#1a3754] text-[#91a6bc] hover:text-white border border-[#263a50] transition-colors cursor-pointer"
+                className="p-1 rounded-lg text-[#70869c] hover:text-white hover:bg-[#16273b] transition-colors"
               >
-                <X className="w-4 h-4" />
+                <X className="w-5 h-5" />
               </button>
             </div>
 
-            {/* Read-Only Notice regarding Actions */}
-            <div className="p-3 rounded-lg bg-[#14202e] border border-[#263a50] flex items-center gap-2.5 text-xs text-[#91a6bc]">
-              <ShieldAlert className="w-4 h-4 text-purple-400 shrink-0" />
-              <span>{t('readOnlyActionDisabled')}</span>
-            </div>
-
-            {/* Field Details Grid */}
-            <div id="detailGrid" className="grid grid-cols-2 gap-2.5">
-              <div className="p-2.5 rounded-lg bg-[#102235] border border-[#263a50]">
-                <span className="block text-[10px] text-[#91a6bc] font-medium mb-1">
-                  {t('creatorLabel')}
-                </span>
-                <span className="text-xs font-semibold text-white tech-id">
-                  {selectedJob.creator || t('notProvided')}
-                </span>
+            {/* Grid of source-backed fields */}
+            <div id="detailGrid" className="grid grid-cols-2 gap-3 text-xs">
+              <div className="p-2.5 rounded-lg bg-[#101f31] border border-[#203349]">
+                <div className="text-[10px] text-[#70869c]">{t('creatorLabel')}</div>
+                <div className="font-semibold text-white tech-id mt-0.5">{selectedJob.creator}</div>
               </div>
-              <div className="p-2.5 rounded-lg bg-[#102235] border border-[#263a50]">
-                <span className="block text-[10px] text-[#91a6bc] font-medium mb-1">
-                  {t('statusLabel')}
-                </span>
-                <span className="text-xs font-semibold text-white tech-id">
-                  {selectedJob.status}
-                </span>
+              <div className="p-2.5 rounded-lg bg-[#101f31] border border-[#203349]">
+                <div className="text-[10px] text-[#70869c]">{t('statusLabel')}</div>
+                <div className="font-semibold text-white tech-id mt-0.5">{selectedJob.status}</div>
               </div>
-              <div className="p-2.5 rounded-lg bg-[#102235] border border-[#263a50]">
-                <span className="block text-[10px] text-[#91a6bc] font-medium mb-1">
-                  {t('dateLabel')}
-                </span>
-                <span className="text-xs font-semibold text-white tech-id">
-                  {selectedJob.date || t('notProvided')}
-                </span>
+              <div className="p-2.5 rounded-lg bg-[#101f31] border border-[#203349]">
+                <div className="text-[10px] text-[#70869c]">{t('dateLabel')}</div>
+                <div className="font-semibold text-white tech-id mt-0.5">{selectedJob.date}</div>
               </div>
-              <div className="p-2.5 rounded-lg bg-[#102235] border border-[#263a50]">
-                <span className="block text-[10px] text-[#91a6bc] font-medium mb-1">
-                  {t('timeLabel')}
-                </span>
-                <span className="text-xs font-semibold text-white tech-id">
-                  {selectedJob.time || t('notProvided')}
-                </span>
+              <div className="p-2.5 rounded-lg bg-[#101f31] border border-[#203349]">
+                <div className="text-[10px] text-[#70869c]">{t('timeLabel')}</div>
+                <div className="font-semibold text-white tech-id mt-0.5">{selectedJob.time}</div>
               </div>
-              <div className="p-2.5 rounded-lg bg-[#102235] border border-[#263a50]">
-                <span className="block text-[10px] text-[#91a6bc] font-medium mb-1">
-                  {t('durationLabel')}
-                </span>
-                <span className="text-xs font-semibold text-white tech-id">
-                  {selectedJob.duration || t('notProvided')}
-                </span>
+              <div className="p-2.5 rounded-lg bg-[#101f31] border border-[#203349]">
+                <div className="text-[10px] text-[#70869c]">{t('durationLabel')}</div>
+                <div className="font-semibold text-white tech-id mt-0.5">{selectedJob.duration}</div>
               </div>
-              <div className="p-2.5 rounded-lg bg-[#102235] border border-[#263a50]">
-                <span className="block text-[10px] text-[#91a6bc] font-medium mb-1">
-                  {t('delayLabel')}
-                </span>
-                <span className="text-xs font-semibold text-white tech-id">
-                  {selectedJob.delay || t('notProvided')}
-                </span>
+              <div className="p-2.5 rounded-lg bg-[#101f31] border border-[#203349]">
+                <div className="text-[10px] text-[#70869c]">{t('delayLabel')}</div>
+                <div className="font-semibold text-white tech-id mt-0.5">{selectedJob.delay}</div>
               </div>
-              <div className="p-2.5 rounded-lg bg-[#102235] border border-[#263a50]">
-                <span className="block text-[10px] text-[#91a6bc] font-medium mb-1">
-                  {t('clientLabel')}
-                </span>
-                <span className="text-xs font-semibold text-white tech-id">
-                  {selectedJob.client || t('notProvided')}
-                </span>
+              <div className="p-2.5 rounded-lg bg-[#101f31] border border-[#203349]">
+                <div className="text-[10px] text-[#70869c]">{t('clientLabel')}</div>
+                <div className="font-semibold text-white tech-id mt-0.5">{selectedJob.client}</div>
               </div>
-              <div className="p-2.5 rounded-lg bg-[#102235] border border-[#263a50]">
-                <span className="block text-[10px] text-[#91a6bc] font-medium mb-1">
-                  {t('idLabel')}
-                </span>
-                <span className="text-xs font-semibold text-cyan-300 tech-id">
+              <div className="p-2.5 rounded-lg bg-[#101f31] border border-[#203349]">
+                <div className="text-[10px] text-[#70869c]">{t('idLabel')}</div>
+                <div className="font-semibold text-cyan-300 tech-id mt-0.5 font-mono">
                   {selectedJob.id}
-                </span>
+                </div>
               </div>
             </div>
 
-            {/* Provenance & Limitations Box */}
-            <div className="p-4 rounded-xl bg-[#0b1623] border border-[#263a50] space-y-2 text-xs text-[#91a6bc]">
-              <strong className="text-white block font-semibold">
-                {t('provenance')}
-              </strong>
-              <p id="detailSource" className="tech-id text-[11px] text-[#a0b5cb]">
+            {/* Provenance and limitations */}
+            <div className="p-3.5 rounded-lg bg-[#101f31] border border-[#203349] space-y-2 text-xs">
+              <div className="font-semibold text-white flex items-center gap-1.5">
+                <Info className="w-3.5 h-3.5 text-cyan-400" />
+                <span>{t('provenance')}</span>
+              </div>
+              <p id="detailSource" className="text-[#91a6bc] text-[11px] font-mono ltr-isolate">
                 {t('sourceLabel')}: {selectedJob.source}
               </p>
-              <p className="text-[11px] leading-relaxed">
-                {t('noNativeId')}
-              </p>
-              <p className="text-[11px] leading-relaxed">
-                {t('noRelated')}
-              </p>
+              <p className="text-[#91a6bc] text-[11px]">{t('noNativeId')}</p>
+              <p className="text-[#91a6bc] text-[11px]">{t('noRelated')}</p>
+            </div>
+
+            {/* Phase 1 Read-only notice */}
+            <div className="p-3 rounded-lg bg-amber-950/20 border border-amber-800/40 text-amber-200 text-xs flex items-center gap-2">
+              <ShieldAlert className="w-4 h-4 shrink-0 text-amber-400" />
+              <span>{t('readOnlyActionDisabled')}</span>
             </div>
           </div>
         )}
-      </div>
+
+        <div className="pt-4 border-t border-[#263a50]">
+          <button
+            type="button"
+            onClick={() => setSelectedJobId(null)}
+            className="w-full py-2 rounded-lg bg-[#14293f] hover:bg-[#1d3a5a] text-cyan-200 text-xs font-semibold border border-[#2c4e72] transition-colors"
+          >
+            Close Drawer
+          </button>
+        </div>
+      </aside>
     </section>
   );
 };

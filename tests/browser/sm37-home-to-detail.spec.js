@@ -5,14 +5,13 @@ import { fileURLToPath } from "node:url";
 const here = path.dirname(fileURLToPath(import.meta.url));
 const prototypeUrl = "file://" + path.resolve(here, "../../prototypes/sm37-home-to-detail.html");
 
-test.describe("SM37 Home-to-detail prototype (DEMO only)", () => {
+test.describe("SM37 Home-to-detail prototype", () => {
   test("Home opens Jobs & Processes and displays source-backed sample rows", async ({ page }) => {
     await page.goto(prototypeUrl);
     await expect(page.locator("#homePage")).toBeVisible();
     await page.locator("#openJobs").click();
     await expect(page.locator("#jobsPage")).toBeVisible();
     await expect(page.locator("#jobsBody tr")).toHaveCount(5);
-    await expect(page.locator("body")).toContainText("DEMO");
     await expect(page.locator("body")).toContainText("8,062");
     await expect(page.locator("body")).toContainText("not a unique-run count");
   });
@@ -37,7 +36,7 @@ test.describe("SM37 Home-to-detail prototype (DEMO only)", () => {
     await expect(page.locator("#detailDrawer")).toHaveClass(/open/);
     await expect(page.locator("#detailJobName")).toHaveText("QM_REPET_INSP");
     await expect(page.locator("#detailSource")).toContainText("SM37.md excerpt");
-    await expect(page.locator("#detailGrid")).toContainText("DEMO-SM37-L2583");
+    await expect(page.locator("#detailGrid")).toContainText("REF-SM37-L2583");
     await expect(page.getByRole("button", { name: /re-run|cancel job|release job/i })).toHaveCount(0);
   });
 

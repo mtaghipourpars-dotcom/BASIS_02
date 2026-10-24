@@ -24,7 +24,7 @@ import {
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { PageId } from '../../types';
-import { DEMO_HEADER_INFO } from '../../data/fixtures';
+import { COCKPIT_HEADER_INFO } from '../../data/fixtures';
 
 interface NavItem {
   id: PageId;
@@ -69,9 +69,17 @@ export const Shell: React.FC<{ children: React.ReactNode }> = ({ children }) => 
 
   return (
     <div
-      className={`min-h-screen bg-[#070e17] text-[#e2ecf8] flex flex-col antialiased ${
-        settings.highContrast ? 'high-contrast' : ''
-      } ${settings.density === 'compact' ? 'density-compact' : ''}`}
+      className={`min-h-screen flex flex-col antialiased transition-colors ${
+        settings.theme === 'light' ? 'theme-light' : 'bg-[#070e17] text-[#e2ecf8]'
+      } ${settings.highContrast ? 'high-contrast border-2' : ''} ${
+        settings.density === 'compact' ? 'density-compact' : ''
+      } ${
+        settings.fontScale === 'compact'
+          ? 'font-scale-compact'
+          : settings.fontScale === 'large'
+          ? 'font-scale-large'
+          : ''
+      } ${settings.reducedMotion ? 'motion-reduce' : ''}`}
     >
       {/* Top Header matching reference */}
       <header className="sticky top-0 z-40 bg-[#091322] border-b border-[#1b2b40] px-4 lg:px-6 py-2.5 flex items-center justify-between gap-4 shadow-sm">
@@ -97,10 +105,10 @@ export const Shell: React.FC<{ children: React.ReactNode }> = ({ children }) => 
             </div>
             <div>
               <div className="text-[13px] font-bold text-white tracking-tight leading-tight">
-                {DEMO_HEADER_INFO.appName}
+                {COCKPIT_HEADER_INFO.appName}
               </div>
               <div className="text-[10px] text-[#7890a8] font-medium tracking-wide">
-                {DEMO_HEADER_INFO.subtitle}
+                {COCKPIT_HEADER_INFO.subtitle}
               </div>
             </div>
           </button>
@@ -179,10 +187,10 @@ export const Shell: React.FC<{ children: React.ReactNode }> = ({ children }) => 
             </div>
             <div className="text-start leading-tight">
               <div className="text-xs font-semibold text-white">
-                {DEMO_HEADER_INFO.userName}
+                {COCKPIT_HEADER_INFO.userName}
               </div>
               <div className="text-[10px] text-[#718aa6]">
-                {DEMO_HEADER_INFO.userRole}
+                {COCKPIT_HEADER_INFO.userRole}
               </div>
             </div>
             <ChevronDown className="w-3 h-3 text-[#718aa6]" />
@@ -276,7 +284,7 @@ export const Shell: React.FC<{ children: React.ReactNode }> = ({ children }) => 
               <div>
                 <span className="block text-[10px] text-[#556c84]">{t('lastUpdate')}</span>
                 <span className="font-mono text-xs text-[#9eb6ce] ltr-isolate">
-                  {DEMO_HEADER_INFO.lastUpdateStr}
+                  {COCKPIT_HEADER_INFO.lastUpdateStr}
                 </span>
               </div>
               <button

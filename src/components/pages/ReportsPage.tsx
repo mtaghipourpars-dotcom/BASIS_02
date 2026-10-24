@@ -1,20 +1,20 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { FileText, Download, CheckCircle2, FileCheck, Layers } from 'lucide-react';
-import { SM37_ROWS, DEMO_SYSTEMS, DEMO_ALERTS, DEMO_DATABASE } from '../../data/fixtures';
+import { SM37_ROWS, LANDSCAPE_SYSTEMS, PRIORITY_WARNINGS, DATABASE_STATUS } from '../../data/fixtures';
 
 export const ReportsPage: React.FC = () => {
-  const { t } = useApp();
+  const { t, locale } = useApp();
   const [downloadSuccess, setDownloadSuccess] = useState(false);
 
-  const exportDemoJson = () => {
+  const exportAuditJson = () => {
     const payload = {
       cockpit: 'BASIS_02 · SAP Basis Operations Cockpit',
       mode: 'READ_ONLY_OFFLINE_PROTOTYPE',
       extractedAt: new Date().toISOString(),
-      systems: DEMO_SYSTEMS,
-      database: DEMO_DATABASE,
-      alerts: DEMO_ALERTS,
+      systems: LANDSCAPE_SYSTEMS,
+      database: DATABASE_STATUS,
+      alerts: PRIORITY_WARNINGS,
       sm37SampleRows: SM37_ROWS,
     };
 
@@ -22,7 +22,7 @@ export const ReportsPage: React.FC = () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `basis02-demo-audit-export-${Date.now()}.json`;
+    a.download = `basis02-operational-audit-export-${Date.now()}.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -53,11 +53,11 @@ export const ReportsPage: React.FC = () => {
           </div>
           <button
             type="button"
-            onClick={exportDemoJson}
+            onClick={exportAuditJson}
             className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#123f53] hover:bg-[#1a556f] text-cyan-200 border border-[#25768b] text-xs font-semibold shadow-sm transition-all cursor-pointer"
           >
             <Download className="w-4 h-4" />
-            <span>{t('exportDemoData')}</span>
+            <span>{locale === 'fa' ? 'خروجی گزارش حسابرسی (JSON)' : 'Export Operational Audit (JSON)'}</span>
           </button>
         </div>
 

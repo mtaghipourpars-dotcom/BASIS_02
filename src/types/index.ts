@@ -70,7 +70,7 @@ export interface ConnectivityItem {
 }
 
 export interface SM37JobRecord {
-  id: string; // e.g. DEMO-SM37-L83
+  id: string; // e.g. REF-SM37-L83
   name: string; // /BUILD/REORG
   creator: string; // DDIC
   status: 'Finished' | 'Canceled' | 'Released' | 'Scheduled';

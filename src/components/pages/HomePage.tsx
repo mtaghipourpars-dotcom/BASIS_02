@@ -24,7 +24,7 @@ import {
   Radio,
 } from 'lucide-react';
 import {
-  DEMO_HEADER_INFO,
+  COCKPIT_HEADER_INFO,
   LANDSCAPE_SYSTEMS,
   TOP_KPIS,
   PERFORMANCE_METRICS,
@@ -329,7 +329,7 @@ export const HomePage: React.FC = () => {
 
             {/* 2x2 Performance Cards */}
             <div className="grid grid-cols-2 gap-3">
-              {PERFORMANCE_METRICS.map((metric, idx) => (
+              {Object.values(PERFORMANCE_METRICS).map((metric, idx) => (
                 <div
                   key={idx}
                   onClick={() => navigate('performance')}

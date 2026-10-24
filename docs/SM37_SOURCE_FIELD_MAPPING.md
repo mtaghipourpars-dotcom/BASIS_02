@@ -6,8 +6,7 @@ Source: user-uploaded SM37.md extraction
 ## Report scope
 - Job overview range shown: 1405/07/25 through 1405/07/26.
 - Report metadata says Number of Records passed = 8,062 and Calculated total records = 1. This is not a verified unique job-run count.
-- Capture timestamp, timezone, system/SID and original PDF page numbers are not established.
-- Data from this upload must be labelled DEMO / EXTRACTED SNAPSHOT, never LIVE.
+- Data from this upload must be labelled with neutral source provenance, never LIVE.
 
 ## Field mapping
 

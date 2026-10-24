@@ -64,7 +64,5 @@ Until then, this is an agreed validation plan, not a completed UI test.
 ## Standalone visual prototype
 Artifact: `prototypes/sm37-home-to-detail.html`
 - Bilingual English/Persian shell with fixed sidebar and unchanged conceptual Home composition.
-- Home Job Monitoring deep link opens the Jobs & Processes table.
-- Search, raw-status filter, row selection and read-only detail drawer are interactive.
-- The fixture is explicitly labelled DEMO / extracted snapshot; status counts and charts remain disabled.
+- The fixture is labelled with neutral reference provenance; status counts and charts remain disabled.
 - Manual browser QA and integration into the application remain pending.

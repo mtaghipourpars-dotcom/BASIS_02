@@ -40,7 +40,7 @@ const DEFAULT_SETTINGS: AppSettings = {
     hostName: 'sap-prd01.corp.local',
     sapRouter: '/H/194.12.10.1/W/secret',
     clientNumber: '800',
-    description: 'Corporate S/4HANA Enterprise Cluster (DEMO)',
+    description: 'Corporate S/4HANA Enterprise Cluster',
   },
 };
 
