@@ -1,7 +1,9 @@
 # BASIS_02 — Ten Operational Islands: Visual Specification
 Version: 1.0
 Status: proposed page-level baseline; Home is unchanged
-Related: `docs/VISUAL_ARCHITECTURE.md`, `docs/PRODUCT_UI_SCRIPT.md`, `specs/pages.yaml`, `specs/widgets.yaml`, `docs/SRC_WIDGET_FIELD_MAPPING.md`
+Related: `docs/VISUAL_ARCHITECTURE.md`, `docs/PRODUCT_UI_SCRIPT.md`, `docs/TEN_ISLANDS_EMW_KPI_FUNCTIONAL_SPEC.md`, `specs/pages.yaml`, `specs/widgets.yaml`, `docs/SRC_WIDGET_FIELD_MAPPING.md`
+
+For complete candidate KPI definitions, page layouts, data gates and the Monitoring / Warning / Execution capability matrix for all ten islands, see [`docs/TEN_ISLANDS_EMW_KPI_FUNCTIONAL_SPEC.md`](TEN_ISLANDS_EMW_KPI_FUNCTIONAL_SPEC.md). This is a proposed design baseline, not a claim that all data sources or features are live/approved.
 
 ## Non-negotiable product rules
 - Preserve the existing Home composition and sidebar order.
