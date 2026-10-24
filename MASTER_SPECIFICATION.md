@@ -13,6 +13,7 @@ This document defines how repository specifications fit together; it does not re
 - Global shell and visual composition: `docs/VISUAL_ARCHITECTURE.md`.
 - Human-readable end-to-end page/widget narrative: `docs/PRODUCT_UI_SCRIPT.md`.
 - Widget identity, exact placement, fields, visual type, states and data-contract reference: `specs/widgets.yaml`.
+- Settings and preference behavior, including disconnected SAP profile configuration: `docs/SETTINGS_AND_PREFERENCES_SPEC.md`.
 - Input/output shape and data quality/freshness/provenance: `specs/data-contracts.yaml`.
 - Business meaning, formula, unit, aggregation and time window for numeric KPIs: `specs/metric-registry.yaml`.
 - Locale and RTL/LTR behavior: `specs/i18n.yaml`.
@@ -40,7 +41,7 @@ The UI is specified in two complementary forms:
 - `DATA_SOURCE_CATALOG.md` maps a widget/data contract to an approved fixture or runtime endpoint. A file name, endpoint, service, parameter or field mapping cannot be inferred by the frontend implementer.
 - Page placement is fixed by the widget's row/order and responsive span; end users cannot add, remove or reorder widgets.
 
-**Current completeness finding:** `specs/widgets.yaml` currently contains `widgets: []`. Therefore the page narrative names the intended widget groups, but the machine-readable, widget-by-widget inventory is NOT complete yet. Until widget records and approved data mappings are added, an implementer cannot unambiguously know the exact gadget type, field mapping, visual options and source for every page. This is a documented gap, not something the LLM may fill by guessing.
+**Current completeness finding:** `specs/widgets.yaml` contains machine-readable records for the existing island baseline and the Settings preference groups. The ten-island inventory and Settings inventory are design records, not proof that the UI is implemented; source mappings and runtime behavior remain gated. Until widget records and approved data mappings are added, an implementer cannot unambiguously know the exact gadget type, field mapping, visual options and source for every page. This is a documented gap, not something the LLM may fill by guessing.
 
 ## 4. Required widget record
 Each widget record must provide, at minimum:
