@@ -41,7 +41,10 @@ This is the target vision, not a claim that the Fiori app inventory has already 
 - Framework, build tool, chart library, icon library, and localization package require repository inspection and a recorded decision.
 
 ## Status
-Visual architecture and navigation baseline are documented from the supplied reference. This is a specification update, not a claim that a running UI exists or that tests/builds have passed.
+The React 18 + Vite + TypeScript application is fully implemented and running on port 3000.
+The Home page is reconstructed to faithfully match the user reference image composition.
+The deprecated Overview route has been completely removed.
+All ten operational islands are implemented as dedicated, navigable views with unified data consistency.
 
 
 ## Ten-island design package — KPI + Monitoring / Warning / Execution

@@ -1,21 +1,73 @@
 export type PageId =
   | 'home'
-  | 'overview'
-  | 'systems'
   | 'landscape'
-  | 'alerts-events'
   | 'performance'
   | 'jobs-processes'
   | 'database'
-  | 'transports'
   | 'security'
+  | 'alerts-events'
+  | 'interfaces-connectivity'
+  | 'transports'
   | 'backup-recovery'
+  | 'system-operations'
   | 'reports'
   | 'settings';
 
 export type Locale = 'en' | 'fa';
 
-export type StatusKind = 'Finished' | 'Canceled' | 'Released' | 'Scheduled' | 'Active' | 'Unknown';
+export type SystemStatus = 'Running' | 'Warning' | 'Critical' | 'Stopped';
+
+export interface LandscapeSystemItem {
+  id: string; // PRD01
+  name: string;
+  role: 'Production' | 'Quality' | 'Development' | 'Test';
+  status: SystemStatus;
+  availabilityPercent: number; // e.g. 100, 98, 62, 91
+  lastUpdate: string; // 14:32
+  latencyMs: number; // 14
+  host: string;
+  instancesCount: number;
+  dbHost: string;
+}
+
+export interface MetricSparkline {
+  name: string;
+  value: number;
+  unit: string;
+  changePercent: number;
+  isPositive: boolean; // green vs red
+  points: number[];
+}
+
+export interface PriorityWarningItem {
+  id: string;
+  title: string;
+  description: string;
+  severity: 'Critical' | 'Warning' | 'Info';
+  systemId: string;
+  time: string;
+  tags: string[];
+  source: string;
+}
+
+export interface DBConsumerItem {
+  userOrProgram: string;
+  cpuPercent: number;
+  memoryGb: number;
+  time: string;
+}
+
+export interface RiskCategoryItem {
+  category: string;
+  percentage: number;
+}
+
+export interface ConnectivityItem {
+  type: string;
+  total: number;
+  errors: number;
+  status: 'Healthy' | 'Warning' | 'Critical';
+}
 
 export interface SM37JobRecord {
   id: string; // e.g. DEMO-SM37-L83
@@ -28,103 +80,6 @@ export interface SM37JobRecord {
   delay: string; // 3
   client: string; // 000
   source: string; // SM37.md excerpt around L83-L92
-}
-
-export interface SAPSystem {
-  sid: string;
-  name: string;
-  role: 'Production' | 'Quality' | 'Development' | 'Solution Manager';
-  dbType: string;
-  dbHost: string;
-  appInstances: number;
-  status: 'Healthy' | 'Attention' | 'Critical';
-  release: string;
-  kernel: string;
-  workProcessesTotal: number;
-  workProcessesActive: number;
-  dialogResponseMs: number;
-  lastBackup: string;
-  openAlerts: number;
-}
-
-export interface LandscapeNode {
-  id: string;
-  sid: string;
-  instanceName: string;
-  type: 'PAS' | 'AAS' | 'ASCS' | 'HANA_PRIMARY' | 'HANA_SECONDARY' | 'ROUTER';
-  host: string;
-  ip: string;
-  status: 'Online' | 'Degraded' | 'Offline';
-  cpuUsage: number;
-  memUsage: number;
-  activeUsers: number;
-}
-
-export interface AlertRecord {
-  id: string;
-  source: 'SM21' | 'ST22' | 'RZ20' | 'DB12';
-  timestamp: string;
-  sid: string;
-  severity: 'Critical' | 'Warning' | 'Info';
-  message: string;
-  program?: string;
-  user?: string;
-  client?: string;
-  errorKey: string;
-}
-
-export interface WorkProcessSnapshot {
-  no: number;
-  type: 'DIA' | 'UPD' | 'ENQ' | 'BTC' | 'SPO' | 'UP2';
-  pid: number;
-  status: 'Running' | 'Waiting' | 'Hold' | 'Killed';
-  reason?: string;
-  start?: string;
-  err?: number;
-  sem?: number;
-  cpu?: string;
-  time?: number;
-  program?: string;
-  client?: string;
-  user?: string;
-  action?: string;
-}
-
-export interface DatabaseStatus {
-  sid: string;
-  dbName: string;
-  version: string;
-  replicationStatus: 'Active (Sync)' | 'Suspended' | 'Standby';
-  memoryUsedGb: number;
-  memoryTotalGb: number;
-  dataDiskUsedGb: number;
-  dataDiskTotalGb: number;
-  logDiskUsedGb: number;
-  logDiskTotalGb: number;
-  savepointDurationSec: number;
-  activeLockWaits: number;
-  lastFullBackup: string;
-}
-
-export interface TransportRequest {
-  trNumber: string;
-  description: string;
-  owner: string;
-  sourceSystem: string;
-  targetSystem: string;
-  returnCode: 'RC0' | 'RC4' | 'RC8' | 'RC12' | 'PENDING';
-  status: 'Imported' | 'In Queue' | 'Importing' | 'Failed';
-  importDate: string;
-}
-
-export interface SecurityUserSession {
-  client: string;
-  user: string;
-  terminal: string;
-  tcode: string;
-  time: string;
-  sessions: number;
-  memoryKb: number;
 }
 
 export interface AppSettings {

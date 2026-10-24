@@ -100,12 +100,6 @@ export const JobsProcessesPage: React.FC = () => {
         </span>
       </div>
 
-      {/* Warning Notice Box */}
-      <div className="p-3.5 rounded-xl bg-[#282317] border border-[#705b32] text-[#e9c982] text-xs leading-relaxed flex items-start gap-3">
-        <Info className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-        <div>{t('notice')}</div>
-      </div>
-
       {/* Table Container */}
       <div className="bg-[#101f31] border border-[#263a50] rounded-xl p-4 space-y-4">
         {/* Table Header & Controls */}

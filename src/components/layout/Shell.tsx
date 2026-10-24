@@ -1,26 +1,30 @@
 import React, { useState } from 'react';
 import {
   LayoutDashboard,
-  Activity,
-  Server,
   Network,
-  AlertTriangle,
-  Gauge,
+  Activity,
   Clock,
   Database,
-  ArrowUpRight,
   Shield,
-  RefreshCw,
   FileText,
+  Share2,
+  Package,
+  HardDrive,
+  Workflow,
+  FileBarChart,
   Settings as SettingsIcon,
   Search,
+  Bell,
+  HelpCircle,
   Menu,
   X,
   Globe,
-  Radio,
+  RefreshCw,
+  ChevronDown,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { PageId } from '../../types';
+import { DEMO_HEADER_INFO } from '../../data/fixtures';
 
 interface NavItem {
   id: PageId;
@@ -29,42 +33,55 @@ interface NavItem {
 }
 
 export const Shell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { locale, toggleLocale, currentPage, navigate, searchQuery, setSearchQuery, t, settings } = useApp();
+  const {
+    locale,
+    toggleLocale,
+    currentPage,
+    navigate,
+    searchQuery,
+    setSearchQuery,
+    selectedLandscape,
+    setSelectedLandscape,
+    t,
+    settings,
+  } = useApp();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const navItems: NavItem[] = [
+  // Exact 10 Operational Islands + General destinations in approved order (Overview removed!)
+  const operationalNavItems: NavItem[] = [
     { id: 'home', labelKey: 'home', icon: <LayoutDashboard className="w-4 h-4" /> },
-    { id: 'overview', labelKey: 'overview', icon: <Activity className="w-4 h-4" /> },
-    { id: 'systems', labelKey: 'systems', icon: <Server className="w-4 h-4" /> },
     { id: 'landscape', labelKey: 'landscape', icon: <Network className="w-4 h-4" /> },
-    { id: 'alerts-events', labelKey: 'alertsEvents', icon: <AlertTriangle className="w-4 h-4" /> },
-    { id: 'performance', labelKey: 'performance', icon: <Gauge className="w-4 h-4" /> },
+    { id: 'performance', labelKey: 'performance', icon: <Activity className="w-4 h-4" /> },
     { id: 'jobs-processes', labelKey: 'jobsProcesses', icon: <Clock className="w-4 h-4" /> },
     { id: 'database', labelKey: 'database', icon: <Database className="w-4 h-4" /> },
-    { id: 'transports', labelKey: 'transports', icon: <ArrowUpRight className="w-4 h-4" /> },
     { id: 'security', labelKey: 'security', icon: <Shield className="w-4 h-4" /> },
-    { id: 'backup-recovery', labelKey: 'backupRecovery', icon: <RefreshCw className="w-4 h-4" /> },
-    { id: 'reports', labelKey: 'reports', icon: <FileText className="w-4 h-4" /> },
+    { id: 'alerts-events', labelKey: 'alertsEvents', icon: <FileText className="w-4 h-4" /> },
+    { id: 'interfaces-connectivity', labelKey: 'interfacesConnectivity', icon: <Share2 className="w-4 h-4" /> },
+    { id: 'transports', labelKey: 'transports', icon: <Package className="w-4 h-4" /> },
+    { id: 'backup-recovery', labelKey: 'backupRecovery', icon: <HardDrive className="w-4 h-4" /> },
+    { id: 'system-operations', labelKey: 'systemOperations', icon: <Workflow className="w-4 h-4" /> },
+  ];
+
+  const secondaryNavItems: NavItem[] = [
+    { id: 'reports', labelKey: 'reports', icon: <FileBarChart className="w-4 h-4" /> },
     { id: 'settings', labelKey: 'settings', icon: <SettingsIcon className="w-4 h-4" /> },
   ];
 
-  const currentNav = navItems.find((n) => n.id === currentPage);
-
   return (
     <div
-      className={`min-h-screen bg-[#081321] text-[#e7f0fb] flex flex-col ${
+      className={`min-h-screen bg-[#070e17] text-[#e2ecf8] flex flex-col antialiased ${
         settings.highContrast ? 'high-contrast' : ''
       } ${settings.density === 'compact' ? 'density-compact' : ''}`}
     >
-      {/* Top Header */}
-      <header className="sticky top-0 z-40 bg-[#0b1827]/95 backdrop-blur border-b border-[#263a50] px-4 lg:px-6 py-2.5 flex items-center justify-between gap-4">
-        {/* Left: Brand & Mobile Toggle */}
+      {/* Top Header matching reference */}
+      <header className="sticky top-0 z-40 bg-[#091322] border-b border-[#1b2b40] px-4 lg:px-6 py-2.5 flex items-center justify-between gap-4 shadow-sm">
+        {/* Left: Mobile Toggle + SAP Brand */}
         <div className="flex items-center gap-3">
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-1.5 rounded-lg bg-[#14273b] border border-[#263a50] text-[#91a6bc] hover:text-white"
-            aria-label="Toggle Navigation Menu"
+            className="lg:hidden p-1.5 rounded-lg bg-[#112035] border border-[#1b2b40] text-[#91a6bc] hover:text-white"
+            aria-label="Toggle Navigation"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
@@ -72,93 +89,119 @@ export const Shell: React.FC<{ children: React.ReactNode }> = ({ children }) => 
           <button
             type="button"
             onClick={() => navigate('home')}
-            className="flex items-center gap-3 text-start group cursor-pointer"
+            className="flex items-center gap-2.5 text-start group cursor-pointer"
           >
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center text-[#061423] font-black text-sm shadow-sm group-hover:scale-105 transition-transform">
-              B
+            {/* SAP Blue Badge */}
+            <div className="w-10 h-7 rounded bg-[#0070f2] flex items-center justify-center text-white font-black text-xs tracking-wider shadow-inner">
+              SAP
             </div>
-            <div className="hidden sm:block">
-              <div className="text-sm font-bold tracking-tight">
-                BASIS<span className="text-cyan-400">_02</span>
+            <div>
+              <div className="text-[13px] font-bold text-white tracking-tight leading-tight">
+                {DEMO_HEADER_INFO.appName}
               </div>
-              <div className="text-[11px] text-[#91a6bc] font-medium leading-none">
-                {t('appSubtitle')}
+              <div className="text-[10px] text-[#7890a8] font-medium tracking-wide">
+                {DEMO_HEADER_INFO.subtitle}
               </div>
             </div>
           </button>
         </div>
 
-        {/* Center: Global Search */}
-        <div className="hidden md:flex flex-1 max-w-md mx-2">
+        {/* Center: Global Search Bar with Ctrl+K */}
+        <div className="hidden md:flex flex-1 max-w-lg mx-4">
           <div className="relative w-full">
-            <Search className="absolute inset-y-0 start-3 my-auto w-4 h-4 text-[#70869c] pointer-events-none" />
+            <Search className="absolute inset-y-0 start-3 my-auto w-3.5 h-3.5 text-[#5e7794] pointer-events-none" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={t('searchGlobal')}
-              className="w-full bg-[#0d1e31] border border-[#263a50] rounded-lg py-1.5 ps-9 pe-3 text-xs text-[#e7f0fb] placeholder-[#70869c] focus:outline-none focus:border-cyan-500/70 focus:ring-1 focus:ring-cyan-500/50 transition-colors"
+              placeholder={t('searchPlaceholder')}
+              className="w-full bg-[#0d1a2d] border border-[#1b2c44] rounded-lg py-1.5 ps-9 pe-16 text-xs text-[#e2ecf8] placeholder-[#5e7794] focus:outline-none focus:border-[#0070f2] focus:ring-1 focus:ring-[#0070f2] transition-colors"
             />
+            <div className="absolute inset-y-0 end-2 my-auto flex items-center">
+              <span className="px-1.5 py-0.5 rounded text-[10px] bg-[#142338] text-[#718aa6] border border-[#20344f] ltr-isolate font-mono">
+                Ctrl + K
+              </span>
+            </div>
           </div>
         </div>
 
-        {/* Right: Badges, Locale Switcher, Status */}
-        <div className="flex items-center gap-2 sm:gap-3">
-          {/* DEMO Indicator Pill */}
-          <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-[#2c2518] text-[#f4c36a] border border-[#8c6e35]">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-            <span>{t('demoBadge')}</span>
-          </div>
+        {/* Right: Notifications, Help, Settings, Profile & Bilingual Switcher */}
+        <div className="flex items-center gap-2.5">
+          {/* Notification Bell */}
+          <button
+            type="button"
+            onClick={() => navigate('alerts-events')}
+            className="relative p-1.5 rounded-lg bg-[#0e1b2e] hover:bg-[#162740] border border-[#1b2c44] text-[#8ea4be] hover:text-white transition-colors"
+            title="Notifications"
+          >
+            <Bell className="w-4 h-4" />
+            <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-rose-500 text-white text-[9px] font-bold flex items-center justify-center">
+              0
+            </span>
+          </button>
 
-          {/* Connection Status Pill */}
-          <div className="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-[#102033] text-[#91a6bc] border border-[#263a50]">
-            <Radio className="w-3 h-3 text-cyan-400" />
-            <span>{t('disconnectedBadge')}</span>
-          </div>
+          {/* Help Info */}
+          <button
+            type="button"
+            onClick={() => navigate('reports')}
+            className="p-1.5 rounded-lg bg-[#0e1b2e] hover:bg-[#162740] border border-[#1b2c44] text-[#8ea4be] hover:text-white transition-colors"
+            title="Documentation"
+          >
+            <HelpCircle className="w-4 h-4" />
+          </button>
 
-          {/* Persian / English Switcher */}
+          {/* Settings Quick Access */}
+          <button
+            type="button"
+            onClick={() => navigate('settings')}
+            className="p-1.5 rounded-lg bg-[#0e1b2e] hover:bg-[#162740] border border-[#1b2c44] text-[#8ea4be] hover:text-white transition-colors"
+            title={t('settings')}
+          >
+            <SettingsIcon className="w-4 h-4" />
+          </button>
+
+          {/* Language Toggle Button (Bilingual Support: Persian RTL / English LTR) */}
           <button
             type="button"
             id="localeBtn"
             onClick={toggleLocale}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#13283d] hover:bg-[#1a3450] text-[#e7f0fb] border border-[#33516d] text-xs font-semibold transition-colors cursor-pointer shadow-sm"
-            aria-label="Switch Language / تغییر زبان"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[#0e1b2e] hover:bg-[#162740] border border-[#1b2c44] text-xs font-semibold text-cyan-300 transition-colors cursor-pointer"
+            title="Switch Language"
           >
             <Globe className="w-3.5 h-3.5 text-cyan-400" />
             <span>{locale === 'en' ? 'فارسی' : 'English'}</span>
           </button>
 
-          {/* Settings Quick Link */}
-          <button
-            type="button"
-            onClick={() => navigate('settings')}
-            className={`p-1.5 rounded-lg border transition-colors ${
-              currentPage === 'settings'
-                ? 'bg-cyan-500/20 border-cyan-500 text-cyan-300'
-                : 'bg-[#13283d] border-[#33516d] text-[#91a6bc] hover:text-white'
-            }`}
-            title={t('settings')}
-            aria-label={t('settings')}
-          >
-            <SettingsIcon className="w-4 h-4" />
-          </button>
+          {/* User Profile matching reference */}
+          <div className="hidden sm:flex items-center gap-2 ps-2 border-s border-[#1b2b40]">
+            <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-amber-500 to-cyan-500 flex items-center justify-center text-[#08101a] font-bold text-xs shadow-sm">
+              M
+            </div>
+            <div className="text-start leading-tight">
+              <div className="text-xs font-semibold text-white">
+                {DEMO_HEADER_INFO.userName}
+              </div>
+              <div className="text-[10px] text-[#718aa6]">
+                {DEMO_HEADER_INFO.userRole}
+              </div>
+            </div>
+            <ChevronDown className="w-3 h-3 text-[#718aa6]" />
+          </div>
         </div>
       </header>
 
-      {/* Main Layout Body */}
+      {/* Main Body with Sidebar & Content */}
       <div className="flex-1 flex overflow-hidden">
         {/* Left Sidebar */}
         <aside
           className={`${
             mobileMenuOpen ? 'block' : 'hidden'
-          } lg:block w-60 shrink-0 bg-[#0b1827] border-e border-[#263a50] p-3 flex flex-col justify-between overflow-y-auto`}
+          } lg:flex w-60 shrink-0 bg-[#091322] border-e border-[#19273a] p-3 flex-col justify-between overflow-y-auto`}
         >
+          {/* Nav Links */}
           <div className="space-y-4">
-            <div className="text-[10px] uppercase font-bold tracking-wider text-[#70869c] px-3 pt-1">
-              {t('workspace')}
-            </div>
-            <nav className="space-y-0.5">
-              {navItems.map((item) => {
+            <nav className="space-y-1">
+              {operationalNavItems.map((item) => {
                 const isActive = currentPage === item.id;
                 return (
                   <button
@@ -171,11 +214,11 @@ export const Shell: React.FC<{ children: React.ReactNode }> = ({ children }) => 
                     }}
                     className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all text-start cursor-pointer ${
                       isActive
-                        ? 'bg-[#153149] text-cyan-200 border-s-4 border-cyan-400 shadow-inner'
-                        : 'text-[#9fb2c7] hover:bg-[#102438] hover:text-white'
+                        ? 'bg-gradient-to-r from-[#0066cc] to-[#0080ff] text-white font-semibold shadow-md shadow-blue-900/30'
+                        : 'text-[#889fb8] hover:bg-[#0e1c2e] hover:text-[#d4e4f7]'
                     }`}
                   >
-                    <span className={isActive ? 'text-cyan-400' : 'text-[#70869c]'}>
+                    <span className={isActive ? 'text-white' : 'text-[#627a94]'}>
                       {item.icon}
                     </span>
                     <span className="truncate">{t(item.labelKey)}</span>
@@ -183,37 +226,85 @@ export const Shell: React.FC<{ children: React.ReactNode }> = ({ children }) => 
                 );
               })}
             </nav>
+
+            <div className="border-t border-[#19273a] pt-3 space-y-1">
+              {secondaryNavItems.map((item) => {
+                const isActive = currentPage === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    id={`nav-${item.id}`}
+                    type="button"
+                    onClick={() => {
+                      navigate(item.id);
+                      setMobileMenuOpen(false);
+                    }}
+                    className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all text-start cursor-pointer ${
+                      isActive
+                        ? 'bg-gradient-to-r from-[#0066cc] to-[#0080ff] text-white font-semibold shadow-md'
+                        : 'text-[#889fb8] hover:bg-[#0e1c2e] hover:text-[#d4e4f7]'
+                    }`}
+                  >
+                    <span className={isActive ? 'text-white' : 'text-[#627a94]'}>
+                      {item.icon}
+                    </span>
+                    <span className="truncate">{t(item.labelKey)}</span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
-          {/* Sidebar Footer Info Card */}
-          <div className="mt-6 pt-4 border-t border-[#263a50]/80 px-2 text-[11px] text-[#91a6bc] space-y-1">
-            <div className="font-semibold text-[#c5d8ed]">{t('phase')}</div>
-            <div className="flex items-center gap-1.5 text-cyan-400">
-              <span className="w-2 h-2 rounded-full bg-cyan-400" />
-              <span>{t('prototypeNote')}</span>
+          {/* Sidebar Footer Panel matching reference */}
+          <div className="mt-6 pt-3 border-t border-[#19273a] space-y-3">
+            {/* Landscape Dropdown */}
+            <div className="p-2.5 rounded-lg bg-[#0e1b2d] border border-[#1b2b40]">
+              <div className="text-[10px] text-[#627a94] uppercase tracking-wider font-semibold mb-1">
+                {t('landscapeSelect')}
+              </div>
+              <div className="flex items-center justify-between text-xs text-[#dbe7f5]">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                  <span className="font-medium">{t('production')}</span>
+                </div>
+                <ChevronDown className="w-3 h-3 text-[#627a94]" />
+              </div>
+            </div>
+
+            {/* Last Update */}
+            <div className="flex items-center justify-between px-1 text-[11px] text-[#718aa6]">
+              <div>
+                <span className="block text-[10px] text-[#556c84]">{t('lastUpdate')}</span>
+                <span className="font-mono text-xs text-[#9eb6ce] ltr-isolate">
+                  {DEMO_HEADER_INFO.lastUpdateStr}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => window.location.reload()}
+                className="p-1 rounded text-[#55d6a1] hover:text-emerald-300 transition-colors"
+                title="Refresh telemetry"
+              >
+                <RefreshCw className="w-3.5 h-3.5" />
+              </button>
             </div>
           </div>
         </aside>
 
-        {/* Content Area */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
-          {/* Breadcrumb Header */}
-          <div className="mb-6 flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-[#263a50]/70">
-            <div className="text-xs text-[#91a6bc]">
-              <span>{t('breadcrumbOps')}</span> /{' '}
-              <span id="crumb-current" className="text-white font-semibold">
-                {currentNav ? t(currentNav.labelKey) : currentPage}
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-[11px] text-[#70869c] ltr-isolate">
-                SM37 · 1405/07/25–26
-              </span>
-            </div>
-          </div>
+        {/* Content Canvas */}
+        <main className="flex-1 overflow-y-auto p-4 sm:p-5 lg:p-6 bg-[#070e17] flex flex-col justify-between">
+          <div className="space-y-5">{children}</div>
 
-          {/* Children Routes */}
-          {children}
+          {/* Cockpit Footer (hidden on Home as requested in image 2) */}
+          {currentPage !== 'home' && (
+            <footer className="mt-8 pt-4 border-t border-[#162334] flex flex-wrap items-center justify-between gap-3 text-[11px] text-[#5e7794]">
+              <div>{t('footerLeft')}</div>
+              <div className="flex items-center gap-2 text-cyan-400 font-medium">
+                <span>{t('footerRight')}</span>
+                <span className="inline-flex gap-1 text-[8px]">● ●</span>
+              </div>
+            </footer>
+          )}
         </main>
       </div>
     </div>

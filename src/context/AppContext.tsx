@@ -7,11 +7,15 @@ interface AppContextType {
   setLocale: (loc: Locale) => void;
   toggleLocale: () => void;
   currentPage: PageId;
-  navigate: (page: PageId) => void;
+  navigate: (page: PageId, options?: { system?: string; severity?: string; jobId?: string }) => void;
   selectedJobId: string | null;
   setSelectedJobId: (id: string | null) => void;
   selectedSystem: string;
   setSelectedSystem: (sys: string) => void;
+  selectedSeverity: string;
+  setSelectedSeverity: (sev: string) => void;
+  selectedLandscape: string;
+  setSelectedLandscape: (ls: string) => void;
   searchQuery: string;
   setSearchQuery: (q: string) => void;
   settings: AppSettings;
@@ -31,12 +35,12 @@ const DEFAULT_SETTINGS: AppSettings = {
   defaultLandingPage: 'home',
   autoRefreshIntervalSec: 60,
   connectionProfile: {
-    systemSid: 'PRD',
+    systemSid: 'PRD01',
     instanceNumber: '00',
-    hostName: 'prd-app01.corp.local',
+    hostName: 'sap-prd01.corp.local',
     sapRouter: '/H/194.12.10.1/W/secret',
     clientNumber: '800',
-    description: 'Corporate S/4HANA Core Enterprise PRD',
+    description: 'Corporate S/4HANA Enterprise Cluster (DEMO)',
   },
 };
 
@@ -47,6 +51,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [currentPage, setCurrentPage] = useState<PageId>('home');
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [selectedSystem, setSelectedSystem] = useState<string>('ALL');
+  const [selectedSeverity, setSelectedSeverity] = useState<string>('');
+  const [selectedLandscape, setSelectedLandscape] = useState<string>('Production');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [settings, setSettings] = useState<AppSettings>(DEFAULT_SETTINGS);
 
@@ -61,7 +67,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setLocale(next);
   };
 
-  const navigate = (page: PageId) => {
+  const navigate = (
+    page: PageId,
+    options?: { system?: string; severity?: string; jobId?: string }
+  ) => {
+    if (options?.system) {
+      setSelectedSystem(options.system);
+    }
+    if (options?.severity) {
+      setSelectedSeverity(options.severity);
+    }
+    if (options?.jobId) {
+      setSelectedJobId(options.jobId);
+    }
     setCurrentPage(page);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -87,7 +105,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }, [locale]);
 
   const t = (key: string, params?: Record<string, string | number>): string => {
-    const dict = translations[locale] as Record<string, string>;
+    const dict = (translations[locale] || translations.en) as Record<string, string>;
     const fallbackDict = translations.en as Record<string, string>;
     let val = dict[key] || fallbackDict[key] || key;
     if (params) {
@@ -110,6 +128,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setSelectedJobId,
         selectedSystem,
         setSelectedSystem,
+        selectedSeverity,
+        setSelectedSeverity,
+        selectedLandscape,
+        setSelectedLandscape,
         searchQuery,
         setSearchQuery,
         settings,

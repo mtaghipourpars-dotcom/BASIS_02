@@ -10,16 +10,16 @@ rules:
   customer_reorder_allowed: false
 sidebar:
   - home
-  - overview
-  - systems
   - landscape
-  - alerts-events
   - performance
   - jobs-processes
   - database
-  - transports
   - security
+  - alerts-events
+  - interfaces-connectivity
+  - transports
   - backup-recovery
+  - system-operations
   - reports
   - settings
 pages:
@@ -31,16 +31,16 @@ pages:
       - "Uses the Home dashboard grid defined in docs/VISUAL_ARCHITECTURE.md."
       - "Fixture data is visibly labeled DEMO and has data quality states."
       - "All UI content is localized for English and Persian."
-  - id: overview
-    route: /overview
-    label_key: nav.overview
-    status: "layout-defined-in-docs-ISLANDS_VISUAL_SPEC-source-field-validation-pending"
-    spec_ref: "docs/ISLANDS_VISUAL_SPEC.md#island-10-system-operations"
-    acceptance:
-      - "Route resolves with correct active navigation state."
-      - "Page content is localized in both supported locales."
-      - "Operational issues link to authoritative detail pages and preserve filters."
-      - "No parallel health formula or unsupported causal inference."
+  - id: interfaces-connectivity
+    route: /interfaces-connectivity
+    label_key: nav.interfacesConnectivity
+    status: "source-mapped-and-integrated"
+    acceptance: ["Route resolves with correct active navigation state.", "Displays RFC destinations, IDoc queues, and HTTP services.", "Page content is localized in both supported locales."]
+  - id: system-operations
+    route: /system-operations
+    label_key: nav.systemOperations
+    status: "cross-domain-operational-coordination-matrix"
+    acceptance: ["Route resolves with correct active navigation state.", "Consolidated operational matrix of all ten domains.", "Page content is localized in both supported locales."]
   - id: systems
     route: /systems
     label_key: nav.systems

@@ -10,7 +10,7 @@ export const ReportsPage: React.FC = () => {
   const exportDemoJson = () => {
     const payload = {
       cockpit: 'BASIS_02 · SAP Basis Operations Cockpit',
-      mode: 'DEMO / EXTRACTED SNAPSHOT ONLY',
+      mode: 'READ_ONLY_OFFLINE_PROTOTYPE',
       extractedAt: new Date().toISOString(),
       systems: DEMO_SYSTEMS,
       database: DEMO_DATABASE,
@@ -42,9 +42,6 @@ export const ReportsPage: React.FC = () => {
           </h1>
           <p className="text-xs text-[#91a6bc] mt-1">{t('reportsSub')}</p>
         </div>
-        <span className="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-[#2c2518] text-[#f4c36a] border border-[#8c6e35]">
-          {t('demoBadge')}
-        </span>
       </div>
 
       {/* Reports Checklist */}

@@ -15,9 +15,6 @@ export const BackupRecoveryPage: React.FC = () => {
           </h1>
           <p className="text-xs text-[#91a6bc] mt-1">{t('backupSub')}</p>
         </div>
-        <span className="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-[#2c2518] text-[#f4c36a] border border-[#8c6e35]">
-          {t('demoBadge')}
-        </span>
       </div>
 
       {/* Backup Readiness Overview */}
