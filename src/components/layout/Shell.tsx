@@ -11,7 +11,6 @@ import {
   Package,
   HardDrive,
   Workflow,
-  FileBarChart,
   Settings as SettingsIcon,
   Search,
   Bell,
@@ -63,7 +62,6 @@ export const Shell: React.FC<{ children: React.ReactNode }> = ({ children }) => 
   ];
 
   const secondaryNavItems: NavItem[] = [
-    { id: 'reports', labelKey: 'reports', icon: <FileBarChart className="w-4 h-4" /> },
     { id: 'settings', labelKey: 'settings', icon: <SettingsIcon className="w-4 h-4" /> },
   ];
 
