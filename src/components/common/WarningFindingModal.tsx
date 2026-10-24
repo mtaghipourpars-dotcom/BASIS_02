@@ -1,6 +1,20 @@
-import React from 'react';
-import { ShieldAlert, X, AlertTriangle, CheckCircle2, Clock, FileText, Database, Key } from 'lucide-react';
+import React, { useState } from 'react';
+import {
+  ShieldAlert,
+  X,
+  AlertTriangle,
+  CheckCircle2,
+  Clock,
+  FileText,
+  Lock,
+  UserCheck,
+  ArrowUpRight,
+  BellOff,
+  CheckCheck,
+  Info,
+} from 'lucide-react';
 import { WarningRule, WarningFinding } from '../../types/mwe';
+import { WARNING_LIFECYCLE_ACTIONS } from '../../data/mweRegistry';
 import { useApp } from '../../context/AppContext';
 
 interface WarningFindingModalProps {
@@ -16,6 +30,7 @@ export const WarningFindingModal: React.FC<WarningFindingModalProps> = ({
 }) => {
   const { locale } = useApp();
   const isFa = locale === 'fa';
+  const [selectedLifecycleAction, setSelectedLifecycleAction] = useState<string | null>(null);
 
   const severityColor =
     rule.severity === 'Critical'
@@ -24,9 +39,27 @@ export const WarningFindingModal: React.FC<WarningFindingModalProps> = ({
       ? 'border-amber-500/40 bg-amber-950/20 text-amber-300'
       : 'border-cyan-500/40 bg-cyan-950/20 text-cyan-300';
 
+  const getLifecycleIcon = (code: string) => {
+    switch (code) {
+      case 'ACKNOWLEDGE':
+        return <CheckCircle2 className="w-3.5 h-3.5" />;
+      case 'ASSIGN':
+        return <UserCheck className="w-3.5 h-3.5" />;
+      case 'ESCALATE':
+        return <ArrowUpRight className="w-3.5 h-3.5" />;
+      case 'SNOOZE':
+      case 'SUPPRESS':
+        return <BellOff className="w-3.5 h-3.5" />;
+      case 'RESOLVE':
+        return <CheckCheck className="w-3.5 h-3.5" />;
+      default:
+        return <Lock className="w-3.5 h-3.5" />;
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs">
-      <div className="relative w-full max-w-2xl bg-[#0c1827] border border-cyan-500/30 rounded-lg shadow-2xl text-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="relative w-full max-w-2xl bg-[#0c1827] border border-cyan-500/30 rounded-lg shadow-2xl text-slate-200 overflow-hidden flex flex-col max-h-[92vh]">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-[#0e1d30]">
           <div className="flex items-center gap-3">
@@ -42,7 +75,9 @@ export const WarningFindingModal: React.FC<WarningFindingModalProps> = ({
                   {rule.severity}
                 </span>
                 <span className="text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-mono">
-                  {rule.status === 'enabled' ? (isFa ? 'فعال و ارزیابی‌شده' : 'Enabled & Evaluated') : (isFa ? 'پیکربندی‌نشده' : 'Not Configured')}
+                  {rule.status === 'enabled'
+                    ? isFa ? 'فعال و ارزیابی‌شده' : 'Enabled & Evaluated'
+                    : isFa ? 'پیکربندی‌نشده' : 'Not Configured'}
                 </span>
               </div>
               <h3 className="text-base font-bold text-white mt-1">
@@ -52,7 +87,7 @@ export const WarningFindingModal: React.FC<WarningFindingModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+            className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -131,6 +166,78 @@ export const WarningFindingModal: React.FC<WarningFindingModalProps> = ({
             </div>
           )}
 
+          {/* Track W: Alert Lifecycle Handling Actions */}
+          <div className="p-3.5 rounded bg-slate-900/90 border border-slate-800 space-y-2.5">
+            <div className="flex items-center justify-between">
+              <span className="font-semibold text-white flex items-center gap-1.5 text-xs">
+                <span className="w-2 h-2 rounded-full bg-amber-400" />
+                {isFa ? 'عملیات چرخه عمر هشدار (Track W Lifecycle Actions):' : 'Track W: Alert Lifecycle Handling Actions:'}
+              </span>
+              <span className="text-[10px] font-mono text-amber-300 px-1.5 py-0.2 rounded bg-amber-500/10 border border-amber-500/20">
+                {isFa ? 'فاز ۲: نیازمند مخزن ممیزی' : 'Phase 2 Gated'}
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-400">
+              {isFa
+                ? 'اقدامات تغییر چرخه عمر هشدار؛ طبق ضوابط فاز ۱ بدون شبیه‌سازی وضعیت و تا زمان اتصال مخزن ممیزی غیرفعال هستند.'
+                : 'Alert lifecycle transitions. In Phase 1 read-only mode, mutation actions are safely gated without fake state changes.'}
+            </p>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-1">
+              {WARNING_LIFECYCLE_ACTIONS.map((action) => {
+                const isSelected = selectedLifecycleAction === action.code;
+                return (
+                  <button
+                    key={action.code}
+                    type="button"
+                    onClick={() => setSelectedLifecycleAction(isSelected ? null : action.code)}
+                    className={`p-2 rounded border text-start transition-all cursor-pointer flex flex-col gap-1 ${
+                      isSelected
+                        ? 'bg-amber-950/30 border-amber-500/50 text-amber-200'
+                        : 'bg-slate-800/60 border-slate-700/60 text-slate-300 hover:border-slate-600'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between text-[11px] font-medium">
+                      <span className="flex items-center gap-1">
+                        {getLifecycleIcon(action.code)}
+                        <span>{isFa ? action.labelFa.split(' ')[0] : action.label.split(' ')[0]}</span>
+                      </span>
+                      <span className="text-[9px] font-mono px-1 rounded bg-slate-800 text-slate-400 border border-slate-700">
+                        Gated
+                      </span>
+                    </div>
+                    <span className="text-[10px] text-slate-400 truncate">
+                      {isFa ? action.labelFa : action.label}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Lifecycle Unmet Prerequisites Card */}
+            {selectedLifecycleAction && (
+              <div className="p-3 rounded bg-amber-950/30 border border-amber-500/30 text-amber-200 text-xs space-y-1.5 animate-fadeIn">
+                {(() => {
+                  const act = WARNING_LIFECYCLE_ACTIONS.find((a) => a.code === selectedLifecycleAction);
+                  if (!act) return null;
+                  return (
+                    <>
+                      <div className="font-semibold text-amber-300 flex items-center gap-1.5">
+                        <Lock className="w-3.5 h-3.5" />
+                        <span>{isFa ? act.labelFa : act.label} — {isFa ? 'پیش‌نیازهای فعال‌سازی:' : 'Activation Gates:'}</span>
+                      </div>
+                      <ul className="list-disc list-inside space-y-0.5 text-[11px] text-slate-300">
+                        {(isFa ? act.unmetPrerequisitesFa : act.unmetPrerequisites).map((req, i) => (
+                          <li key={i}>{req}</li>
+                        ))}
+                      </ul>
+                    </>
+                  );
+                })()}
+              </div>
+            )}
+          </div>
+
           {/* Missing Prerequisites if unconfigured */}
           {rule.status === 'not_configured' && (
             <div className="p-4 rounded bg-amber-950/20 border border-amber-500/30 space-y-2">
@@ -181,7 +288,7 @@ export const WarningFindingModal: React.FC<WarningFindingModalProps> = ({
           </span>
           <button
             onClick={onClose}
-            className="px-4 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-white font-medium transition-colors"
+            className="px-4 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-white font-medium transition-colors cursor-pointer"
           >
             {isFa ? 'بستن' : 'Close'}
           </button>

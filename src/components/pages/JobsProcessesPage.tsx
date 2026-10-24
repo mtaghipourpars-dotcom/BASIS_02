@@ -20,6 +20,7 @@ import {
 import { CapabilityTrackStatus } from '../common/CapabilityTrackStatus';
 import { WarningRulePanel } from '../common/WarningRulePanel';
 import { ControlledActionPanel } from '../common/ControlledActionPanel';
+import { EntityDetailDrawer, EntityDetailData } from '../common/EntityDetailDrawer';
 import { WARNING_RULES, CONTROLLED_ACTIONS } from '../../data/mweRegistry';
 
 export const JobsProcessesPage: React.FC = () => {
@@ -46,6 +47,95 @@ export const JobsProcessesPage: React.FC = () => {
   });
 
   const selectedJob = SM37_ROWS.find((r) => r.id === selectedJobId) || null;
+
+  const entityDetailData: EntityDetailData | null = selectedJob
+    ? {
+        id: selectedJob.id,
+        name: selectedJob.name,
+        islandId: 'jobs-processes',
+        entityType: 'job_run',
+        status: selectedJob.status,
+        attributes: {
+          [t('creatorLabel')]: selectedJob.creator,
+          [t('statusLabel')]: selectedJob.status,
+          [t('dateLabel')]: selectedJob.date,
+          [t('timeLabel')]: selectedJob.time,
+          [t('durationLabel')]: selectedJob.duration,
+          [t('delayLabel')]: selectedJob.delay,
+          [t('clientLabel')]: selectedJob.client,
+          [t('idLabel')]: selectedJob.id,
+        },
+        sourceLocator: selectedJob.source,
+        sourceArtifact: selectedJob.source,
+        observedAt: `${selectedJob.date} ${selectedJob.time}`,
+        confidence: 'High',
+        steps: [
+          {
+            stepNumber: 1,
+            program: selectedJob.name.replace(/[^A-Z0-9_]/g, '') || 'RSBUILDREORG',
+            variant: 'DEFAULT_VAR',
+            user: selectedJob.creator,
+            language: 'EN',
+            status: selectedJob.status === 'Canceled' ? 'Canceled' : 'Finished',
+          },
+        ],
+        jobLogs: [
+          {
+            timestamp: selectedJob.time !== '—' ? selectedJob.time : '00:00:01',
+            msgType: 'I',
+            msgId: 'BT',
+            msgNumber: '001',
+            messageText: `Job ${selectedJob.name} started for user ${selectedJob.creator}`,
+          },
+          {
+            timestamp: selectedJob.time !== '—' ? selectedJob.time : '00:00:02',
+            msgType: 'I',
+            msgId: 'BT',
+            msgNumber: '010',
+            messageText: `Step 1 started (program ${selectedJob.name.replace(/[^A-Z0-9_]/g, '') || 'RSBUILDREORG'})`,
+          },
+          ...(selectedJob.status === 'Canceled'
+            ? [
+                {
+                  timestamp: selectedJob.time !== '—' ? selectedJob.time : '00:00:03',
+                  msgType: 'E' as const,
+                  msgId: 'DB',
+                  msgNumber: '999',
+                  messageText: 'Lock wait timeout exceeded during enqueue request',
+                },
+                {
+                  timestamp: selectedJob.time !== '—' ? selectedJob.time : '00:00:03',
+                  msgType: 'E' as const,
+                  msgId: 'BT',
+                  msgNumber: '111',
+                  messageText: 'Job canceled after abnormal termination of step 1',
+                },
+              ]
+            : [
+                {
+                  timestamp: selectedJob.time !== '—' ? selectedJob.time : '00:00:03',
+                  msgType: 'S' as const,
+                  msgId: 'BT',
+                  msgNumber: '020',
+                  messageText: 'Job finished successfully with return code 0.',
+                },
+              ]),
+        ],
+        spools: [
+          {
+            spoolId: 'SP-104829',
+            title: `${selectedJob.name}_SPOOL`,
+            pages: 4,
+            format: 'X_65_132',
+            createdAt: selectedJob.time,
+          },
+        ],
+        relatedRecords: [
+          { islandId: 'alerts-events', title: `Event Log for ${selectedJob.name}`, id: 'EVT-01' },
+          { islandId: 'performance', title: `Work Process DIA/BTC Stats`, id: 'WP-01' },
+        ],
+      }
+    : null;
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -359,109 +449,12 @@ export const JobsProcessesPage: React.FC = () => {
         <div className="text-[11px] text-[#70869c]">{t('tableFoot')}</div>
       </div>
 
-      {/* Selected Job Evidence Drawer (Slide-Over) */}
-      <aside
-        id="detailDrawer"
-        aria-label="Job detail drawer"
-        className={`fixed top-0 end-0 z-50 h-full w-full sm:w-[440px] bg-[#0c1a29] border-s border-[#263a50] p-6 shadow-2xl flex flex-col justify-between overflow-y-auto transition-transform duration-300 ease-in-out ${
-          selectedJob ? 'translate-x-0 open' : 'translate-x-full rtl:-translate-x-full'
-        }`}
-      >
-        {selectedJob && (
-          <div className="space-y-5">
-            {/* Drawer Header */}
-            <div className="flex items-start justify-between pb-3 border-b border-[#263a50]">
-              <div>
-                <div className="text-[10px] font-bold text-cyan-400 uppercase tracking-wider">
-                  {t('detailEyebrow')}
-                </div>
-                <h2 id="detailJobName" className="text-base sm:text-lg font-bold text-white mt-0.5">
-                  {selectedJob.name}
-                </h2>
-                <div id="detailStatus" className="mt-1">
-                  {getStatusBadge(selectedJob.status)}
-                </div>
-              </div>
-              <button
-                type="button"
-                id="closeDrawer"
-                onClick={() => setSelectedJobId(null)}
-                aria-label="Close detail"
-                className="p-1 rounded-lg text-[#70869c] hover:text-white hover:bg-[#16273b] transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Grid of source-backed fields */}
-            <div id="detailGrid" className="grid grid-cols-2 gap-3 text-xs">
-              <div className="p-2.5 rounded-lg bg-[#101f31] border border-[#203349]">
-                <div className="text-[10px] text-[#70869c]">{t('creatorLabel')}</div>
-                <div className="font-semibold text-white tech-id mt-0.5">{selectedJob.creator}</div>
-              </div>
-              <div className="p-2.5 rounded-lg bg-[#101f31] border border-[#203349]">
-                <div className="text-[10px] text-[#70869c]">{t('statusLabel')}</div>
-                <div className="font-semibold text-white tech-id mt-0.5">{selectedJob.status}</div>
-              </div>
-              <div className="p-2.5 rounded-lg bg-[#101f31] border border-[#203349]">
-                <div className="text-[10px] text-[#70869c]">{t('dateLabel')}</div>
-                <div className="font-semibold text-white tech-id mt-0.5">{selectedJob.date}</div>
-              </div>
-              <div className="p-2.5 rounded-lg bg-[#101f31] border border-[#203349]">
-                <div className="text-[10px] text-[#70869c]">{t('timeLabel')}</div>
-                <div className="font-semibold text-white tech-id mt-0.5">{selectedJob.time}</div>
-              </div>
-              <div className="p-2.5 rounded-lg bg-[#101f31] border border-[#203349]">
-                <div className="text-[10px] text-[#70869c]">{t('durationLabel')}</div>
-                <div className="font-semibold text-white tech-id mt-0.5">{selectedJob.duration}</div>
-              </div>
-              <div className="p-2.5 rounded-lg bg-[#101f31] border border-[#203349]">
-                <div className="text-[10px] text-[#70869c]">{t('delayLabel')}</div>
-                <div className="font-semibold text-white tech-id mt-0.5">{selectedJob.delay}</div>
-              </div>
-              <div className="p-2.5 rounded-lg bg-[#101f31] border border-[#203349]">
-                <div className="text-[10px] text-[#70869c]">{t('clientLabel')}</div>
-                <div className="font-semibold text-white tech-id mt-0.5">{selectedJob.client}</div>
-              </div>
-              <div className="p-2.5 rounded-lg bg-[#101f31] border border-[#203349]">
-                <div className="text-[10px] text-[#70869c]">{t('idLabel')}</div>
-                <div className="font-semibold text-cyan-300 tech-id mt-0.5 font-mono">
-                  {selectedJob.id}
-                </div>
-              </div>
-            </div>
-
-            {/* Provenance and limitations */}
-            <div className="p-3.5 rounded-lg bg-[#101f31] border border-[#203349] space-y-2 text-xs">
-              <div className="font-semibold text-white flex items-center gap-1.5">
-                <Info className="w-3.5 h-3.5 text-cyan-400" />
-                <span>{t('provenance')}</span>
-              </div>
-              <p id="detailSource" className="text-[#91a6bc] text-[11px] font-mono ltr-isolate">
-                {t('sourceLabel')}: {selectedJob.source}
-              </p>
-              <p className="text-[#91a6bc] text-[11px]">{t('noNativeId')}</p>
-              <p className="text-[#91a6bc] text-[11px]">{t('noRelated')}</p>
-            </div>
-
-            {/* Phase 1 Read-only notice */}
-            <div className="p-3 rounded-lg bg-amber-950/20 border border-amber-800/40 text-amber-200 text-xs flex items-center gap-2">
-              <ShieldAlert className="w-4 h-4 shrink-0 text-amber-400" />
-              <span>{t('readOnlyActionDisabled')}</span>
-            </div>
-          </div>
-        )}
-
-        <div className="pt-4 border-t border-[#263a50]">
-          <button
-            type="button"
-            onClick={() => setSelectedJobId(null)}
-            className="w-full py-2 rounded-lg bg-[#14293f] hover:bg-[#1d3a5a] text-cyan-200 text-xs font-semibold border border-[#2c4e72] transition-colors"
-          >
-            Close Drawer
-          </button>
-        </div>
-      </aside>
+      {/* 5-Area Entity Detail Drawer with M toolbar, W lifecycle bar, and separated Job Definition vs Job Run E actions */}
+      <EntityDetailDrawer
+        entity={entityDetailData}
+        isOpen={!!selectedJob}
+        onClose={() => setSelectedJobId(null)}
+      />
     </section>
   );
 };

@@ -26,6 +26,7 @@ import { CapabilityTrackStatus } from '../common/CapabilityTrackStatus';
 import { WarningRulePanel } from '../common/WarningRulePanel';
 import { ControlledActionPanel } from '../common/ControlledActionPanel';
 import { WARNING_RULES, CONTROLLED_ACTIONS } from '../../data/mweRegistry';
+import { EntityDetailDrawer, EntityDetailData } from '../common/EntityDetailDrawer';
 
 interface DomainMatrixItem {
   id: PageId;
@@ -383,86 +384,43 @@ export const SystemOperationsPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Domain Detail Drawer */}
-      {selectedDomain && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-end">
-          <div className="bg-[#0b1727] border-s border-[#1b2b40] w-full max-w-md h-full p-6 shadow-2xl flex flex-col justify-between overflow-y-auto">
-            <div className="space-y-5">
-              <div className="flex items-center justify-between pb-3 border-b border-[#1b2b40]">
-                <div>
-                  <div className="text-[10px] text-cyan-400 font-bold uppercase tracking-wider">
-                    {selectedDomain.domainNumber} · Domain Coordination
-                  </div>
-                  <h3 className="text-lg font-bold text-white tech-id mt-0.5">
-                    {t(selectedDomain.nameKey)}
-                  </h3>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setSelectedDomain(null)}
-                  className="p-1.5 rounded-lg text-[#718aa6] hover:text-white hover:bg-[#14263c] transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              <div className="space-y-3 text-xs">
-                <div className="p-3 rounded-lg bg-[#0e1d2f] border border-[#1b2f48] space-y-1.5">
-                  <div className="flex justify-between py-1 border-b border-[#16273c]">
-                    <span className="text-[#88a2bd]">Reported State:</span>
-                    <span
-                      className={`font-semibold ${
-                        selectedDomain.status === 'Critical'
-                          ? 'text-rose-400'
-                          : selectedDomain.status === 'Attention'
-                          ? 'text-amber-400'
-                          : 'text-emerald-400'
-                      }`}
-                    >
-                      {selectedDomain.status}
-                    </span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-[#16273c]">
-                    <span className="text-[#88a2bd]">Telemetry Freshness:</span>
-                    <span className="font-mono text-cyan-300">{selectedDomain.freshness}</span>
-                  </div>
-                  <div className="flex justify-between py-1">
-                    <span className="text-[#88a2bd]">Evidence Coverage:</span>
-                    <span className="font-mono text-white font-bold">{selectedDomain.coveragePct}%</span>
-                  </div>
-                </div>
-
-                <div className="p-3 rounded-lg bg-[#0e1d2f] border border-[#1b2f48] space-y-1">
-                  <div className="text-[11px] text-[#7d96b2] font-semibold">Summary Finding</div>
-                  <p className="text-white text-xs leading-relaxed">{selectedDomain.summary}</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-2 pt-4">
-              <button
-                type="button"
-                onClick={() => {
-                  const target = selectedDomain.id;
-                  setSelectedDomain(null);
-                  navigate(target);
-                }}
-                className="w-full py-2.5 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-black text-xs font-bold transition-colors flex items-center justify-center gap-2"
-              >
-                <span>Open Island Detail Page</span>
-                <ArrowRight className="w-4 h-4 rtl:rotate-180" />
-              </button>
-              <button
-                type="button"
-                onClick={() => setSelectedDomain(null)}
-                className="w-full py-2 rounded-lg bg-[#14263c] hover:bg-[#1a334f] text-cyan-200 text-xs font-semibold border border-[#233f5d] transition-colors"
-              >
-                Close Drawer
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Selected Domain Detail Drawer via Unified EntityDetailDrawer */}
+      <EntityDetailDrawer
+        isOpen={!!selectedDomain}
+        entity={
+          selectedDomain
+            ? {
+                id: `DOM-${selectedDomain.id}`,
+                name: `${selectedDomain.domainNumber}: ${t(selectedDomain.nameKey)}`,
+                islandId: 'system-operations',
+                entityType: 'Operational Island Domain',
+                status: selectedDomain.status,
+                attributes: {
+                  'Domain Identifier': selectedDomain.domainNumber,
+                  'Operational Island': t(selectedDomain.nameKey),
+                  'Health Status': selectedDomain.status,
+                  'Telemetry Freshness': selectedDomain.freshness,
+                  'Evidence Coverage': `${selectedDomain.coveragePct}%`,
+                  'Monitored Scope': selectedDomain.activeItemCount,
+                  'Executive Summary': selectedDomain.summary,
+                },
+                sourceArtifact: 'SAP Solution Manager / Operations Coordinator Matrix',
+                sourceLocator: `MATRIX_${selectedDomain.domainNumber}_${selectedDomain.id.toUpperCase()}`,
+                observedAt: '1405-02-14 10:14:00 (Jalali)',
+                confidence: 'High',
+                provenanceNotes:
+                  'Synthesized domain health status. Automated remediation sequences and landscape freeze triggers are strictly disabled in Phase 1.',
+                provenanceNotesFa:
+                  'ثبت هماهنگی عملیاتی جزیره. خودکارسازی توالی‌های اصلاحی و توقف سامانه در فاز اول غیرفعال است.',
+                relatedRecords: [
+                  { islandId: selectedDomain.id, title: t(selectedDomain.nameKey), id: `ISLAND_${selectedDomain.id}`, count: 1 },
+                  { islandId: 'alerts-events', title: 'Correlated Warnings', id: 'CORR_WARN', count: 3 },
+                ],
+              }
+            : null
+        }
+        onClose={() => setSelectedDomain(null)}
+      />
     </div>
   );
 };

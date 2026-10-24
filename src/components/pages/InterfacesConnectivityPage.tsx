@@ -22,6 +22,7 @@ import {
 import { CapabilityTrackStatus } from '../common/CapabilityTrackStatus';
 import { WarningRulePanel } from '../common/WarningRulePanel';
 import { ControlledActionPanel } from '../common/ControlledActionPanel';
+import { EntityDetailDrawer } from '../common/EntityDetailDrawer';
 import { WARNING_RULES, CONTROLLED_ACTIONS } from '../../data/mweRegistry';
 
 export const InterfacesConnectivityPage: React.FC = () => {
@@ -317,86 +318,39 @@ export const InterfacesConnectivityPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Selected Interface Detail Drawer */}
-      {selectedInterface && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-end">
-          <div className="bg-[#0b1727] border-s border-[#1b2b40] w-full max-w-md h-full p-6 shadow-2xl flex flex-col justify-between overflow-y-auto">
-            <div className="space-y-5">
-              <div className="flex items-center justify-between pb-3 border-b border-[#1b2b40]">
-                <div>
-                  <div className="text-[10px] text-cyan-400 font-bold uppercase tracking-wider">
-                    Interface Specification · {selectedInterface.type}
-                  </div>
-                  <h3 className="text-lg font-bold text-white tech-id mt-0.5">
-                    {selectedInterface.name}
-                  </h3>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setSelectedInterface(null)}
-                  className="p-1.5 rounded-lg text-[#718aa6] hover:text-white hover:bg-[#14263c] transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              <div className="space-y-3 text-xs">
-                <div className="p-3 rounded-lg bg-[#0e1d2f] border border-[#1b2f48] space-y-1.5">
-                  <div className="text-[11px] text-[#7d96b2] font-semibold">Communication Parameters</div>
-                  <div className="flex justify-between py-1 border-b border-[#16273c]">
-                    <span className="text-[#88a2bd]">Destination ID:</span>
-                    <span className="font-mono text-cyan-300 font-bold">{selectedInterface.id}</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-[#16273c]">
-                    <span className="text-[#88a2bd]">Target Host:</span>
-                    <span className="font-mono text-white text-[11px]">{selectedInterface.targetHost}</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-[#16273c]">
-                    <span className="text-[#88a2bd]">Target Port:</span>
-                    <span className="font-mono text-white">{selectedInterface.port}</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-[#16273c]">
-                    <span className="text-[#88a2bd]">Protocol:</span>
-                    <span className="font-bold text-white">{selectedInterface.protocol}</span>
-                  </div>
-                  <div className="flex justify-between py-1">
-                    <span className="text-[#88a2bd]">Operational State:</span>
-                    <span
-                      className={`font-semibold ${
-                        selectedInterface.status === 'Online' ? 'text-emerald-400' : 'text-rose-400'
-                      }`}
-                    >
-                      {selectedInterface.status}
-                    </span>
-                  </div>
-                </div>
-
-                {selectedInterface.errorText && (
-                  <div className="p-3 rounded-lg bg-rose-950/20 border border-rose-800/40 text-rose-200 text-xs space-y-1">
-                    <div className="font-semibold text-rose-300 flex items-center gap-1.5">
-                      <AlertTriangle className="w-3.5 h-3.5" />
-                      <span>Reported Connection Error</span>
-                    </div>
-                    <p className="font-mono text-[11px] leading-relaxed">{selectedInterface.errorText}</p>
-                  </div>
-                )}
-
-                <div className="p-3 rounded-lg bg-amber-950/20 border border-amber-800/40 text-amber-200 text-[11px]">
-                  <strong>Phase 1 Read-Only:</strong> Triggering live connection test RFC echo or IDoc queue reprocessing is disabled.
-                </div>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => setSelectedInterface(null)}
-              className="w-full py-2 rounded-lg bg-[#14263c] hover:bg-[#1a334f] text-cyan-200 text-xs font-semibold border border-[#233f5d] transition-colors"
-            >
-              Close Interface Details
-            </button>
-          </div>
-        </div>
-      )}
+      {/* 5-Area Entity Detail Drawer */}
+      <EntityDetailDrawer
+        entity={
+          selectedInterface
+            ? {
+                id: selectedInterface.id,
+                name: `${selectedInterface.name} (${selectedInterface.type})`,
+                islandId: 'interfaces-connectivity',
+                entityType: 'rfc_destination',
+                status: selectedInterface.status,
+                attributes: {
+                  destinationId: selectedInterface.id,
+                  type: selectedInterface.type,
+                  targetHost: selectedInterface.targetHost,
+                  port: selectedInterface.port,
+                  protocol: selectedInterface.protocol,
+                  status: selectedInterface.status,
+                  error: selectedInterface.errorText || 'None',
+                },
+                sourceLocator: 'SM59 / RFCDES table',
+                sourceArtifact: 'SM59 RFC Destination Directory',
+                observedAt: '14:32:00',
+                confidence: 'High',
+                relatedRecords: [
+                  { islandId: 'alerts-events', title: `Gateway Logs for ${selectedInterface.name}`, id: 'LOG-01' },
+                  { islandId: 'landscape', title: `Host System ${selectedInterface.targetHost}`, id: 'SYS-01' },
+                ],
+              }
+            : null
+        }
+        isOpen={!!selectedInterface}
+        onClose={() => setSelectedInterface(null)}
+      />
     </div>
   );
 };

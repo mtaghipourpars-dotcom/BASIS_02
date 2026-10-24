@@ -187,10 +187,10 @@ export const Shell: React.FC<{ children: React.ReactNode }> = ({ children }) => 
             </div>
             <div className="text-start leading-tight">
               <div className="text-xs font-semibold text-white">
-                {COCKPIT_HEADER_INFO.userName}
+                {locale === 'fa' ? COCKPIT_HEADER_INFO.userNameFa : COCKPIT_HEADER_INFO.userNameEn}
               </div>
               <div className="text-[10px] text-[#718aa6]">
-                {COCKPIT_HEADER_INFO.userRole}
+                {locale === 'fa' ? COCKPIT_HEADER_INFO.userRoleFa : COCKPIT_HEADER_INFO.userRole}
               </div>
             </div>
             <ChevronDown className="w-3 h-3 text-[#718aa6]" />

@@ -27,6 +27,7 @@ import {
 import { CapabilityTrackStatus } from '../common/CapabilityTrackStatus';
 import { WarningRulePanel } from '../common/WarningRulePanel';
 import { ControlledActionPanel } from '../common/ControlledActionPanel';
+import { EntityDetailDrawer, EntityDetailData } from '../common/EntityDetailDrawer';
 import { WARNING_RULES, CONTROLLED_ACTIONS } from '../../data/mweRegistry';
 
 export const LandscapePage: React.FC = () => {
@@ -511,86 +512,47 @@ export const LandscapePage: React.FC = () => {
         </div>
       </div>
 
-      {/* Selected Instance Evidence Drawer */}
-      {selectedInstance && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-end">
-          <div className="bg-[#0b1727] border-s border-[#1b2b40] w-full max-w-md h-full p-6 shadow-2xl flex flex-col justify-between overflow-y-auto">
-            <div className="space-y-5">
-              <div className="flex items-center justify-between pb-3 border-b border-[#1b2b40]">
-                <div>
-                  <div className="text-[10px] text-cyan-400 font-bold uppercase tracking-wider">
-                    Source Evidence · Read Only
-                  </div>
-                  <h3 className="text-lg font-bold text-white tech-id mt-0.5">
-                    {selectedInstance.instanceId}
-                  </h3>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setSelectedInstance(null)}
-                  className="p-1.5 rounded-lg text-[#718aa6] hover:text-white hover:bg-[#14263c] transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              <div className="space-y-3 text-xs">
-                <div className="p-3 rounded-lg bg-[#0e1d2f] border border-[#1b2f48] space-y-1.5">
-                  <div className="text-[11px] text-[#7d96b2] font-semibold">Instance Specifications</div>
-                  <div className="flex justify-between py-1 border-b border-[#16273c]">
-                    <span className="text-[#88a2bd]">System ID:</span>
-                    <span className="font-bold text-white tech-id">{selectedInstance.systemId}</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-[#16273c]">
-                    <span className="text-[#88a2bd]">Instance Type:</span>
-                    <span className="font-bold text-cyan-300">{selectedInstance.instanceType}</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-[#16273c]">
-                    <span className="text-[#88a2bd]">Instance Number:</span>
-                    <span className="font-mono text-white">{selectedInstance.instanceNumber}</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-[#16273c]">
-                    <span className="text-[#88a2bd]">Network Host:</span>
-                    <span className="font-mono text-white text-[11px]">{selectedInstance.host}</span>
-                  </div>
-                  <div className="flex justify-between py-1">
-                    <span className="text-[#88a2bd]">Reported State:</span>
-                    <span className="font-semibold text-emerald-400">{selectedInstance.status}</span>
-                  </div>
-                </div>
-
-                <div className="p-3 rounded-lg bg-[#0e1d2f] border border-[#1b2f48] space-y-1.5">
-                  <div className="text-[11px] text-[#7d96b2] font-semibold">Telemetry &amp; Resource Load</div>
-                  <div className="flex justify-between py-1 border-b border-[#16273c]">
-                    <span className="text-[#88a2bd]">Current CPU Load:</span>
-                    <span className="font-mono text-white font-bold">{selectedInstance.cpuPercent}%</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-[#16273c]">
-                    <span className="text-[#88a2bd]">Memory Allocation:</span>
-                    <span className="font-mono text-white font-bold">{selectedInstance.memoryPercent}%</span>
-                  </div>
-                  <div className="flex justify-between py-1">
-                    <span className="text-[#88a2bd]">Observed Timestamp:</span>
-                    <span className="font-mono text-cyan-300">{selectedInstance.observedAt}</span>
-                  </div>
-                </div>
-
-                <div className="p-3 rounded-lg bg-amber-950/20 border border-amber-800/40 text-amber-200 text-[11px]">
-                  <strong>Phase 1 Read-Only:</strong> Instance operational commands (startsap, stopsap, restart) remain strictly disabled.
-                </div>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => setSelectedInstance(null)}
-              className="w-full py-2 rounded-lg bg-[#14263c] hover:bg-[#1a334f] text-cyan-200 text-xs font-semibold border border-[#233f5d] transition-colors"
-            >
-              Close Evidence Drawer
-            </button>
-          </div>
-        </div>
-      )}
+      {/* 5-Area Entity Detail Drawer */}
+      <EntityDetailDrawer
+        entity={
+          selectedInstance
+            ? {
+                id: selectedInstance.instanceId,
+                name: `${selectedInstance.systemId} / ${selectedInstance.instanceId}`,
+                islandId: 'landscape',
+                entityType: 'instance',
+                status: selectedInstance.status,
+                attributes: {
+                  systemId: selectedInstance.systemId,
+                  instanceNumber: selectedInstance.instanceNumber,
+                  instanceType: selectedInstance.instanceType,
+                  environment: selectedInstance.environment,
+                  host: selectedInstance.host,
+                  cpuPercent: `${selectedInstance.cpuPercent}%`,
+                  memoryPercent: `${selectedInstance.memoryPercent}%`,
+                  dataState: selectedInstance.dataState,
+                },
+                sourceLocator: selectedInstance.source,
+                sourceArtifact: selectedInstance.source,
+                observedAt: selectedInstance.observedAt,
+                confidence: 'High',
+                workProcesses: [
+                  { wpNo: 0, type: 'DIA', pid: '20491', status: 'Running', program: 'SAPMSSY1', cpuSec: 12 },
+                  { wpNo: 1, type: 'DIA', pid: '20492', status: 'Waiting', program: '—', cpuSec: 4 },
+                  { wpNo: 2, type: 'BTC', pid: '20493', status: 'Running', program: 'RSBUILDREORG', cpuSec: 85 },
+                  { wpNo: 3, type: 'UPD', pid: '20494', status: 'Waiting', program: '—', cpuSec: 2 },
+                ],
+                relatedRecords: [
+                  { islandId: 'performance', title: `Performance Metrics for ${selectedInstance.instanceId}`, id: 'PRF-01' },
+                  { islandId: 'jobs-processes', title: `Active Background Jobs on ${selectedInstance.systemId}`, id: 'JOB-01' },
+                  { islandId: 'alerts-events', title: `System Log Events for ${selectedInstance.host}`, id: 'EVT-01' },
+                ],
+              }
+            : null
+        }
+        isOpen={!!selectedInstance}
+        onClose={() => setSelectedInstance(null)}
+      />
     </div>
   );
 };

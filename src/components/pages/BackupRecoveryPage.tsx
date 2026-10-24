@@ -23,6 +23,7 @@ import { CapabilityTrackStatus } from '../common/CapabilityTrackStatus';
 import { WarningRulePanel } from '../common/WarningRulePanel';
 import { ControlledActionPanel } from '../common/ControlledActionPanel';
 import { WARNING_RULES, CONTROLLED_ACTIONS } from '../../data/mweRegistry';
+import { EntityDetailDrawer, EntityDetailData } from '../common/EntityDetailDrawer';
 
 export const BackupRecoveryPage: React.FC = () => {
   const { t } = useApp();
@@ -301,69 +302,44 @@ export const BackupRecoveryPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Selected Backup Detail Drawer */}
-      {selectedBackup && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-end">
-          <div className="bg-[#0b1727] border-s border-[#1b2b40] w-full max-w-md h-full p-6 shadow-2xl flex flex-col justify-between overflow-y-auto">
-            <div className="space-y-5">
-              <div className="flex items-center justify-between pb-3 border-b border-[#1b2b40]">
-                <div>
-                  <div className="text-[10px] text-cyan-400 font-bold uppercase tracking-wider">
-                    Backup Catalog Record · DB12
-                  </div>
-                  <h3 className="text-lg font-bold text-white tech-id mt-0.5">
-                    {selectedBackup.backupId}
-                  </h3>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setSelectedBackup(null)}
-                  className="p-1.5 rounded-lg text-[#718aa6] hover:text-white hover:bg-[#14263c] transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              <div className="space-y-3 text-xs">
-                <div className="p-3 rounded-lg bg-[#0e1d2f] border border-[#1b2f48] space-y-1.5">
-                  <div className="flex justify-between py-1 border-b border-[#16273c]">
-                    <span className="text-[#88a2bd]">Database SID:</span>
-                    <span className="font-bold text-white tech-id">{selectedBackup.sid}</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-[#16273c]">
-                    <span className="text-[#88a2bd]">Backup Type:</span>
-                    <span className="font-bold text-cyan-300">{selectedBackup.type}</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-[#16273c]">
-                    <span className="text-[#88a2bd]">Execution Duration:</span>
-                    <span className="font-mono text-white">{selectedBackup.duration}</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-[#16273c]">
-                    <span className="text-[#88a2bd]">Compressed Size:</span>
-                    <span className="font-mono text-white font-bold">{selectedBackup.sizeGb} GB</span>
-                  </div>
-                  <div className="flex justify-between py-1">
-                    <span className="text-[#88a2bd]">Storage Target:</span>
-                    <span className="font-mono text-cyan-300 text-[11px] text-end">{selectedBackup.destination}</span>
-                  </div>
-                </div>
-
-                <div className="p-3 rounded-lg bg-amber-950/20 border border-amber-800/40 text-amber-200 text-[11px]">
-                  <strong>Phase 1 Read-Only:</strong> Initiating database restore, disaster recovery drill failover, or backup deletion is disabled.
-                </div>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => setSelectedBackup(null)}
-              className="w-full py-2 rounded-lg bg-[#14263c] hover:bg-[#1a334f] text-cyan-200 text-xs font-semibold border border-[#233f5d] transition-colors"
-            >
-              Close Backup Details
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Selected Backup Detail Drawer via Unified EntityDetailDrawer */}
+      <EntityDetailDrawer
+        isOpen={!!selectedBackup}
+        entity={
+          selectedBackup
+            ? {
+                id: selectedBackup.backupId,
+                name: `Backup: ${selectedBackup.backupId} (${selectedBackup.type})`,
+                islandId: 'backup-recovery',
+                entityType: 'Database Backup (DB12 / DB13)',
+                status: selectedBackup.status,
+                attributes: {
+                  'Backup ID': selectedBackup.backupId,
+                  'Database SID': selectedBackup.sid,
+                  'Backup Type': selectedBackup.type,
+                  'Operational Status': selectedBackup.status,
+                  'Execution Duration': selectedBackup.duration,
+                  'Compressed Archive Size': `${selectedBackup.sizeGb} GB`,
+                  'Storage Destination': selectedBackup.destination,
+                  'Start Timestamp': selectedBackup.startTime,
+                },
+                sourceArtifact: 'SAP DB12 / DB13 Backup Catalog Log',
+                sourceLocator: `BK_${selectedBackup.backupId}_SID_${selectedBackup.sid}`,
+                observedAt: '1405-02-14 10:14:00 (Jalali)',
+                confidence: 'High',
+                provenanceNotes:
+                  'Observed backup catalog entry. Point-in-time restore, log replay, and backup cancel/deletion are strictly disabled in Phase 1.',
+                provenanceNotesFa:
+                  'ثبت شناسه پشتیبان در کاتالوگ DB12. بازیابی نقطه در زمان، بازپخش لاگ‌ها یا لغو پشتیبان‌گیری در فاز اول غیرفعال است.',
+                relatedRecords: [
+                  { islandId: 'database', title: 'Database Storage (DB02)', id: 'DB02_VOL', count: 1 },
+                  { islandId: 'jobs-processes', title: 'Background Jobs (DB13 Jobs)', id: 'SM37_BK', count: 1 },
+                ],
+              }
+            : null
+        }
+        onClose={() => setSelectedBackup(null)}
+      />
     </div>
   );
 };

@@ -11,8 +11,11 @@ import {
 export const COCKPIT_HEADER_INFO = {
   appName: 'Basis Operations Cockpit',
   subtitle: 'Monitor · Warn · Execute',
-  userName: 'Mehdi Taghipour',
+  userName: 'Mehrdad Taghipour',
+  userNameEn: 'Mehrdad Taghipour',
+  userNameFa: 'مهرداد تقی پور',
   userRole: 'Basis Lead Architect',
+  userRoleFa: 'معمار ارشد Basis',
   lastUpdateStr: 'Apr 26, 2025 14:32',
   selectedLandscape: 'Production',
 };

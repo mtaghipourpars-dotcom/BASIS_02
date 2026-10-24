@@ -23,6 +23,7 @@ import { CapabilityTrackStatus } from '../common/CapabilityTrackStatus';
 import { WarningRulePanel } from '../common/WarningRulePanel';
 import { ControlledActionPanel } from '../common/ControlledActionPanel';
 import { WARNING_RULES, CONTROLLED_ACTIONS } from '../../data/mweRegistry';
+import { EntityDetailDrawer, EntityDetailData } from '../common/EntityDetailDrawer';
 
 export const PerformancePage: React.FC = () => {
   const { t, selectedSystem, setSelectedSystem } = useApp();
@@ -465,76 +466,47 @@ export const PerformancePage: React.FC = () => {
         </div>
       </div>
 
-      {/* Selected Work Process Detail Drawer */}
-      {selectedWP && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-end">
-          <div className="bg-[#0b1727] border-s border-[#1b2b40] w-full max-w-md h-full p-6 shadow-2xl flex flex-col justify-between overflow-y-auto">
-            <div className="space-y-5">
-              <div className="flex items-center justify-between pb-3 border-b border-[#1b2b40]">
-                <div>
-                  <div className="text-[10px] text-cyan-400 font-bold uppercase tracking-wider">
-                    Work Process Evidence · SM50
-                  </div>
-                  <h3 className="text-lg font-bold text-white tech-id mt-0.5">
-                    WP No. {selectedWP.no} ({selectedWP.type})
-                  </h3>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setSelectedWP(null)}
-                  className="p-1.5 rounded-lg text-[#718aa6] hover:text-white hover:bg-[#14263c] transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              <div className="space-y-3 text-xs">
-                <div className="p-3 rounded-lg bg-[#0e1d2f] border border-[#1b2f48] space-y-1.5">
-                  <div className="text-[11px] text-[#7d96b2] font-semibold">Process Details</div>
-                  <div className="flex justify-between py-1 border-b border-[#16273c]">
-                    <span className="text-[#88a2bd]">PID (OS Level):</span>
-                    <span className="font-mono text-white tech-id">{selectedWP.pid}</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-[#16273c]">
-                    <span className="text-[#88a2bd]">Status:</span>
-                    <span className="font-semibold text-emerald-400">{selectedWP.status}</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-[#16273c]">
-                    <span className="text-[#88a2bd]">Execution Time:</span>
-                    <span className="font-mono text-cyan-300">{selectedWP.time} seconds</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-[#16273c]">
-                    <span className="text-[#88a2bd]">Active ABAP Program:</span>
-                    <span className="font-mono text-white">{selectedWP.program || 'None (Idle)'}</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-[#16273c]">
-                    <span className="text-[#88a2bd]">Client / User:</span>
-                    <span className="text-white font-semibold">
-                      {selectedWP.client ? `Client ${selectedWP.client} (${selectedWP.user})` : 'System Daemon'}
-                    </span>
-                  </div>
-                  <div className="flex justify-between py-1">
-                    <span className="text-[#88a2bd]">Current Action:</span>
-                    <span className="text-white">{selectedWP.action || 'Idle wait'}</span>
-                  </div>
-                </div>
-
-                <div className="p-3 rounded-lg bg-amber-950/20 border border-amber-800/40 text-amber-200 text-[11px]">
-                  <strong>Phase 1 Read-Only:</strong> Work process termination (kill PID, cancel with core dump) or ABAP debug session triggers are disabled.
-                </div>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => setSelectedWP(null)}
-              className="w-full py-2 rounded-lg bg-[#14263c] hover:bg-[#1a334f] text-cyan-200 text-xs font-semibold border border-[#233f5d] transition-colors"
-            >
-              Close Process Evidence
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Selected Work Process Detail Drawer via Unified EntityDetailDrawer */}
+      <EntityDetailDrawer
+        isOpen={!!selectedWP}
+        entity={
+          selectedWP
+            ? {
+                id: `WP-${selectedWP.no}-${selectedWP.pid}`,
+                name: `Work Process No. ${selectedWP.no} (${selectedWP.type})`,
+                islandId: 'performance',
+                entityType: 'Work Process (SM50)',
+                status: selectedWP.status,
+                attributes: {
+                  'Process Number': `#${selectedWP.no}`,
+                  'Process Type': selectedWP.type,
+                  'OS PID': selectedWP.pid,
+                  'Current Status': selectedWP.status,
+                  'Execution Time': `${selectedWP.time} seconds`,
+                  'Active Program': selectedWP.program || 'None (Idle)',
+                  'Client / User': selectedWP.client
+                    ? `Client ${selectedWP.client} (${selectedWP.user})`
+                    : 'System Daemon',
+                  'Action Description': selectedWP.action || 'Idle wait',
+                },
+                sourceArtifact: 'SAP SM50 / ST03N Work Process Snapshot',
+                sourceLocator: `D11_WP_${selectedWP.no}_PID_${selectedWP.pid}`,
+                observedAt: '1405-02-14 10:14:00 (Jalali)',
+                confidence: 'High',
+                provenanceNotes:
+                  'Observed process state snapshot. Process termination and ABAP debug attaches are strictly gated in Phase 1.',
+                provenanceNotesFa:
+                  'ثبت وضعیت پردازش کاری SM50. خاتمه فرآیند یا اجرای اشکال‌زدایی در فاز اول غیرفعال است.',
+                relatedRecords: [
+                  { islandId: 'jobs-processes', title: 'Background Jobs (SM37)', id: 'SM37_JOBS', count: 12 },
+                  { islandId: 'landscape', title: 'Instance D11', id: 'D11_INST', count: 1 },
+                  { islandId: 'alerts-events', title: 'System Logs (SM21)', id: 'SM21_LOGS', count: 2 },
+                ],
+              }
+            : null
+        }
+        onClose={() => setSelectedWP(null)}
+      />
     </div>
   );
 };

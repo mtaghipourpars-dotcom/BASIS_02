@@ -54,14 +54,30 @@ export interface WarningRule {
   findings?: WarningFinding[];
 }
 
+export type ActionCategory =
+  | 'Job Definition'
+  | 'Job Run'
+  | 'Service Management'
+  | 'Instance Management'
+  | 'Workload Management'
+  | 'Storage & Volumes'
+  | 'Security & Users'
+  | 'Log & Updates'
+  | 'Connection & Queues'
+  | 'Transport & Objects'
+  | 'Backup & DR'
+  | 'Orchestration';
+
 export interface ControlledAction {
   actionId: string; // e.g. ACT-LAN-001
+  actionCode?: string; // e.g. RELEASE, STOP, CANCEL, RERUN, RESTART
   version: string;
   islandId: PageId;
   name: string;
   nameFa: string;
   description: string;
   descriptionFa: string;
+  category?: ActionCategory;
   targetEntityType: string;
   purpose: string;
   purposeFa: string;
@@ -82,6 +98,28 @@ export interface ControlledAction {
   verificationCriteriaFa: string;
 }
 
+export interface EntityMonitoringAction {
+  id: string;
+  code: string; // e.g. JOB_DETAILS, STATUS, REFRESH, STEP, JOB_LOG, SPOOL
+  label: string;
+  labelFa: string;
+  iconName?: string;
+  description: string;
+  descriptionFa: string;
+  isAvailable: boolean;
+  unavailabilityReason?: string;
+  unavailabilityReasonFa?: string;
+}
+
+export interface WarningLifecycleAction {
+  code: 'ACKNOWLEDGE' | 'ASSIGN' | 'ESCALATE' | 'SNOOZE' | 'SUPPRESS' | 'RESOLVE';
+  label: string;
+  labelFa: string;
+  status: 'not_configured' | 'gated';
+  unmetPrerequisites: string[];
+  unmetPrerequisitesFa: string[];
+}
+
 export interface IslandMWEState {
   islandId: PageId;
   mActive: boolean;
@@ -89,4 +127,5 @@ export interface IslandMWEState {
   eActive: boolean; // Always false in Phase 1
   rules: WarningRule[];
   actions: ControlledAction[];
+  monitoringActions?: EntityMonitoringAction[];
 }

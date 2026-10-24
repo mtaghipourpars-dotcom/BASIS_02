@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Lock, Shield, ChevronRight, Ban, Info } from 'lucide-react';
+import { Lock, Shield, ChevronRight, Ban, Filter, Layers } from 'lucide-react';
 import { ControlledAction } from '../../types/mwe';
 import { ActionPreflightModal } from './ActionPreflightModal';
 import { useApp } from '../../context/AppContext';
@@ -18,6 +18,17 @@ export const ControlledActionPanel: React.FC<ControlledActionPanelProps> = ({
   const { locale } = useApp();
   const isFa = locale === 'fa';
   const [selectedAction, setSelectedAction] = useState<ControlledAction | null>(null);
+  const [categoryFilter, setCategoryFilter] = useState<string>('ALL');
+
+  // Collect unique categories if present
+  const categories = Array.from(
+    new Set(actions.map((a) => a.category).filter(Boolean))
+  ) as string[];
+
+  const filteredActions =
+    categoryFilter === 'ALL'
+      ? actions
+      : actions.filter((a) => a.category === categoryFilter);
 
   return (
     <div className={`bg-[#0c1827] border border-slate-800 rounded-lg p-4 space-y-3.5 ${className}`}>
@@ -51,14 +62,43 @@ export const ControlledActionPanel: React.FC<ControlledActionPanelProps> = ({
         </div>
       )}
 
+      {/* Category Pills (e.g. Job Definition vs Job Run) */}
+      {categories.length > 1 && (
+        <div className="flex items-center gap-1.5 flex-wrap text-[11px]">
+          <button
+            onClick={() => setCategoryFilter('ALL')}
+            className={`px-2.5 py-1 rounded transition-colors ${
+              categoryFilter === 'ALL'
+                ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-semibold'
+                : 'bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800'
+            }`}
+          >
+            {isFa ? `همه (${actions.length})` : `All (${actions.length})`}
+          </button>
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setCategoryFilter(cat)}
+              className={`px-2.5 py-1 rounded transition-colors ${
+                categoryFilter === cat
+                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-semibold'
+                  : 'bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800'
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* Actions List */}
-      <div className="space-y-2.5">
-        {actions.length === 0 ? (
+      <div className="space-y-2.5 max-h-[500px] overflow-y-auto pr-1">
+        {filteredActions.length === 0 ? (
           <div className="p-3 rounded bg-slate-900 text-slate-400 text-xs text-center">
             {isFa ? 'هیچ کاتالوگ اقدامی برای این زمینه تعریف نشده است.' : 'No approved action catalog for this context.'}
           </div>
         ) : (
-          actions.map((act) => {
+          filteredActions.map((act) => {
             const riskColor =
               act.riskLevel === 'Critical'
                 ? 'bg-red-500/20 text-red-300 border-red-500/30'
@@ -73,13 +113,23 @@ export const ControlledActionPanel: React.FC<ControlledActionPanelProps> = ({
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="space-y-0.5">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <span className="font-mono text-[10px] font-bold text-cyan-400">
                         {act.actionId}
                       </span>
+                      {act.actionCode && (
+                        <span className="text-[10px] font-mono px-1 py-0.2 rounded bg-slate-800 text-cyan-200 border border-cyan-500/20">
+                          {act.actionCode}
+                        </span>
+                      )}
                       <span className={`text-[10px] px-1.5 py-0.2 rounded border font-semibold ${riskColor}`}>
                         {act.riskLevel}
                       </span>
+                      {act.category && (
+                        <span className="text-[9px] px-1.5 py-0.2 rounded bg-slate-800/80 text-slate-400 font-sans">
+                          {act.category}
+                        </span>
+                      )}
                     </div>
                     <h4 className="text-xs font-semibold text-white">
                       {isFa ? act.nameFa : act.name}
@@ -99,7 +149,7 @@ export const ControlledActionPanel: React.FC<ControlledActionPanelProps> = ({
                 <div className="flex items-center justify-between pt-2 border-t border-slate-800/80">
                   <button
                     onClick={() => setSelectedAction(act)}
-                    className="text-[11px] text-cyan-400 hover:text-cyan-300 flex items-center gap-1 font-medium transition-colors"
+                    className="text-[11px] text-cyan-400 hover:text-cyan-300 flex items-center gap-1 font-medium transition-colors cursor-pointer"
                   >
                     <Shield className="w-3.5 h-3.5 text-cyan-400" />
                     <span>{isFa ? 'بررسی پیش‌نیازها و گیت‌ها' : 'Preflight Checklist & Gates'}</span>

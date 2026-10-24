@@ -22,6 +22,7 @@ import { CapabilityTrackStatus } from '../common/CapabilityTrackStatus';
 import { WarningRulePanel } from '../common/WarningRulePanel';
 import { ControlledActionPanel } from '../common/ControlledActionPanel';
 import { WARNING_RULES, CONTROLLED_ACTIONS } from '../../data/mweRegistry';
+import { EntityDetailDrawer, EntityDetailData } from '../common/EntityDetailDrawer';
 
 export const SecurityPage: React.FC = () => {
   const { t } = useApp();
@@ -258,69 +259,73 @@ export const SecurityPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Session Evidence Drawer */}
-      {selectedSession && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-end">
-          <div className="bg-[#0b1727] border-s border-[#1b2b40] w-full max-w-md h-full p-6 shadow-2xl flex flex-col justify-between overflow-y-auto">
-            <div className="space-y-5">
-              <div className="flex items-center justify-between pb-3 border-b border-[#1b2b40]">
-                <div>
-                  <div className="text-[10px] text-cyan-400 font-bold uppercase tracking-wider">
-                    Session Record · SM04
-                  </div>
-                  <h3 className="text-lg font-bold text-white tech-id mt-0.5">
-                    User: {selectedSession.user}
-                  </h3>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setSelectedSession(null)}
-                  className="p-1.5 rounded-lg text-[#718aa6] hover:text-white hover:bg-[#14263c] transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              <div className="space-y-3 text-xs">
-                <div className="p-3 rounded-lg bg-[#0e1d2f] border border-[#1b2f48] space-y-1.5">
-                  <div className="flex justify-between py-1 border-b border-[#16273c]">
-                    <span className="text-[#88a2bd]">Client:</span>
-                    <span className="font-bold text-white tech-id">{selectedSession.client}</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-[#16273c]">
-                    <span className="text-[#88a2bd]">Terminal Address:</span>
-                    <span className="font-mono text-cyan-300">{selectedSession.terminal}</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-[#16273c]">
-                    <span className="text-[#88a2bd]">Active Transaction:</span>
-                    <span className="font-bold text-emerald-400 font-mono">{selectedSession.tcode}</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-[#16273c]">
-                    <span className="text-[#88a2bd]">Logon Timestamp:</span>
-                    <span className="font-mono text-white">{selectedSession.time}</span>
-                  </div>
-                  <div className="flex justify-between py-1">
-                    <span className="text-[#88a2bd]">Memory Consumption:</span>
-                    <span className="font-mono text-white">{selectedSession.memoryKb} KB</span>
-                  </div>
-                </div>
-
-                <div className="p-3 rounded-lg bg-amber-950/20 border border-amber-800/40 text-amber-200 text-[11px]">
-                  <strong>Phase 1 Read-Only:</strong> Session termination (delete session via SM04) or locking user accounts is disabled.
-                </div>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => setSelectedSession(null)}
-              className="w-full py-2 rounded-lg bg-[#14263c] hover:bg-[#1a334f] text-cyan-200 text-xs font-semibold border border-[#233f5d] transition-colors"
-            >
-              Close Session Detail
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Unified EntityDetailDrawer for Sessions (SM04) & Enqueue Locks (SM12) */}
+      <EntityDetailDrawer
+        isOpen={!!selectedSession || !!selectedLock}
+        entity={
+          selectedSession
+            ? {
+                id: `SM04-${selectedSession.client}-${selectedSession.user}-${selectedSession.terminal}`,
+                name: `User Session: ${selectedSession.user} (Client ${selectedSession.client})`,
+                islandId: 'security',
+                entityType: 'User Session (SM04)',
+                status: 'Active',
+                attributes: {
+                  'User ID': selectedSession.user,
+                  'Client': selectedSession.client,
+                  'Terminal Address': selectedSession.terminal,
+                  'Active Transaction': selectedSession.tcode,
+                  'Logon Timestamp': selectedSession.time,
+                  'Sub-Sessions': `${selectedSession.sessions}`,
+                  'Allocated Memory': `${selectedSession.memoryKb} KB`,
+                },
+                sourceArtifact: 'SAP SM04 Active Sessions Snapshot',
+                sourceLocator: `SM04_USR_${selectedSession.user}_CLI_${selectedSession.client}`,
+                observedAt: '1405-02-14 10:14:00 (Jalali)',
+                confidence: 'High',
+                provenanceNotes:
+                  'Active user session extracted from SM04. Terminating user sessions or revoking authorizations requires Phase 2 controlled execution.',
+                provenanceNotesFa:
+                  'ثبت اطلاعات نشست کاربر از SM04. قطع نشست کاربر یا لغو مجوزها در فاز اول غیرفعال است.',
+                relatedRecords: [
+                  { islandId: 'performance', title: 'Work Processes (SM50)', id: 'SM50_ACTIVE', count: 1 },
+                  { islandId: 'alerts-events', title: 'Security Audit Log (SM21)', id: 'SM21_SEC', count: 3 },
+                ],
+              }
+            : selectedLock
+            ? {
+                id: `SM12-${selectedLock.table}-${selectedLock.lockArg}`,
+                name: `Enqueue Lock: ${selectedLock.table}`,
+                islandId: 'security',
+                entityType: 'Enqueue Lock (SM12)',
+                status: selectedLock.mode,
+                attributes: {
+                  'Locked Table': selectedLock.table,
+                  'Lock Mode': selectedLock.mode,
+                  'Lock Argument': selectedLock.lockArg,
+                  'Lock Owner (User)': selectedLock.user,
+                  'Client': selectedLock.client,
+                  'Lock Timestamp': selectedLock.time,
+                },
+                sourceArtifact: 'SAP SM12 Enqueue Lock Table Snapshot',
+                sourceLocator: `SM12_TBL_${selectedLock.table}_ARG_${selectedLock.lockArg.slice(0, 10)}`,
+                observedAt: '1405-02-14 10:14:00 (Jalali)',
+                confidence: 'High',
+                provenanceNotes:
+                  'Active enqueue lock entry. Deleting locks via SM12 is disabled in Phase 1 to prevent data inconsistency.',
+                provenanceNotesFa:
+                  'ورودی قفل انکیو فعال. آزادسازی یا حذف قفل از طریق SM12 در فاز اول غیرفعال است.',
+                relatedRecords: [
+                  { islandId: 'performance', title: 'Work Processes (SM50)', id: 'SM50_ENQ', count: 1 },
+                ],
+              }
+            : null
+        }
+        onClose={() => {
+          setSelectedSession(null);
+          setSelectedLock(null);
+        }}
+      />
     </div>
   );
 };

@@ -22,6 +22,7 @@ import { CapabilityTrackStatus } from '../common/CapabilityTrackStatus';
 import { WarningRulePanel } from '../common/WarningRulePanel';
 import { ControlledActionPanel } from '../common/ControlledActionPanel';
 import { WARNING_RULES, CONTROLLED_ACTIONS } from '../../data/mweRegistry';
+import { EntityDetailDrawer, EntityDetailData } from '../common/EntityDetailDrawer';
 
 export const AlertsEventsPage: React.FC = () => {
   const { t, selectedSeverity, setSelectedSeverity, navigate } = useApp();
@@ -263,81 +264,44 @@ export const AlertsEventsPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Selected Event Detail Drawer */}
-      {selectedEvent && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-end">
-          <div className="bg-[#0b1727] border-s border-[#1b2b40] w-full max-w-md h-full p-6 shadow-2xl flex flex-col justify-between overflow-y-auto">
-            <div className="space-y-5">
-              <div className="flex items-center justify-between pb-3 border-b border-[#1b2b40]">
-                <div>
-                  <div className="text-[10px] text-cyan-400 font-bold uppercase tracking-wider">
-                    Event Technical Record · {selectedEvent.source}
-                  </div>
-                  <h3 className="text-lg font-bold text-white tech-id mt-0.5">
-                    {selectedEvent.code}
-                  </h3>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setSelectedEvent(null)}
-                  className="p-1.5 rounded-lg text-[#718aa6] hover:text-white hover:bg-[#14263c] transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              <div className="space-y-3 text-xs">
-                <div className="p-3 rounded-lg bg-[#0e1d2f] border border-[#1b2f48] space-y-1.5">
-                  <div className="text-[11px] text-[#7d96b2] font-semibold">Event Parameters</div>
-                  <div className="flex justify-between py-1 border-b border-[#16273c]">
-                    <span className="text-[#88a2bd]">Event ID:</span>
-                    <span className="font-mono text-cyan-300 font-bold">{selectedEvent.id}</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-[#16273c]">
-                    <span className="text-[#88a2bd]">Source Subsystem:</span>
-                    <span className="font-bold text-white">{selectedEvent.source} ({selectedEvent.type})</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-[#16273c]">
-                    <span className="text-[#88a2bd]">Severity:</span>
-                    <span className="font-semibold text-rose-400">{selectedEvent.severity}</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-[#16273c]">
-                    <span className="text-[#88a2bd]">ABAP Program:</span>
-                    <span className="font-mono text-white">{selectedEvent.program}</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-[#16273c]">
-                    <span className="text-[#88a2bd]">Executing User:</span>
-                    <span className="font-bold text-white">{selectedEvent.user} (Cli {selectedEvent.client})</span>
-                  </div>
-                  <div className="flex justify-between py-1">
-                    <span className="text-[#88a2bd]">Observation Time:</span>
-                    <span className="font-mono text-white">{selectedEvent.time}</span>
-                  </div>
-                </div>
-
-                <div className="p-3 rounded-lg bg-[#0e1d2f] border border-[#1b2f48] space-y-1">
-                  <div className="text-[11px] text-[#7d96b2] font-semibold">Message Detail</div>
-                  <div className="font-mono text-white text-xs bg-[#091522] p-2.5 rounded border border-[#172b43] leading-relaxed">
-                    {selectedEvent.message}
-                  </div>
-                </div>
-
-                <div className="p-3 rounded-lg bg-amber-950/20 border border-amber-800/40 text-amber-200 text-[11px]">
-                  <strong>Phase 1 Read-Only:</strong> Log clearing, event acknowledgment, or dump purge triggers remain disabled.
-                </div>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => setSelectedEvent(null)}
-              className="w-full py-2 rounded-lg bg-[#14263c] hover:bg-[#1a334f] text-cyan-200 text-xs font-semibold border border-[#233f5d] transition-colors"
-            >
-              Close Event Details
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Selected Event Details via Unified EntityDetailDrawer */}
+      <EntityDetailDrawer
+        isOpen={!!selectedEvent}
+        entity={
+          selectedEvent
+            ? {
+                id: selectedEvent.id,
+                name: `${selectedEvent.code} (${selectedEvent.source})`,
+                islandId: 'alerts-events',
+                entityType: `System Log / Dump Event (${selectedEvent.source})`,
+                status: selectedEvent.severity,
+                attributes: {
+                  'Event ID': selectedEvent.id,
+                  'Subsystem': `${selectedEvent.source} (${selectedEvent.type})`,
+                  'Severity': selectedEvent.severity,
+                  'Event Code': selectedEvent.code,
+                  'Program / Transaction': selectedEvent.program,
+                  'User / Client': `${selectedEvent.user} (Client ${selectedEvent.client})`,
+                  'Observation Timestamp': selectedEvent.time,
+                  'Message Summary': selectedEvent.message,
+                },
+                sourceArtifact: `SAP ${selectedEvent.source} Operational Log Buffer`,
+                sourceLocator: `EVT_${selectedEvent.id}_${selectedEvent.code}`,
+                observedAt: '1405-02-14 10:14:00 (Jalali)',
+                confidence: 'High',
+                provenanceNotes:
+                  'Observed log or dump event. Log deletion, dump cleanup, and alert suppression require Phase 2 validation.',
+                provenanceNotesFa:
+                  'ثبت رویداد لاگ یا دامپ. پاک‌سازی گزارش‌ها یا بی‌صدا کردن هشدارها نیازمند اعتبارسنجی فاز دوم است.',
+                relatedRecords: [
+                  { islandId: 'performance', title: 'Work Processes (SM50)', id: 'SM50_EVT', count: 1 },
+                  { islandId: 'jobs-processes', title: 'Background Jobs (SM37)', id: 'SM37_EVT', count: 2 },
+                ],
+              }
+            : null
+        }
+        onClose={() => setSelectedEvent(null)}
+      />
     </div>
   );
 };

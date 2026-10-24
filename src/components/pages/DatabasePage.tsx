@@ -23,6 +23,7 @@ import { CapabilityTrackStatus } from '../common/CapabilityTrackStatus';
 import { WarningRulePanel } from '../common/WarningRulePanel';
 import { ControlledActionPanel } from '../common/ControlledActionPanel';
 import { WARNING_RULES, CONTROLLED_ACTIONS } from '../../data/mweRegistry';
+import { EntityDetailDrawer, EntityDetailData } from '../common/EntityDetailDrawer';
 
 export const DatabasePage: React.FC = () => {
   const { t } = useApp();
@@ -293,66 +294,44 @@ export const DatabasePage: React.FC = () => {
         </div>
       </div>
 
-      {/* Selected Volume Evidence Drawer */}
-      {selectedVol && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-end">
-          <div className="bg-[#0b1727] border-s border-[#1b2b40] w-full max-w-md h-full p-6 shadow-2xl flex flex-col justify-between overflow-y-auto">
-            <div className="space-y-5">
-              <div className="flex items-center justify-between pb-3 border-b border-[#1b2b40]">
-                <div>
-                  <div className="text-[10px] text-cyan-400 font-bold uppercase tracking-wider">
-                    Volume Evidence · Storage Monitor
-                  </div>
-                  <h3 className="text-lg font-bold text-white tech-id mt-0.5">
-                    {selectedVol.volumeName}
-                  </h3>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setSelectedVol(null)}
-                  className="p-1.5 rounded-lg text-[#718aa6] hover:text-white hover:bg-[#14263c] transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              <div className="space-y-3 text-xs">
-                <div className="p-3 rounded-lg bg-[#0e1d2f] border border-[#1b2f48] space-y-1.5">
-                  <div className="text-[11px] text-[#7d96b2] font-semibold">Volume Allocation</div>
-                  <div className="flex justify-between py-1 border-b border-[#16273c]">
-                    <span className="text-[#88a2bd]">Mount Path:</span>
-                    <span className="font-mono text-white text-[11px]">{selectedVol.mountPoint}</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-[#16273c]">
-                    <span className="text-[#88a2bd]">Allocated Size:</span>
-                    <span className="font-mono text-white font-bold">{selectedVol.sizeGb} GB</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-[#16273c]">
-                    <span className="text-[#88a2bd]">Currently Used:</span>
-                    <span className="font-mono text-cyan-300 font-bold">{selectedVol.usedGb} GB ({selectedVol.pct}%)</span>
-                  </div>
-                  <div className="flex justify-between py-1">
-                    <span className="text-[#88a2bd]">Operational State:</span>
-                    <span className="font-semibold text-emerald-400">{selectedVol.status}</span>
-                  </div>
-                </div>
-
-                <div className="p-3 rounded-lg bg-amber-950/20 border border-amber-800/40 text-amber-200 text-[11px]">
-                  <strong>Phase 1 Read-Only:</strong> Tablespace resize, storage shrink, or datafile reorganization commands are disabled.
-                </div>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => setSelectedVol(null)}
-              className="w-full py-2 rounded-lg bg-[#14263c] hover:bg-[#1a334f] text-cyan-200 text-xs font-semibold border border-[#233f5d] transition-colors"
-            >
-              Close Volume Detail
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Selected Volume Evidence Drawer via Unified EntityDetailDrawer */}
+      <EntityDetailDrawer
+        isOpen={!!selectedVol}
+        entity={
+          selectedVol
+            ? {
+                id: `DB-VOL-${selectedVol.volumeName}`,
+                name: `Database Storage Volume: ${selectedVol.volumeName}`,
+                islandId: 'database',
+                entityType: 'Storage Volume (DB02 / HANA Studio)',
+                status: selectedVol.status,
+                attributes: {
+                  'Volume Name': selectedVol.volumeName,
+                  'Mount Path': selectedVol.mountPoint,
+                  'Allocated Capacity': `${selectedVol.sizeGb} GB`,
+                  'Used Capacity': `${selectedVol.usedGb} GB`,
+                  'Utilization Ratio': `${selectedVol.pct}%`,
+                  'Operational State': selectedVol.status,
+                  'Database SID': DATABASE_STATUS.sid,
+                  'Database Engine': `${DATABASE_STATUS.dbName} (v${DATABASE_STATUS.version})`,
+                },
+                sourceArtifact: 'SAP DB02 / OS Storage Catalog Volume Table',
+                sourceLocator: `VOL_${selectedVol.volumeName}_MNT_${selectedVol.mountPoint}`,
+                observedAt: '1405-02-14 10:14:00 (Jalali)',
+                confidence: 'High',
+                provenanceNotes:
+                  'Observed database volume metrics. Tablespace resize, storage shrink, or datafile reorganization commands are strictly gated in Phase 1.',
+                provenanceNotesFa:
+                  'ثبت ظرفیت فضای ذخیره‌سازی پایگاه‌داده. افزایش ظرفیت جداول یا کوچک‌سازی فضای دیسک در فاز اول غیرفعال است.',
+                relatedRecords: [
+                  { islandId: 'backup-recovery', title: 'Backup History (DB13)', id: 'DB13_BK', count: 4 },
+                  { islandId: 'performance', title: 'I/O Utilization (ST04)', id: 'ST04_IO', count: 1 },
+                ],
+              }
+            : null
+        }
+        onClose={() => setSelectedVol(null)}
+      />
     </div>
   );
 };

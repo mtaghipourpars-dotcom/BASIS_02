@@ -21,6 +21,7 @@ import { CapabilityTrackStatus } from '../common/CapabilityTrackStatus';
 import { WarningRulePanel } from '../common/WarningRulePanel';
 import { ControlledActionPanel } from '../common/ControlledActionPanel';
 import { WARNING_RULES, CONTROLLED_ACTIONS } from '../../data/mweRegistry';
+import { EntityDetailDrawer, EntityDetailData } from '../common/EntityDetailDrawer';
 
 export const TransportsPage: React.FC = () => {
   const { t } = useApp();
@@ -299,72 +300,43 @@ export const TransportsPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Selected Transport Detail Drawer */}
-      {selectedTransport && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-end">
-          <div className="bg-[#0b1727] border-s border-[#1b2b40] w-full max-w-md h-full p-6 shadow-2xl flex flex-col justify-between overflow-y-auto">
-            <div className="space-y-5">
-              <div className="flex items-center justify-between pb-3 border-b border-[#1b2b40]">
-                <div>
-                  <div className="text-[10px] text-cyan-400 font-bold uppercase tracking-wider">
-                    Transport Cofile Record · STMS
-                  </div>
-                  <h3 className="text-lg font-bold text-white tech-id mt-0.5">
-                    {selectedTransport.trNumber}
-                  </h3>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setSelectedTransport(null)}
-                  className="p-1.5 rounded-lg text-[#718aa6] hover:text-white hover:bg-[#14263c] transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              <div className="space-y-3 text-xs">
-                <div className="p-3 rounded-lg bg-[#0e1d2f] border border-[#1b2f48] space-y-1.5">
-                  <div className="text-[11px] text-[#7d96b2] font-semibold">Transport Specifications</div>
-                  <div className="flex justify-between py-1 border-b border-[#16273c]">
-                    <span className="text-[#88a2bd]">Description:</span>
-                    <span className="text-white font-medium text-end max-w-[200px] truncate">{selectedTransport.description}</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-[#16273c]">
-                    <span className="text-[#88a2bd]">Request Owner:</span>
-                    <span className="font-bold text-white tech-id">{selectedTransport.owner}</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-[#16273c]">
-                    <span className="text-[#88a2bd]">Route:</span>
-                    <span className="font-mono text-cyan-300 font-bold">
-                      {selectedTransport.sourceSystem} → {selectedTransport.targetSystem}
-                    </span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-[#16273c]">
-                    <span className="text-[#88a2bd]">Return Code:</span>
-                    <span className="font-mono font-bold text-white">{selectedTransport.returnCode}</span>
-                  </div>
-                  <div className="flex justify-between py-1">
-                    <span className="text-[#88a2bd]">Import Date:</span>
-                    <span className="font-mono text-[#91a6bc]">{selectedTransport.importDate}</span>
-                  </div>
-                </div>
-
-                <div className="p-3 rounded-lg bg-amber-950/20 border border-amber-800/40 text-amber-200 text-[11px]">
-                  <strong>Phase 1 Read-Only:</strong> Transport import execution (import request into target system) is disabled.
-                </div>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => setSelectedTransport(null)}
-              className="w-full py-2 rounded-lg bg-[#14263c] hover:bg-[#1a334f] text-cyan-200 text-xs font-semibold border border-[#233f5d] transition-colors"
-            >
-              Close Transport Details
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Selected Transport Detail Drawer via Unified EntityDetailDrawer */}
+      <EntityDetailDrawer
+        isOpen={!!selectedTransport}
+        entity={
+          selectedTransport
+            ? {
+                id: selectedTransport.trNumber,
+                name: `${selectedTransport.trNumber} — ${selectedTransport.description}`,
+                islandId: 'transports',
+                entityType: 'Transport Request (STMS / SE09 / SE10)',
+                status: selectedTransport.returnCode,
+                attributes: {
+                  'Transport Number': selectedTransport.trNumber,
+                  'Description': selectedTransport.description,
+                  'Request Owner': selectedTransport.owner,
+                  'Transport Route': `${selectedTransport.sourceSystem} → ${selectedTransport.targetSystem}`,
+                  'Return Code': selectedTransport.returnCode,
+                  'Queue Status': selectedTransport.status,
+                  'Import Timestamp': selectedTransport.importDate,
+                },
+                sourceArtifact: 'SAP STMS Transport Queue & Cofile Buffer',
+                sourceLocator: `TR_${selectedTransport.trNumber}_RC_${selectedTransport.returnCode}`,
+                observedAt: '1405-02-14 10:14:00 (Jalali)',
+                confidence: 'High',
+                provenanceNotes:
+                  'Observed transport request in queue. Import request, release task, and forward transport triggers are strictly disabled in Phase 1.',
+                provenanceNotesFa:
+                  'ثبت درخواست انتقال در صف STMS. وارد کردن درخواست، آزادسازی تسک و ارجاع انتقال در فاز اول غیرفعال است.',
+                relatedRecords: [
+                  { islandId: 'alerts-events', title: 'System Logs (SM21)', id: 'SM21_TR', count: 1 },
+                  { islandId: 'landscape', title: 'Target Instance', id: 'TGT_PRD', count: 1 },
+                ],
+              }
+            : null
+        }
+        onClose={() => setSelectedTransport(null)}
+      />
     </div>
   );
 };
